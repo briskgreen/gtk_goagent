@@ -1,4 +1,3 @@
 gtk_goagent
 ===========
-
-GoaGent前端
+GoAgent 简易前端
