@@ -1,5 +1,4 @@
-#include "signal.h"
-#include <string.h>
+#include "callback.h"
 
 void create_tray(GtkWidget *win)
 {
@@ -32,6 +31,21 @@ void show_time(GtkWidget *widget)
 	g_timeout_add(1000,(GSourceFunc)change_time,label);
 }
 
+/*void wait_pid(int signum)
+{
+	message_box(NULL,"Killed");
+	waitpid(-1,NULL,WNOHANG);
+}
+
+void kill_signal(void)
+{
+	struct sigaction act,old;
+
+	act.sa_flags=0;
+	act.sa_handler=wait_pid;
+	sigaction(SIGKILL,&act,&old);
+}*/
+
 int main(int argc,char **argv)
 {
 	GtkWidget *win;
@@ -55,6 +69,7 @@ int main(int argc,char **argv)
 	g_signal_connect(G_OBJECT(win),"delete_event",G_CALLBACK(really_quit),NULL);
 
 	create_tray(win);
+	//kill_signal();
 
 	vbox=gtk_vbox_new(FALSE,0);
 	accel_group=gtk_accel_group_new();

@@ -1,4 +1,4 @@
-#include "signal.h"
+#include "callback.h"
 
 void get_connect(DATA *data);
 
@@ -24,6 +24,8 @@ void disconnect_goagent(GtkWidget *widget,DATA *data)
 	GtkTextBuffer *buffer=gtk_text_view_get_buffer(GTK_TEXT_VIEW(data->text));
 
 	data->off=0;
+	kill(data->pid,SIGKILL);
+	while(waitpid(-1,NULL,WNOHANG)!=-1);
 	pthread_cancel(data->thread);
 	gtk_text_buffer_set_text(buffer," ",1);
 }
@@ -61,14 +63,24 @@ void get_connect(DATA *data)
 	GtkTextBuffer *buffer=gtk_text_view_get_buffer(GTK_TEXT_VIEW(data->text));
 	GtkTextMark *mark=gtk_text_buffer_get_insert(buffer);
 	GtkTextIter iter;
+	int pipefd[2];
+	char buf[64];
 
 	gtk_text_buffer_get_iter_at_mark(buffer,&iter,mark);
+	pipe(pipefd);
 
-	while(1)
+	/*while(1)
 	{
-		//gtk_text_buffer_insert_at_cursor(buffer,"Hello World\n",12);
-		//gtk_text_buffer_get_iter_at_mark(buffer,&iter,mark);
 		gtk_text_buffer_insert(buffer,&iter,"Hello World\n",12);
 		sleep(1);
+	}*/
+	if((data->pid=fork())==0)
+	{
+		close(pipefd[0]);
+		dup2(pipefd[1],STDERR_FILENO);
+		execl("./he","he");
 	}
+
+	while(read(pipefd[0],buf,sizeof(buf)))
+		gtk_text_buffer_insert(buffer,&iter,buf,strlen(buf));
 }
