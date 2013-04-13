@@ -2,14 +2,24 @@
 #define _SIGNAL_H
 
 #include "dialog.h"
+#include <pthread.h>
 
-void connect_goagent(GtkWidget *widget,gpointer data);
+typedef struct 
+{
+	GtkWidget *text;
+	pthread_t thread;
+	int off;
+}DATA;
 
-void disconnect_goagent(GtkWidget *widget,gpointer data);
+void connect_goagent(GtkWidget *widget,DATA *data);
+
+void disconnect_goagent(GtkWidget *widget,DATA *data);
 
 void help(GtkWidget *widget,gpointer data);
 
 void about(GtkWidget *widget,gpointer data);
+
+void properties(GtkWidget *widget,gpointer data);
 
 void tray_on_menu(GtkWidget *widget,gpointer data);
 

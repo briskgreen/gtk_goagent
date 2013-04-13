@@ -13,7 +13,7 @@ menu.o:menu.c menu.h
 	gcc -c menu.c $(PKG_INCLUDE)
 
 signal.o:signal.c signal.h dialog.h
-	gcc -c signal.c $(PKG_INCLUDE)
+	gcc -c signal.c $(PKG_INCLUDE) -lpthread
 
 clean:
 	rm gtk_goagent *.o
