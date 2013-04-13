@@ -67,6 +67,17 @@ void error_message(GtkWidget *widget,gchar *error)
 	gtk_main_quit();
 }
 
+void message_box(GtkWidget *widget,gchar *error)
+{
+	GtkWidget *dialog;
+
+	dialog=gtk_message_dialog_new(NULL,GTK_DIALOG_MODAL,GTK_MESSAGE_INFO,
+			GTK_BUTTONS_OK,"%s",error);
+	gtk_dialog_run(GTK_DIALOG(dialog));
+
+	gtk_widget_destroy(dialog);
+}
+
 void help_dialog(GtkWidget *help,gpointer data)
 {
 	GtkWidget *dialog;

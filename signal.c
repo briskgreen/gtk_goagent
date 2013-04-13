@@ -9,7 +9,8 @@ void connect_goagent(GtkWidget *widget,DATA *data)
 
 	if(data->off)
 	{
-		gtk_text_buffer_insert_at_cursor(buffer,"\nConnected Now\n",15);
+		//gtk_text_buffer_insert_at_cursor(buffer,"\nConnected Now\n",15);
+		message_box(widget,"Connected Now\n");
 		return;
 	}
 
