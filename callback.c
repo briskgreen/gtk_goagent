@@ -17,6 +17,7 @@ void connect_goagent(GtkWidget *widget,DATA *data)
 	pthread_create(&thread,NULL,(void *)get_connect,data);
 	data->thread=thread;
 	data->off=1;
+	data->offset=1;
 }
 
 void disconnect_goagent(GtkWidget *widget,DATA *data)
@@ -64,7 +65,8 @@ void get_connect(DATA *data)
 	GtkTextMark *mark=gtk_text_buffer_get_insert(buffer);
 	GtkTextIter iter;
 	int pipefd[2];
-	char buf[64];
+	char buf[1024];
+	int len;
 
 	gtk_text_buffer_get_iter_at_mark(buffer,&iter,mark);
 	pipe(pipefd);
@@ -78,9 +80,18 @@ void get_connect(DATA *data)
 	{
 		close(pipefd[0]);
 		dup2(pipefd[1],STDERR_FILENO);
-		execl("./he","he");
+		dup2(pipefd[1],STDOUT_FILENO);
+
+		execl("/usr/bin/python","python","/home/brisk/vbox-share/goagent/local/proxy.py",NULL);
 	}
 
-	while(read(pipefd[0],buf,sizeof(buf)))
-		gtk_text_buffer_insert(buffer,&iter,buf,strlen(buf));
+	while(len=read(pipefd[0],buf,sizeof(buf)))
+	{
+		if(len==-1)
+			continue;
+
+		//gtk_text_buffer_insert(buffer,&iter,buf,len-1);
+		gtk_text_buffer_insert_at_cursor(buffer,buf,len);
+		bzero(buf,sizeof(buf));
+	}
 }

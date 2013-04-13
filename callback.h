@@ -15,6 +15,7 @@ typedef struct
 	pthread_t thread;
 	int off;
 	pid_t pid;
+	guint offset;
 }DATA;
 
 void connect_goagent(GtkWidget *widget,DATA *data);

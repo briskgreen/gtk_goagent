@@ -98,6 +98,7 @@ int main(int argc,char **argv)
 	//text=gtk_text_view_new();
 	gtk_widget_set_size_request(text,0x280,0x150);
 	gtk_text_view_set_editable(GTK_TEXT_VIEW(text),FALSE);
+	gtk_text_view_set_wrap_mode(GTK_TEXT_VIEW(text),GTK_WRAP_CHAR);
 	scrolled=gtk_scrolled_window_new(NULL,NULL);
 	gtk_scrolled_window_set_policy(GTK_SCROLLED_WINDOW(scrolled),GTK_POLICY_AUTOMATIC,GTK_POLICY_AUTOMATIC);
 	gtk_container_add(GTK_CONTAINER(scrolled),text);
