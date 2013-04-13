@@ -66,7 +66,7 @@ int main(int argc,char **argv)
 	gtk_window_set_position(GTK_WINDOW(win),GTK_WIN_POS_CENTER);
 	gtk_window_set_title(GTK_WINDOW(win),"Gtk GoAgent");
 	gtk_window_set_icon_from_file(GTK_WINDOW(win),"goagent.png",NULL);
-	g_signal_connect(G_OBJECT(win),"delete_event",G_CALLBACK(really_quit),NULL);
+	//g_signal_connect(G_OBJECT(win),"delete_event",G_CALLBACK(really_quit),NULL);
 
 	create_tray(win);
 	//kill_signal();
@@ -86,7 +86,7 @@ int main(int argc,char **argv)
 	create_menu_with_image(menu,GTK_STOCK_OPEN,accel_group,connect_goagent,&data);
 	create_menu_with_image(menu,GTK_STOCK_CLOSE,accel_group,disconnect_goagent,&data);
 	gtk_menu_shell_append(GTK_MENU_SHELL(menu),gtk_separator_menu_item_new());
-	create_menu_with_image(menu,GTK_STOCK_QUIT,accel_group,really_quit,NULL);
+	create_menu_with_image(menu,GTK_STOCK_QUIT,accel_group,really_quit,&data);
 
 	menu=create_menu(menu_bar,"_Edit");
 	create_menu_with_image(menu,GTK_STOCK_PROPERTIES,accel_group,properties,NULL);
@@ -117,6 +117,8 @@ int main(int argc,char **argv)
 	close=gtk_button_new_with_label("Disconnect");
 	gtk_box_pack_end(GTK_BOX(hbox),close,FALSE,FALSE,10);
 	g_signal_connect(G_OBJECT(close),"clicked",G_CALLBACK(disconnect_goagent),&data);
+
+	g_signal_connect(G_OBJECT(win),"delete_event",G_CALLBACK(really_quit),&data);
 
 	gtk_widget_show_all(win);
 	gtk_main();

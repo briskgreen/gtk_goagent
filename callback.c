@@ -17,7 +17,6 @@ void connect_goagent(GtkWidget *widget,DATA *data)
 	pthread_create(&thread,NULL,(void *)get_connect,data);
 	data->thread=thread;
 	data->off=1;
-	data->offset=1;
 }
 
 void disconnect_goagent(GtkWidget *widget,DATA *data)
@@ -28,7 +27,7 @@ void disconnect_goagent(GtkWidget *widget,DATA *data)
 	kill(data->pid,SIGKILL);
 	while(waitpid(-1,NULL,WNOHANG)!=-1);
 	pthread_cancel(data->thread);
-	gtk_text_buffer_set_text(buffer," ",1);
+	gtk_text_buffer_set_text(buffer,"",0);
 }
 
 void help(GtkWidget *widget,gpointer data)
@@ -62,20 +61,14 @@ void tray_on_click(GtkWidget *widget,gpointer data)
 void get_connect(DATA *data)
 {
 	GtkTextBuffer *buffer=gtk_text_view_get_buffer(GTK_TEXT_VIEW(data->text));
-	GtkTextMark *mark=gtk_text_buffer_get_insert(buffer);
-	GtkTextIter iter;
+	GtkTextIter end;
 	int pipefd[2];
 	char buf[1024];
 	int len;
 
-	gtk_text_buffer_get_iter_at_mark(buffer,&iter,mark);
+	//gtk_text_buffer_get_iter_at_mark(buffer,&iter,mark);
 	pipe(pipefd);
 
-	/*while(1)
-	{
-		gtk_text_buffer_insert(buffer,&iter,"Hello World\n",12);
-		sleep(1);
-	}*/
 	if((data->pid=fork())==0)
 	{
 		close(pipefd[0]);
@@ -85,13 +78,18 @@ void get_connect(DATA *data)
 		execl("/usr/bin/python","python","/home/brisk/vbox-share/goagent/local/proxy.py",NULL);
 	}
 
-	while(len=read(pipefd[0],buf,sizeof(buf)))
+	while(len=read(pipefd[0],buf,sizeof(buf))-1)
 	{
-		if(len==-1)
-			continue;
+		gtk_text_buffer_get_end_iter(buffer,&end);
 
-		//gtk_text_buffer_insert(buffer,&iter,buf,len-1);
-		gtk_text_buffer_insert_at_cursor(buffer,buf,len);
+		if(gtk_text_iter_get_line_offset(&end)>5120)
+			gtk_text_buffer_set_text(buffer,"",0);
+
+		if(strstr(buf,"ERROR") || strstr(buf,"WARNING"))
+		{
+			gtk_text_buffer_insert(buffer,&end,buf,len);
+			gtk_text_buffer_insert(buffer,&end,"\n",1);
+		}
 		bzero(buf,sizeof(buf));
 	}
 }

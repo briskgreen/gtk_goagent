@@ -54,6 +54,10 @@ void really_quit(GtkWidget *widget,gpointer data)
 	}
 
 	gtk_widget_destroy(dialog);
+
+	kill(((DATA *)data)->pid,SIGKILL);
+	while(waitpid(-1,NULL,WNOHANG)!=-1);
+	pthread_cancel(((DATA *)data)->thread);
 }
 
 void error_message(GtkWidget *widget,gchar *error)

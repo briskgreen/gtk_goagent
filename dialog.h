@@ -2,6 +2,9 @@
 #define _DIALOG_H
 
 #include "menu.h"
+#include <sys/types.h>
+#include <sys/wait.h>
+#include <pthread.h>
 
 typedef struct
 {
@@ -9,6 +12,14 @@ typedef struct
 	gchar *email;
 	gchar *readme;
 }HELP;
+
+typedef struct
+{
+	GtkWidget *text;
+	pthread_t thread;
+	int off;
+	pid_t pid;
+}DATA;
 
 void init_help_data(HELP *help);
 

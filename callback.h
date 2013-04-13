@@ -2,21 +2,9 @@
 #define _CALLBACK_H
 
 #include "dialog.h"
-#include <pthread.h>
 #include <string.h>
 #include <signal.h>
-#include <sys/types.h>
 #include <unistd.h>
-#include <sys/wait.h>
-
-typedef struct 
-{
-	GtkWidget *text;
-	pthread_t thread;
-	int off;
-	pid_t pid;
-	guint offset;
-}DATA;
 
 void connect_goagent(GtkWidget *widget,DATA *data);
 
