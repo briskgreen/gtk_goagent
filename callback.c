@@ -41,11 +41,12 @@ void about(GtkWidget *widget,gpointer data)
 void properties(GtkWidget *widget,gpointer data)
 {}
 
-void change_language(GtkWidget *widget,gpointer data)
+/*void change_language(GtkWidget *widget,gpointer data)
 {
-	setlocale(LC_ALL,"C");
-	setenv("LANG","en_US.UTF-8",1);
-}
+	setlocale(LC_ALL,"");
+	setlocale(LC_CTYPE,"zh_CN.UTF-8");
+	setenv("LANG","zh_CN.UTF-8",1);
+}*/
 
 void tray_on_menu(GtkWidget *widget,gpointer data)
 {}
