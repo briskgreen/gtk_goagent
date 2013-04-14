@@ -2,7 +2,9 @@
 
 git add $1
 git commit -m "update"
+echo -n "Please Enter URL:"
 read URL
 git remote add origin $URL
 git push origin master
+
 exit 0
