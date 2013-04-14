@@ -16,6 +16,8 @@ void about(GtkWidget *widget,gpointer data);
 
 void properties(GtkWidget *widget,gpointer data);
 
+void change_language(GtkWidget *widget,gpointer data);
+
 void tray_on_menu(GtkWidget *widget,gpointer data);
 
 void hide_window(GtkWidget *widget,GdkEventWindowState *event,gpointer data);

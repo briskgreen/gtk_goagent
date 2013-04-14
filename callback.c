@@ -1,4 +1,6 @@
 #include "callback.h"
+#include <locale.h>
+#include <stdlib.h>
 
 void get_connect(DATA *data);
 
@@ -38,6 +40,12 @@ void about(GtkWidget *widget,gpointer data)
 
 void properties(GtkWidget *widget,gpointer data)
 {}
+
+void change_language(GtkWidget *widget,gpointer data)
+{
+	setlocale(LC_ALL,"C");
+	setenv("LANG","en_US.UTF-8",1);
+}
 
 void tray_on_menu(GtkWidget *widget,gpointer data)
 {}

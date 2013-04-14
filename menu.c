@@ -1,4 +1,5 @@
 #include "menu.h"
+//#include <string.h>
 
 gchar *set_string(gchar *source);
 
@@ -18,7 +19,11 @@ void create_menu_with_image(GtkWidget *menu,gchar *item,\
 {
 	GtkWidget *menu_item;
 
-	menu_item=gtk_image_menu_item_new_from_stock(item,accel_group);
+	//if(strstr(item,"gtk"))
+		menu_item=gtk_image_menu_item_new_from_stock(item,accel_group);
+	//else
+	//	menu_item=gtk_menu_item_new_with_mnemonic(item);
+
 	g_signal_connect(G_OBJECT(menu_item),"activate",G_CALLBACK(func),data);
 	gtk_menu_shell_append(GTK_MENU_SHELL(menu),menu_item);
 	gtk_widget_show(menu_item);

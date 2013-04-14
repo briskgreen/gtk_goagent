@@ -61,6 +61,8 @@ int main(int argc,char **argv)
 	DATA data;
 
 	gtk_init(&argc,&argv);
+	//setlocale(LC_ALL,"C");
+	//setenv("LANG","en_US.UTF-8",1);
 
 	win=gtk_window_new(GTK_WINDOW_TOPLEVEL);
 	gtk_window_set_position(GTK_WINDOW(win),GTK_WIN_POS_CENTER);
@@ -90,6 +92,7 @@ int main(int argc,char **argv)
 
 	menu=create_menu(menu_bar,"_Edit");
 	create_menu_with_image(menu,GTK_STOCK_PROPERTIES,accel_group,properties,NULL);
+	create_menu_with_image(menu,"_Language",accel_group,change_language,NULL);
 
 	menu=create_menu(menu_bar,"_Help");
 	create_menu_with_image(menu,GTK_STOCK_HELP,accel_group,help,NULL);
