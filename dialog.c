@@ -6,7 +6,7 @@ void init_help_data(HELP *help)
 {
 	gchar *readme="一个简单的闹钟程序\n使用方法:\n点击菜单的New或者按钮New进行新的闹钟设置\n点击菜单的Delete或者下面的Delete按钮可删除一个闹钟\n如果日历中有高亮显示的(非当日)表示该日已经设置了闹钟\n可以双击进行查看或者删除,如果没有高亮显示的双击可直接进行闹钟设置!\n";
 	extern gchar *set_string(gchar *source);
-	help->name=set_string("SimpleAlarm");
+	help->name=set_string("Gtk GoAgent");
 	help->email=set_string("briskgreen@163.com");
 	help->readme=set_string(readme);
 }
@@ -36,8 +36,8 @@ void really_quit(GtkWidget *widget,gpointer data)
 	gint status;
 
 	dialog=gtk_dialog_new();
-	gtk_window_set_title(GTK_WINDOW(dialog),"Really Quit?");
-	label=gtk_label_new("Are You Really Want to Quit Application Now?\nClick OK To Quit,Click NO To Continue!");
+	gtk_window_set_title(GTK_WINDOW(dialog),_("Really Quit?"));
+	label=gtk_label_new(_("Are You Really Want to Quit Application Now?\nClick OK To Quit,Click NO To Continue!"));
 	gtk_box_pack_start(GTK_BOX(GTK_DIALOG(dialog)->vbox),label,FALSE,FALSE,5);
 	gtk_widget_show(label);
 	gtk_dialog_add_buttons(GTK_DIALOG(dialog),GTK_STOCK_NO,GTK_RESPONSE_NO,GTK_STOCK_OK,GTK_RESPONSE_OK,NULL);
@@ -54,6 +54,9 @@ void really_quit(GtkWidget *widget,gpointer data)
 	}
 
 	gtk_widget_destroy(dialog);
+
+	if(data == NULL)
+		return;
 
 	kill(((DATA *)data)->pid,SIGKILL);
 	while(waitpid(-1,NULL,WNOHANG)!=-1);
@@ -88,7 +91,7 @@ void help_dialog(GtkWidget *help,gpointer data)
 	HELP *help_data=(HELP *)data;
 
 	dialog=gtk_dialog_new();
-	gtk_window_set_title(GTK_WINDOW(dialog),"Help");
+	gtk_window_set_title(GTK_WINDOW(dialog),_("Help"));
 	set_help(dialog,help_data->name);
 	set_help(dialog,help_data->email);
 	set_help(dialog,help_data->readme);

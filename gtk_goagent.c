@@ -3,12 +3,29 @@
 void create_tray(GtkWidget *win)
 {
 	GtkStatusIcon *tray;
+	GtkWidget *menu;
+	GtkWidget *item;
 
 	tray=gtk_status_icon_new_from_file("goagent.png");
 	gtk_status_icon_set_tooltip_text(tray,"GoAgent");
-	gtk_status_icon_set_visible(tray,FALSE);
+	gtk_status_icon_set_visible(tray,TRUE);
 	g_signal_connect(G_OBJECT(tray),"activate",G_CALLBACK(tray_on_click),win);
-	g_signal_connect(G_OBJECT(tray),"popup_menu",G_CALLBACK(tray_on_menu),win);
+	//menu_bar=malloc(sizeof(GtkWidget));
+	//menu=malloc(sizeof(GtkWidget));
+
+	menu=gtk_menu_new();
+	item=gtk_menu_item_new_with_mnemonic(_("_Show"));
+	gtk_menu_shell_append(GTK_MENU_SHELL(menu),item);
+	g_signal_connect(G_OBJECT(item),"activate",G_CALLBACK(tray_on_click),win);
+	item=gtk_menu_item_new_with_mnemonic(_("H_ide"));
+	gtk_menu_shell_append(GTK_MENU_SHELL(menu),item);
+	g_signal_connect(G_OBJECT(item),"activate",G_CALLBACK(hide_win),win);
+	item=gtk_image_menu_item_new_from_stock(GTK_STOCK_QUIT,NULL);
+	gtk_menu_shell_append(GTK_MENU_SHELL(menu),item);
+	g_signal_connect(G_OBJECT(item),"activate",G_CALLBACK(really_quit),NULL);
+	gtk_widget_show_all(menu);
+
+	g_signal_connect(G_OBJECT(tray),"popup_menu",G_CALLBACK(tray_on_menu),menu);
 	g_signal_connect(G_OBJECT(win),"window_state_event",G_CALLBACK(hide_window),tray);
 }
 
@@ -60,9 +77,14 @@ int main(int argc,char **argv)
 	GtkAccelGroup *accel_group;
 	DATA data;
 
-	setlocale(LC_ALL,"");
+	/*setlocale(LC_ALL,"");
 	setlocale(LC_CTYPE,"zh_CN.UTF-8");
-	setenv("LANG","zh_CN.UTF-8",1);
+	setenv("LANG","zh_CN.UTF-8",1);*/
+	
+	gtk_set_locale();
+	//setlocale(LC_ALL,"");
+	bindtextdomain("gtk_goagent","./locale/");
+	textdomain("gtk_goagent");
 
 	gtk_init(&argc,&argv);
 
@@ -72,6 +94,7 @@ int main(int argc,char **argv)
 	gtk_window_set_icon_from_file(GTK_WINDOW(win),"goagent.png",NULL);
 	//g_signal_connect(G_OBJECT(win),"delete_event",G_CALLBACK(really_quit),NULL);
 
+	//accel_group=gtk_accel_group_new();
 	create_tray(win);
 	//kill_signal();
 
@@ -86,17 +109,17 @@ int main(int argc,char **argv)
 
 	menu_bar=gtk_menu_bar_new();
 	gtk_box_pack_start(GTK_BOX(vbox),menu_bar,FALSE,FALSE,0);
-	menu=create_menu(menu_bar,"_File");
+	menu=create_menu(menu_bar,_("_File"));
 	create_menu_with_image(menu,GTK_STOCK_OPEN,accel_group,connect_goagent,&data);
 	create_menu_with_image(menu,GTK_STOCK_CLOSE,accel_group,disconnect_goagent,&data);
 	gtk_menu_shell_append(GTK_MENU_SHELL(menu),gtk_separator_menu_item_new());
 	create_menu_with_image(menu,GTK_STOCK_QUIT,accel_group,really_quit,&data);
 
-	menu=create_menu(menu_bar,"_Edit");
+	menu=create_menu(menu_bar,_("_Edit"));
 	create_menu_with_image(menu,GTK_STOCK_PROPERTIES,accel_group,properties,NULL);
 	//create_menu_with_image(menu,"_Language",accel_group,change_language,NULL);
 
-	menu=create_menu(menu_bar,"_Help");
+	menu=create_menu(menu_bar,_("_Help"));
 	create_menu_with_image(menu,GTK_STOCK_HELP,accel_group,help,NULL);
 	create_menu_with_image(menu,GTK_STOCK_ABOUT,accel_group,about,NULL);
 
@@ -116,10 +139,10 @@ int main(int argc,char **argv)
 	hbox=gtk_hbox_new(FALSE,0);
 	gtk_box_pack_start(GTK_BOX(vbox),hbox,FALSE,FALSE,5);
 	
-	open=gtk_button_new_with_label("Connect");
+	open=gtk_button_new_with_label(_("Connect"));
 	gtk_box_pack_start(GTK_BOX(hbox),open,FALSE,FALSE,10);
 	g_signal_connect(G_OBJECT(open),"clicked",G_CALLBACK(connect_goagent),&data);
-	close=gtk_button_new_with_label("Disconnect");
+	close=gtk_button_new_with_label(_("Disconnect"));
 	gtk_box_pack_end(GTK_BOX(hbox),close,FALSE,FALSE,10);
 	g_signal_connect(G_OBJECT(close),"clicked",G_CALLBACK(disconnect_goagent),&data);
 

@@ -5,8 +5,6 @@
 #include <string.h>
 #include <signal.h>
 #include <unistd.h>
-#include <locale.h>
-#include <stdlib.h>
 
 void connect_goagent(GtkWidget *widget,DATA *data);
 
@@ -20,7 +18,11 @@ void properties(GtkWidget *widget,gpointer data);
 
 //void change_language(GtkWidget *widget,gpointer data);
 
-void tray_on_menu(GtkWidget *widget,gpointer data);
+//void tray_on_menu(GtkWidget *widget,gpointer data);
+void tray_on_menu(GtkWidget *widget,guint button,
+		guint32 activate_time,gpointer data);
+
+void hide_win(GtkWidget *widget,gpointer data);
 
 void hide_window(GtkWidget *widget,GdkEventWindowState *event,gpointer data);
 

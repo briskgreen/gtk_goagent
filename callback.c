@@ -12,7 +12,7 @@ void connect_goagent(GtkWidget *widget,DATA *data)
 	if(data->off)
 	{
 		//gtk_text_buffer_insert_at_cursor(buffer,"\nConnected Now\n",15);
-		message_box(widget,"Connected Now\n");
+		message_box(widget,_("Connected Now\n"));
 		return;
 	}
 
@@ -39,7 +39,11 @@ void about(GtkWidget *widget,gpointer data)
 {}
 
 void properties(GtkWidget *widget,gpointer data)
-{}
+{
+	setlocale(LC_ALL,"");
+	setlocale(LC_CTYPE,"zh_CN.UTF-8");
+	setenv("LANG","zh_CN.UTF-8",1);
+}
 
 /*void change_language(GtkWidget *widget,gpointer data)
 {
@@ -48,23 +52,28 @@ void properties(GtkWidget *widget,gpointer data)
 	setenv("LANG","zh_CN.UTF-8",1);
 }*/
 
-void tray_on_menu(GtkWidget *widget,gpointer data)
-{}
+void tray_on_menu(GtkWidget *widget,guint button,
+		guint32 activate_time,gpointer data)
+{
+	gtk_menu_popup(GTK_MENU(data),NULL,NULL,gtk_status_icon_position_menu,GTK_STATUS_ICON(widget),button,activate_time);
+}
+
+void hide_win(GtkWidget *widget,gpointer data)
+{
+	gtk_widget_hide_all(GTK_WIDGET(data));
+}
 
 void hide_window(GtkWidget *widget,GdkEventWindowState *event,gpointer data)
 {
 	if(event->changed_mask == GDK_WINDOW_STATE_ICONIFIED && event->new_window_state == GDK_WINDOW_STATE_ICONIFIED)
-	{
 		gtk_widget_hide_all(widget);
-		gtk_status_icon_set_visible(GTK_STATUS_ICON(data),TRUE);
-	}
 }
 
 void tray_on_click(GtkWidget *widget,gpointer data)
 {
 	gtk_widget_show_all(GTK_WIDGET(data));
 	gtk_window_present(GTK_WINDOW(data));
-	gtk_status_icon_set_visible(GTK_STATUS_ICON(widget),FALSE);
+	//gtk_status_icon_set_visible(GTK_STATUS_ICON(widget),FALSE);
 }
 
 void get_connect(DATA *data)

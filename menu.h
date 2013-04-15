@@ -2,6 +2,12 @@
 #define _MENU_H
 
 #include <gtk/gtk.h>
+#include <locale.h>
+#include <libintl.h>
+#include <stdlib.h>
+
+#define _(string) gettext(string)
+#define N_(string) string
 
 typedef struct
 {
