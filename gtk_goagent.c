@@ -7,7 +7,7 @@ void create_tray(GtkWidget *win)
 	GtkWidget *item;
 
 	tray=gtk_status_icon_new_from_file("goagent.png");
-	gtk_status_icon_set_tooltip_text(tray,"GoAgent");
+	gtk_status_icon_set_tooltip_text(tray,"Gtk GoAgent");
 	gtk_status_icon_set_visible(tray,TRUE);
 	g_signal_connect(G_OBJECT(tray),"activate",G_CALLBACK(tray_on_click),win);
 	//menu_bar=malloc(sizeof(GtkWidget));

@@ -71,8 +71,13 @@ void hide_window(GtkWidget *widget,GdkEventWindowState *event,gpointer data)
 
 void tray_on_click(GtkWidget *widget,gpointer data)
 {
-	gtk_widget_show_all(GTK_WIDGET(data));
-	gtk_window_present(GTK_WINDOW(data));
+	if(!gtk_widget_get_visible(GTK_WIDGET(data)))
+	{
+		gtk_widget_show_all(GTK_WIDGET(data));
+		gtk_window_present(GTK_WINDOW(data));
+	}
+	else
+		gtk_widget_hide_all(GTK_WIDGET(data));
 	//gtk_status_icon_set_visible(GTK_STATUS_ICON(widget),FALSE);
 }
 
