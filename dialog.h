@@ -17,6 +17,7 @@ typedef struct
 {
 	GtkWidget *text;
 	pthread_t thread;
+	pthread_mutex_t mutex;
 	int off;
 	pid_t pid;
 }DATA;

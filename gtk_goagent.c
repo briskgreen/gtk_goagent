@@ -106,6 +106,7 @@ int main(int argc,char **argv)
 	text=gtk_text_view_new();
 	data.text=text;
 	data.off=0;
+	pthread_mutex_init(&data.mutex,NULL);
 
 	menu_bar=gtk_menu_bar_new();
 	gtk_box_pack_start(GTK_BOX(vbox),menu_bar,FALSE,FALSE,0);
@@ -149,7 +150,14 @@ int main(int argc,char **argv)
 	g_signal_connect(G_OBJECT(win),"delete_event",G_CALLBACK(really_quit),&data);
 
 	gtk_widget_show_all(win);
+
 	gtk_main();
+	//pthread_mutex_unlock(&data.mutex);
+
+	kill(data.pid,SIGKILL);
+	while(waitpid(-1,NULL,WNOHANG)!=-1);
+	pthread_cancel(data.thread);
+	pthread_mutex_destroy(&data.mutex);
 
 	return 0;
 }

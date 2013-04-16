@@ -1,17 +1,17 @@
 #include "callback.h"
 #include <locale.h>
 #include <stdlib.h>
+#include <limits.h>
 
 void get_connect(DATA *data);
+void _get_connect(DATA *data);
 
 void connect_goagent(GtkWidget *widget,DATA *data)
 {
 	static pthread_t thread;
-	GtkTextBuffer *buffer=gtk_text_view_get_buffer(GTK_TEXT_VIEW(data->text));
 
 	if(data->off)
 	{
-		//gtk_text_buffer_insert_at_cursor(buffer,"\nConnected Now\n",15);
 		message_box(widget,_("Connected Now\n"));
 		return;
 	}
@@ -29,6 +29,10 @@ void disconnect_goagent(GtkWidget *widget,DATA *data)
 	kill(data->pid,SIGKILL);
 	while(waitpid(-1,NULL,WNOHANG)!=-1);
 	pthread_cancel(data->thread);
+
+	while(gtk_events_pending())
+		gtk_main_iteration();
+
 	gtk_text_buffer_set_text(buffer,"",0);
 }
 
@@ -44,13 +48,6 @@ void properties(GtkWidget *widget,gpointer data)
 	setlocale(LC_CTYPE,"zh_CN.UTF-8");
 	setenv("LANG","zh_CN.UTF-8",1);
 }
-
-/*void change_language(GtkWidget *widget,gpointer data)
-{
-	setlocale(LC_ALL,"");
-	setlocale(LC_CTYPE,"zh_CN.UTF-8");
-	setenv("LANG","zh_CN.UTF-8",1);
-}*/
 
 void tray_on_menu(GtkWidget *widget,guint button,
 		guint32 activate_time,gpointer data)
@@ -81,6 +78,31 @@ void tray_on_click(GtkWidget *widget,gpointer data)
 	//gtk_status_icon_set_visible(GTK_STATUS_ICON(widget),FALSE);
 }
 
+
+void _get_connect(DATA *data)
+{
+	GtkTextBuffer *buffer=gtk_text_view_get_buffer(GTK_TEXT_VIEW(data->text));
+	GtkTextIter end;
+	char buf[1024];
+	int len;
+
+	//len=read(pipefd[0],buf,sizeof(buf)-1);
+	if(len==-1)
+		return;
+	gtk_text_buffer_get_end_iter(buffer,&end);
+	if(gtk_text_iter_get_offset(&end)>INT_MAX)
+	{
+		while(gtk_events_pending())
+			gtk_main_iteration();
+
+		gtk_text_buffer_set_text(buffer,"",0);
+		return;
+	}
+	while(gtk_events_pending())
+		gtk_main_iteration();
+	gtk_text_buffer_insert(buffer,&end,buf,len);
+}
+
 void get_connect(DATA *data)
 {
 	GtkTextBuffer *buffer=gtk_text_view_get_buffer(GTK_TEXT_VIEW(data->text));
@@ -101,18 +123,57 @@ void get_connect(DATA *data)
 		execl("/usr/bin/python","python","/home/brisk/vbox-share/goagent/local/proxy.py",NULL);
 	}
 
-	while(len=read(pipefd[0],buf,sizeof(buf))-1)
+	close(pipefd[1]);
+
+	/*while(len=read(pipefd[0],buf,sizeof(buf))-1)
 	{
 		gtk_text_buffer_get_end_iter(buffer,&end);
 
-		if(gtk_text_iter_get_line_offset(&end)>5120)
+		if(len<=0)
+			continue;
+
+		if(gtk_text_iter_get_offset(&end)>INT_MAX)
+		{
 			gtk_text_buffer_set_text(buffer,"",0);
+			bzero(buf,sizeof(buf));
+			continue;
+		}
 
 		if(strstr(buf,"ERROR") || strstr(buf,"WARNING"))
 		{
 			gtk_text_buffer_insert(buffer,&end,buf,len);
 			gtk_text_buffer_insert(buffer,&end,"\n",1);
 		}
+		bzero(buf,sizeof(buf));
+	}*/
+	while(1)
+	{
+		len=read(pipefd[0],buf,sizeof(buf)-1);
+		if(len<=0)
+			continue;
+
+		gtk_text_buffer_get_end_iter(buffer,&end);
+
+		if(gtk_text_iter_get_offset(&end)>INT_MAX)
+		{
+			while(gtk_events_pending())
+				gtk_main_iteration();
+
+			pthread_mutex_lock(&data->mutex);
+			gtk_text_buffer_set_text(buffer,"",0);
+			pthread_mutex_unlock(&data->mutex);
+
+			bzero(buf,sizeof(buf));
+			continue;
+		}
+
+		while(gtk_events_pending())
+			gtk_main_iteration();
+
+		pthread_mutex_lock(&data->mutex);
+		gtk_text_buffer_insert(buffer,&end,buf,len);
+		pthread_mutex_unlock(&data->mutex);
+		//gtk_text_buffer_insert(buffer,&end,"\n",1);
 		bzero(buf,sizeof(buf));
 	}
 }
