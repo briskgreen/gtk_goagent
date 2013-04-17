@@ -137,7 +137,7 @@ int main(int argc,char **argv)
 	create_menu_with_image(menu,GTK_STOCK_ABOUT,accel_group,about,NULL);
 
 	//text=gtk_text_view_new();
-	gtk_widget_set_size_request(text,0x300,0x150);
+	gtk_widget_set_size_request(text,0x300,0x180);
 	gtk_text_view_set_editable(GTK_TEXT_VIEW(text),FALSE);
 	gtk_text_view_set_wrap_mode(GTK_TEXT_VIEW(text),GTK_WRAP_CHAR);
 	scrolled=gtk_scrolled_window_new(NULL,NULL);
