@@ -5,6 +5,7 @@
 #include <string.h>
 #include <signal.h>
 #include <unistd.h>
+#include <errno.h>
 
 void connect_goagent(GtkWidget *widget,DATA *data);
 
