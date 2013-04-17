@@ -134,6 +134,7 @@ void get_connect(DATA *data)
 	int pipefd[2];
 	char buf[1024];
 	int len;
+	guint offset;
 
 	//gtk_text_buffer_get_iter_at_mark(buffer,&iter,mark);
 	pipe(pipefd);
@@ -183,9 +184,15 @@ void get_connect(DATA *data)
 		if(len<=0)
 			continue;
 
-		gtk_text_buffer_get_end_iter(buffer,&end);
+		while(gtk_events_pending())
+			gtk_main_iteration();
 
-		if(gtk_text_iter_get_offset(&end)>INT_MAX)
+		pthread_mutex_lock(&data->mutex);
+		gtk_text_buffer_get_end_iter(buffer,&end);
+		gtk_text_iter_get_offset(&end);
+		pthread_mutex_unlock(&data->mutex);
+
+		if(offset>INT_MAX)
 		{
 			while(gtk_events_pending())
 				gtk_main_iteration();
