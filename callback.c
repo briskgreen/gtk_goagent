@@ -4,7 +4,7 @@
 #include <limits.h>
 
 void get_connect(DATA *data);
-void kill_pthread(int signum);
+gboolean is_python_and_goagent_path(char *python_path,char *goagent_path);
 
 DATA *sig_data;
 //void _get_connect(DATA *data);
@@ -18,6 +18,9 @@ void connect_goagent(GtkWidget *widget,DATA *data)
 		message_box(widget,_("Connected Now\n"));
 		return;
 	}
+
+	if(!is_python_and_goagent_path(data->python_path,data->goagent_path))
+		return;
 
 	pthread_create(&thread,NULL,(void *)get_connect,data);
 	data->thread=thread;
@@ -44,6 +47,16 @@ void disconnect_goagent(GtkWidget *widget,DATA *data)
 
 	pthread_mutex_lock(&data->mutex);
 	gtk_text_buffer_set_text(buffer,"",0);
+	pthread_mutex_unlock(&data->mutex);
+}
+
+void clean_buffer(GtkWidget *widget,DATA *data)
+{
+	while(gtk_events_pending())
+		gtk_main_iteration();
+	pthread_mutex_lock(&data->mutex);
+	gtk_text_buffer_set_text(gtk_text_view_get_buffer(
+				GTK_TEXT_VIEW(data->text)),"",0);
 	pthread_mutex_unlock(&data->mutex);
 }
 
@@ -121,14 +134,10 @@ void get_connect(DATA *data)
 	int pipefd[2];
 	char buf[1024];
 	int len;
-	struct sigaction act,old;
 
 	//gtk_text_buffer_get_iter_at_mark(buffer,&iter,mark);
 	pipe(pipefd);
-	act.sa_flags=0;
-
-	act.sa_handler=kill_pthread;
-	sigaction(SIGUSR1,&act,&old);
+	sig_data=data;
 
 	if((data->pid=fork())==0)
 	{
@@ -136,17 +145,11 @@ void get_connect(DATA *data)
 		dup2(pipefd[1],STDERR_FILENO);
 		dup2(pipefd[1],STDOUT_FILENO);
 
-		if(data->python_path==NULL)
-			message_box(NULL,_("You Should Set Python Path!"));
-		if(data->goagent_path==NULL)
-			message_box(NULL,_("You Should Set GoAgent Path!"));
-
 		//execl("/usr/bin/python","python","/home/brisk/vbox-share/goagent/local/proxy.py",NULL);
 		if(execl(data->python_path,"python",data->goagent_path,NULL)==-1)
 		{
-			message_box(NULL,strerror(errno));
+			write(STDERR_FILENO,strerror(errno),strlen(strerror(errno)));
 			kill(getppid(),SIGUSR1);
-			sig_data=data;
 			_exit(-1);
 		}
 	}
@@ -208,5 +211,25 @@ void get_connect(DATA *data)
 
 void kill_pthread(int signum)
 {
-	disconnect_goagent(NULL,sig_data);
+	//message_box(NULL,strerror(errno));
+	sig_data->off=0;
+	while(waitpid(-1,NULL,WNOHANG)!=-1);
+	pthread_cancel(sig_data->thread);
+}
+
+gboolean is_python_and_goagent_path(char *python_path,char *goagent_path)
+{
+	if(python_path==NULL)
+	{
+		message_box(NULL,_("You Should Set Python Path!"));
+		return FALSE;
+	}
+
+	if(goagent_path==NULL)
+	{
+		message_box(NULL,_("You Should Set GoAgent Path!"));
+		return FALSE;
+	}
+
+	return TRUE;
 }

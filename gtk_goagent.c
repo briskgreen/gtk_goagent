@@ -74,8 +74,10 @@ int main(int argc,char **argv)
 	GtkWidget *scrolled;
 	GtkWidget *open;
 	GtkWidget *close;
+	GtkWidget *clean;
 	GtkAccelGroup *accel_group;
 	DATA data;
+	struct sigaction act,old;
 
 	/*setlocale(LC_ALL,"");
 	setlocale(LC_CTYPE,"zh_CN.UTF-8");
@@ -85,6 +87,10 @@ int main(int argc,char **argv)
 	//setlocale(LC_ALL,"");
 	bindtextdomain("gtk_goagent","./locale/");
 	textdomain("gtk_goagent");
+
+	act.sa_flags=0;
+	act.sa_handler=kill_pthread;
+	sigaction(SIGUSR1,&act,&old);
 
 	gtk_init(&argc,&argv);
 
@@ -106,6 +112,12 @@ int main(int argc,char **argv)
 	text=gtk_text_view_new();
 	data.text=text;
 	data.off=0;
+	//data.python_path=NULL;
+	//data.goagent_path=NULL;
+	char *python_path="/usr/bin/python";
+	char *goagent_path="/home/brisk/vbox-share/goagent/local/proxy.py";
+	data.python_path=python_path;
+	data.goagent_path=goagent_path;
 	pthread_mutex_init(&data.mutex,NULL);
 
 	menu_bar=gtk_menu_bar_new();
@@ -125,7 +137,7 @@ int main(int argc,char **argv)
 	create_menu_with_image(menu,GTK_STOCK_ABOUT,accel_group,about,NULL);
 
 	//text=gtk_text_view_new();
-	gtk_widget_set_size_request(text,0x280,0x150);
+	gtk_widget_set_size_request(text,0x300,0x150);
 	gtk_text_view_set_editable(GTK_TEXT_VIEW(text),FALSE);
 	gtk_text_view_set_wrap_mode(GTK_TEXT_VIEW(text),GTK_WRAP_CHAR);
 	scrolled=gtk_scrolled_window_new(NULL,NULL);
@@ -141,10 +153,13 @@ int main(int argc,char **argv)
 	gtk_box_pack_start(GTK_BOX(vbox),hbox,FALSE,FALSE,5);
 	
 	open=gtk_button_new_with_label(_("Connect"));
-	gtk_box_pack_start(GTK_BOX(hbox),open,FALSE,FALSE,10);
+	gtk_box_pack_start(GTK_BOX(hbox),open,FALSE,FALSE,30);
 	g_signal_connect(G_OBJECT(open),"clicked",G_CALLBACK(connect_goagent),&data);
+	clean=gtk_button_new_with_label(_("Clean"));
+	gtk_box_pack_start(GTK_BOX(hbox),clean,TRUE,TRUE,100);
+	g_signal_connect(G_OBJECT(clean),"clicked",G_CALLBACK(clean_buffer),&data);
 	close=gtk_button_new_with_label(_("Disconnect"));
-	gtk_box_pack_end(GTK_BOX(hbox),close,FALSE,FALSE,10);
+	gtk_box_pack_end(GTK_BOX(hbox),close,FALSE,FALSE,30);
 	g_signal_connect(G_OBJECT(close),"clicked",G_CALLBACK(disconnect_goagent),&data);
 
 	g_signal_connect(G_OBJECT(win),"delete_event",G_CALLBACK(really_quit),&data);

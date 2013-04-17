@@ -11,6 +11,8 @@ void connect_goagent(GtkWidget *widget,DATA *data);
 
 void disconnect_goagent(GtkWidget *widget,DATA *data);
 
+void clean_buffer(GtkWidget *widget,DATA *data);
+
 void help(GtkWidget *widget,gpointer data);
 
 void about(GtkWidget *widget,gpointer data);
@@ -28,5 +30,7 @@ void hide_win(GtkWidget *widget,gpointer data);
 void hide_window(GtkWidget *widget,GdkEventWindowState *event,gpointer data);
 
 void tray_on_click(GtkWidget *widget,gpointer data);
+
+void kill_pthread(int signum);
 
 #endif
