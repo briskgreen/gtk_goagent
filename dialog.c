@@ -4,7 +4,7 @@ void set_help(GtkWidget *dialog,gchar *help);
 
 void init_help_data(HELP *help)
 {
-	gchar *readme="一个简单的闹钟程序\n使用方法:\n点击菜单的New或者按钮New进行新的闹钟设置\n点击菜单的Delete或者下面的Delete按钮可删除一个闹钟\n如果日历中有高亮显示的(非当日)表示该日已经设置了闹钟\n可以双击进行查看或者删除,如果没有高亮显示的双击可直接进行闹钟设置!\n";
+	gchar *readme="Gtk GoAgent是一个简单的GoAgent前端!\n";
 	extern gchar *set_string(gchar *source);
 	help->name=set_string("Gtk GoAgent");
 	help->email=set_string("briskgreen@163.com");

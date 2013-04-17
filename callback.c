@@ -4,7 +4,10 @@
 #include <limits.h>
 
 void get_connect(DATA *data);
-void _get_connect(DATA *data);
+void kill_pthread(int signum);
+
+DATA *sig_data;
+//void _get_connect(DATA *data);
 
 void connect_goagent(GtkWidget *widget,DATA *data)
 {
@@ -25,6 +28,12 @@ void disconnect_goagent(GtkWidget *widget,DATA *data)
 {
 	GtkTextBuffer *buffer=gtk_text_view_get_buffer(GTK_TEXT_VIEW(data->text));
 
+	if(!data->off)
+	{
+		message_box(widget,_("No Connected Now!"));
+		return;
+	}
+
 	data->off=0;
 	kill(data->pid,SIGKILL);
 	while(waitpid(-1,NULL,WNOHANG)!=-1);
@@ -33,7 +42,9 @@ void disconnect_goagent(GtkWidget *widget,DATA *data)
 	while(gtk_events_pending())
 		gtk_main_iteration();
 
+	pthread_mutex_lock(&data->mutex);
 	gtk_text_buffer_set_text(buffer,"",0);
+	pthread_mutex_unlock(&data->mutex);
 }
 
 void help(GtkWidget *widget,gpointer data)
@@ -44,9 +55,9 @@ void about(GtkWidget *widget,gpointer data)
 
 void properties(GtkWidget *widget,gpointer data)
 {
-	setlocale(LC_ALL,"");
+	/*setlocale(LC_ALL,"");
 	setlocale(LC_CTYPE,"zh_CN.UTF-8");
-	setenv("LANG","zh_CN.UTF-8",1);
+	setenv("LANG","zh_CN.UTF-8",1);*/
 }
 
 void tray_on_menu(GtkWidget *widget,guint button,
@@ -79,7 +90,7 @@ void tray_on_click(GtkWidget *widget,gpointer data)
 }
 
 
-void _get_connect(DATA *data)
+/*void _get_connect(DATA *data)
 {
 	GtkTextBuffer *buffer=gtk_text_view_get_buffer(GTK_TEXT_VIEW(data->text));
 	GtkTextIter end;
@@ -101,7 +112,7 @@ void _get_connect(DATA *data)
 	while(gtk_events_pending())
 		gtk_main_iteration();
 	gtk_text_buffer_insert(buffer,&end,buf,len);
-}
+}*/
 
 void get_connect(DATA *data)
 {
@@ -110,9 +121,14 @@ void get_connect(DATA *data)
 	int pipefd[2];
 	char buf[1024];
 	int len;
+	struct sigaction act,old;
 
 	//gtk_text_buffer_get_iter_at_mark(buffer,&iter,mark);
 	pipe(pipefd);
+	act.sa_flags=0;
+
+	act.sa_handler=kill_pthread;
+	sigaction(SIGUSR1,&act,&old);
 
 	if((data->pid=fork())==0)
 	{
@@ -120,7 +136,19 @@ void get_connect(DATA *data)
 		dup2(pipefd[1],STDERR_FILENO);
 		dup2(pipefd[1],STDOUT_FILENO);
 
-		execl("/usr/bin/python","python","/home/brisk/vbox-share/goagent/local/proxy.py",NULL);
+		if(data->python_path==NULL)
+			message_box(NULL,_("You Should Set Python Path!"));
+		if(data->goagent_path==NULL)
+			message_box(NULL,_("You Should Set GoAgent Path!"));
+
+		//execl("/usr/bin/python","python","/home/brisk/vbox-share/goagent/local/proxy.py",NULL);
+		if(execl(data->python_path,"python",goagent_path,NULL)==-1)
+		{
+			message_box(NULL,strerror(errno));
+			kill(getppid(),SIGUSR1);
+			sig_data=data;
+			_exit(-1);
+		}
 	}
 
 	close(pipefd[1]);
@@ -176,4 +204,9 @@ void get_connect(DATA *data)
 		//gtk_text_buffer_insert(buffer,&end,"\n",1);
 		bzero(buf,sizeof(buf));
 	}
+}
+
+void kill_pthread(int signum)
+{
+	disconnect_goagent(NULL,sig_data);
 }

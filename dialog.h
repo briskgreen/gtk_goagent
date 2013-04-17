@@ -20,6 +20,8 @@ typedef struct
 	pthread_mutex_t mutex;
 	int off;
 	pid_t pid;
+	char *python_path;
+	char *goagent_path;
 }DATA;
 
 void init_help_data(HELP *help);

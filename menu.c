@@ -7,8 +7,8 @@ void init_about_data(ABOUT *about)
 {
 	about->name=set_string("Gtk GoAgent");
 	about->version=set_string("1.0");
-	about->copyright=set_string("Copyright © 2012-12 By 炕头哥");
-	about->comments=set_string("A Simple Alarm With Calendar");
+	about->copyright=set_string("Copyright © 2013-04 By 炕头哥");
+	about->comments=set_string("一个简单的GoAgent前端");
 	about->license=set_string("GPL");
 	about->website=set_string("briskgreen@163.com");
 	*about->authors=set_string("Brisk");
