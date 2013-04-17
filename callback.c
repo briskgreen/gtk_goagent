@@ -142,7 +142,7 @@ void get_connect(DATA *data)
 			message_box(NULL,_("You Should Set GoAgent Path!"));
 
 		//execl("/usr/bin/python","python","/home/brisk/vbox-share/goagent/local/proxy.py",NULL);
-		if(execl(data->python_path,"python",goagent_path,NULL)==-1)
+		if(execl(data->python_path,"python",data->goagent_path,NULL)==-1)
 		{
 			message_box(NULL,strerror(errno));
 			kill(getppid(),SIGUSR1);
