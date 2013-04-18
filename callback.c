@@ -2,6 +2,7 @@
 #include <locale.h>
 #include <stdlib.h>
 #include <limits.h>
+#include <fcntl.h>
 
 void get_connect(DATA *data);
 gboolean is_python_and_goagent_path(char *python_path,char *goagent_path);
@@ -11,8 +12,7 @@ DATA *sig_data;
 
 void connect_goagent(GtkWidget *widget,DATA *data)
 {
-	static pthread_t thread;
-
+	//static pthread_t thread;
 	if(data->off)
 	{
 		message_box(widget,_("Connected Now\n"));
@@ -116,7 +116,7 @@ gboolean _get_connect(DATA *data)
 
 	if(len<=0)
 	{
-		usleep(100);
+		//usleep(100);
 		return TRUE;
 	}
 
@@ -129,7 +129,7 @@ gboolean _get_connect(DATA *data)
 	}
 
 	gtk_text_buffer_insert(buffer,&end,buf,len);
-	usleep(100);
+	//usleep(100);
 
 	return TRUE;
 }
@@ -142,6 +142,7 @@ void get_connect(DATA *data)
 	char buf[1024];
 	int len;
 	guint offset;*/
+	int flags;
 
 	//gtk_text_buffer_get_iter_at_mark(buffer,&iter,mark);
 	pipe(data->pipefd);
@@ -156,13 +157,17 @@ void get_connect(DATA *data)
 		//execl("/usr/bin/python","python","/home/brisk/vbox-share/goagent/local/proxy.py",NULL);
 		if(execl(data->python_path,"python",data->goagent_path,NULL)==-1)
 		{
-			write(STDERR_FILENO,strerror(errno),strlen(strerror(errno)));
+			write(STDERR_FILENO,_("Error Python Path!"),
+					strlen(_("Error Python Path!")));
 			kill(getppid(),SIGUSR1);
 			_exit(-1);
 		}
 	}
 
 	close(data->pipefd[1]);
+	flags=fcntl(data->pipefd[0],F_GETFL,0);
+	flags|=O_NONBLOCK;
+	fcntl(data->pipefd[0],F_SETFL,flags);
 
 	g_idle_add((GSourceFunc)_get_connect,data);
 
