@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2013-04-15 22:22+0800\n"
+"POT-Creation-Date: 2013-04-18 16:55+0800\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -17,9 +17,21 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: callback.c:15
+#: callback.c:18
 msgid "Connected Now\n"
-msgstr "已经连接\n"
+msgstr "已经连接!\n"
+
+#: callback.c:37
+msgid "No Connected Now!"
+msgstr "没有连接!"
+
+#: callback.c:242
+msgid "You Should Set Python Path!"
+msgstr "你需要设置Python的路径!"
+
+#: callback.c:248
+msgid "You Should Set GoAgent Path!"
+msgstr "你需要设置GoAgent的路径!"
 
 #: dialog.c:39
 msgid "Really Quit?"
@@ -29,9 +41,9 @@ msgstr "退出?"
 msgid ""
 "Are You Really Want to Quit Application Now?\n"
 "Click OK To Quit,Click NO To Continue!"
-msgstr "你真的想要退出应用程序吗?\n点击确定退出,点击否不退出"
+msgstr "你真的要退出应用程序吗?\n点击确定退出,点击否继续!"
 
-#: dialog.c:94
+#: dialog.c:87
 msgid "Help"
 msgstr "帮助"
 
@@ -43,22 +55,26 @@ msgstr "显示(_S)"
 msgid "H_ide"
 msgstr "隐藏(_i)"
 
-#: gtk_goagent.c:112
+#: gtk_goagent.c:125
 msgid "_File"
 msgstr "文件(_F)"
 
-#: gtk_goagent.c:118
+#: gtk_goagent.c:131
 msgid "_Edit"
 msgstr "编辑(_E)"
 
-#: gtk_goagent.c:122
+#: gtk_goagent.c:135
 msgid "_Help"
-msgstr "帮助(_H)"
+msgstr "帮助(_F)"
 
-#: gtk_goagent.c:142
+#: gtk_goagent.c:155
 msgid "Connect"
 msgstr "连接"
 
-#: gtk_goagent.c:145
+#: gtk_goagent.c:158
+msgid "Clean"
+msgstr "清除"
+
+#: gtk_goagent.c:161
 msgid "Disconnect"
 msgstr "断开"
