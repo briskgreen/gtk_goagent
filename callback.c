@@ -5,9 +5,9 @@
 
 void get_connect(DATA *data);
 gboolean is_python_and_goagent_path(char *python_path,char *goagent_path);
+gboolean _get_connect(DATA *data);
 
 DATA *sig_data;
-//void _get_connect(DATA *data);
 
 void connect_goagent(GtkWidget *widget,DATA *data)
 {
@@ -22,8 +22,9 @@ void connect_goagent(GtkWidget *widget,DATA *data)
 	if(!is_python_and_goagent_path(data->python_path,data->goagent_path))
 		return;
 
-	pthread_create(&thread,NULL,(void *)get_connect,data);
-	data->thread=thread;
+	//pthread_create(&thread,NULL,(void *)get_connect,data);
+	//data->thread=thread;
+	get_connect(data);
 	data->off=1;
 }
 
@@ -40,24 +41,26 @@ void disconnect_goagent(GtkWidget *widget,DATA *data)
 	data->off=0;
 	kill(data->pid,SIGKILL);
 	while(waitpid(-1,NULL,WNOHANG)!=-1);
-	pthread_cancel(data->thread);
+	close(data->pipefd[0]);
+	g_idle_remove_by_data(data);
+	/*pthread_cancel(data->thread);
 
 	while(gtk_events_pending())
 		gtk_main_iteration();
 
-	pthread_mutex_lock(&data->mutex);
+	pthread_mutex_lock(&data->mutex);*/
 	gtk_text_buffer_set_text(buffer,"",0);
-	pthread_mutex_unlock(&data->mutex);
+	//pthread_mutex_unlock(&data->mutex);
 }
 
 void clean_buffer(GtkWidget *widget,DATA *data)
 {
-	while(gtk_events_pending())
+	/*while(gtk_events_pending())
 		gtk_main_iteration();
-	pthread_mutex_lock(&data->mutex);
+	pthread_mutex_lock(&data->mutex);*/
 	gtk_text_buffer_set_text(gtk_text_view_get_buffer(
 				GTK_TEXT_VIEW(data->text)),"",0);
-	pthread_mutex_unlock(&data->mutex);
+	//pthread_mutex_unlock(&data->mutex);
 }
 
 void help(GtkWidget *widget,gpointer data)
@@ -102,49 +105,53 @@ void tray_on_click(GtkWidget *widget,gpointer data)
 	//gtk_status_icon_set_visible(GTK_STATUS_ICON(widget),FALSE);
 }
 
-
-/*void _get_connect(DATA *data)
+gboolean _get_connect(DATA *data)
 {
 	GtkTextBuffer *buffer=gtk_text_view_get_buffer(GTK_TEXT_VIEW(data->text));
 	GtkTextIter end;
-	char buf[1024];
+	char buf[512];
 	int len;
 
-	//len=read(pipefd[0],buf,sizeof(buf)-1);
-	if(len==-1)
-		return;
+	len=read(data->pipefd[0],buf,sizeof(buf)-1);
+
+	if(len<=0)
+	{
+		usleep(100);
+		return TRUE;
+	}
+
 	gtk_text_buffer_get_end_iter(buffer,&end);
 	if(gtk_text_iter_get_offset(&end)>INT_MAX)
 	{
-		while(gtk_events_pending())
-			gtk_main_iteration();
-
 		gtk_text_buffer_set_text(buffer,"",0);
-		return;
+
+		return TRUE;
 	}
-	while(gtk_events_pending())
-		gtk_main_iteration();
+
 	gtk_text_buffer_insert(buffer,&end,buf,len);
-}*/
+	usleep(100);
+
+	return TRUE;
+}
 
 void get_connect(DATA *data)
 {
-	GtkTextBuffer *buffer=gtk_text_view_get_buffer(GTK_TEXT_VIEW(data->text));
+	/*GtkTextBuffer *buffer=gtk_text_view_get_buffer(GTK_TEXT_VIEW(data->text));
 	GtkTextIter end;
 	int pipefd[2];
 	char buf[1024];
 	int len;
-	guint offset;
+	guint offset;*/
 
 	//gtk_text_buffer_get_iter_at_mark(buffer,&iter,mark);
-	pipe(pipefd);
+	pipe(data->pipefd);
 	sig_data=data;
 
 	if((data->pid=fork())==0)
 	{
-		close(pipefd[0]);
-		dup2(pipefd[1],STDERR_FILENO);
-		dup2(pipefd[1],STDOUT_FILENO);
+		close(data->pipefd[0]);
+		dup2(data->pipefd[1],STDERR_FILENO);
+		dup2(data->pipefd[1],STDOUT_FILENO);
 
 		//execl("/usr/bin/python","python","/home/brisk/vbox-share/goagent/local/proxy.py",NULL);
 		if(execl(data->python_path,"python",data->goagent_path,NULL)==-1)
@@ -155,7 +162,9 @@ void get_connect(DATA *data)
 		}
 	}
 
-	close(pipefd[1]);
+	close(data->pipefd[1]);
+
+	g_idle_add((GSourceFunc)_get_connect,data);
 
 	/*while(len=read(pipefd[0],buf,sizeof(buf))-1)
 	{
@@ -178,7 +187,7 @@ void get_connect(DATA *data)
 		}
 		bzero(buf,sizeof(buf));
 	}*/
-	while(1)
+	/*while(1)
 	{
 		len=read(pipefd[0],buf,sizeof(buf)-1);
 		if(len<=0)
@@ -213,7 +222,7 @@ void get_connect(DATA *data)
 		pthread_mutex_unlock(&data->mutex);
 		//gtk_text_buffer_insert(buffer,&end,"\n",1);
 		bzero(buf,sizeof(buf));
-	}
+	}*/
 }
 
 void kill_pthread(int signum)
@@ -221,7 +230,9 @@ void kill_pthread(int signum)
 	//message_box(NULL,strerror(errno));
 	sig_data->off=0;
 	while(waitpid(-1,NULL,WNOHANG)!=-1);
-	pthread_cancel(sig_data->thread);
+	//pthread_cancel(sig_data->thread);
+	close(sig_data->pipefd[0]);
+	g_idle_remove_by_data(sig_data);
 }
 
 gboolean is_python_and_goagent_path(char *python_path,char *goagent_path)

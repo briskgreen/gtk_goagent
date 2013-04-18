@@ -115,10 +115,10 @@ int main(int argc,char **argv)
 	//data.python_path=NULL;
 	//data.goagent_path=NULL;
 	char *python_path="/usr/bin/python";
-	char *goagent_path="/home/brisk/vbox-share/goagent/local/proxy.py";
+	char *goagent_path="/home/brisk/goagent/local/proxy.py";
 	data.python_path=python_path;
 	data.goagent_path=goagent_path;
-	pthread_mutex_init(&data.mutex,NULL);
+	//pthread_mutex_init(&data.mutex,NULL);
 
 	menu_bar=gtk_menu_bar_new();
 	gtk_box_pack_start(GTK_BOX(vbox),menu_bar,FALSE,FALSE,0);
@@ -171,8 +171,9 @@ int main(int argc,char **argv)
 
 	kill(data.pid,SIGKILL);
 	while(waitpid(-1,NULL,WNOHANG)!=-1);
-	pthread_cancel(data.thread);
-	pthread_mutex_destroy(&data.mutex);
+	g_idle_remove_by_data(&data);
+	//pthread_cancel(data.thread);
+	//pthread_mutex_destroy(&data.mutex);
 
 	return 0;
 }

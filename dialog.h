@@ -16,8 +16,7 @@ typedef struct
 typedef struct
 {
 	GtkWidget *text;
-	pthread_t thread;
-	pthread_mutex_t mutex;
+	int pipefd[2];
 	int off;
 	pid_t pid;
 	char *python_path;
