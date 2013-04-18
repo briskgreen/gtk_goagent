@@ -8,6 +8,7 @@
 #define HOME (getenv("HOME"))
 #define CONFFILE "/.gtk_goagentrc"
 #define PYPATH "/local/proxy.py"
+#define UPPATH "/server/uploader.zip"
 
 typedef struct
 {

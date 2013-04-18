@@ -1,7 +1,7 @@
 #ifndef _CALLBACK_H
 #define _CALLBACK_H
 
-#include "dialog.h"
+#include "config.h"
 #include <string.h>
 #include <signal.h>
 #include <unistd.h>
