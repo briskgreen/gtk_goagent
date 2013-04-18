@@ -130,9 +130,10 @@ gboolean _get_connect(DATA *data)
 
 	if(strstr(buf,"WARNING"))
 	{
-		gtk_text_buffer_create_tag(buffer,"yellow_fg","foreground","yellow",NULL);
+		gtk_text_buffer_create_tag(buffer,"green_fg",
+				"foreground","green",NULL);
 		gtk_text_buffer_insert_with_tags_by_name(buffer,&end,buf,
-				len,"yellow_fg",NULL);
+				len,"green_fg",NULL);
 		return TRUE;
 	}
 
