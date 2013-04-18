@@ -116,7 +116,7 @@ gboolean _get_connect(DATA *data)
 
 	if(len<=0)
 	{
-		//usleep(100);
+		usleep(100);
 		return TRUE;
 	}
 
@@ -125,6 +125,23 @@ gboolean _get_connect(DATA *data)
 	{
 		gtk_text_buffer_set_text(buffer,"",0);
 
+		return TRUE;
+	}
+
+	if(strstr(buf,"WARNING"))
+	{
+		gtk_text_buffer_create_tag(buffer,"yellow_fg","foreground","yellow",NULL);
+		gtk_text_buffer_insert_with_tags_by_name(buffer,&end,buf,
+				len,"yellow_fg",NULL);
+		return TRUE;
+	}
+
+	if(strstr(buf,"ERROR"))
+	{
+		gtk_text_buffer_create_tag(buffer,"red_fg","foreground",
+				"red",NULL);
+		gtk_text_buffer_insert_with_tags_by_name(buffer,&end,buf,
+				len,"red_fg",NULL);
 		return TRUE;
 	}
 

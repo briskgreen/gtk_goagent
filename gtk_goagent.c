@@ -115,7 +115,7 @@ int main(int argc,char **argv)
 	//data.python_path=NULL;
 	//data.goagent_path=NULL;
 	char *python_path="/usr/bin/python";
-	char *goagent_path="/home/brisk/goagent/local/proxy.py";
+	char *goagent_path="/home/brisk/vbox-share/goagent/local/proxy.py";
 	data.python_path=python_path;
 	data.goagent_path=goagent_path;
 	//pthread_mutex_init(&data.mutex,NULL);
