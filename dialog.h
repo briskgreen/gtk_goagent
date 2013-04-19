@@ -32,6 +32,8 @@ void error_message(GtkWidget *widget,gchar *data);
 
 void message_box(GtkWidget *widget,gchar *data);
 
+gboolean message_box_ok(gchar *data);
+
 void help_dialog(GtkWidget *help,gpointer data);
 
 #endif

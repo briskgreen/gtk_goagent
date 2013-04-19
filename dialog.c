@@ -78,6 +78,37 @@ void message_box(GtkWidget *widget,gchar *error)
 	gtk_widget_destroy(dialog);
 }
 
+gboolean message_box_ok(gchar *data)
+{
+	GtkWidget *dialog;
+	GtkWidget *label;
+	guint status;
+
+	dialog=gtk_dialog_new();
+	gtk_window_set_title(GTK_WINDOW(dialog),_("Message Box"));
+	label=gtk_label_new(data);
+	gtk_box_pack_start(GTK_BOX(GTK_DIALOG(dialog)->vbox),label,FALSE,FALSE,5);
+	gtk_widget_show(label);
+	gtk_dialog_add_buttons(GTK_DIALOG(dialog),GTK_STOCK_NO,GTK_RESPONSE_NO,GTK_STOCK_OK,GTK_RESPONSE_OK,NULL);
+
+	status=gtk_dialog_run(GTK_DIALOG(dialog));
+
+	switch(status)
+	{
+		case GTK_RESPONSE_OK:
+			gtk_widget_destroy(dialog);
+			return TRUE;
+			
+		case GTK_RESPONSE_NO:
+			gtk_widget_destroy(dialog);
+			return FALSE;
+
+		default:
+			gtk_widget_destroy(dialog);
+			return FALSE;
+	}
+}
+
 void help_dialog(GtkWidget *help,gpointer data)
 {
 	GtkWidget *dialog;

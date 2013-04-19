@@ -32,10 +32,10 @@ char *get_goagent_path(FILE *fp);
 
 char *get_language_env(FILE *fp);
 
-void set_python_path(CONFDATA *data,const char *arg);
+void set_python_path(CONFDATA *data,char *arg);
 
-void set_goagent_path(CONFDATA *data,const char *arg);
+void set_goagent_path(CONFDATA *data,char *arg);
 
-void set_language_env(CONFDATA *data,const char *arg);
+void set_language_env(CONFDATA *data,char *arg);
 
 #endif
