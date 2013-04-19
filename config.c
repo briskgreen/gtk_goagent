@@ -8,7 +8,7 @@ gboolean test_argument(FILE *fp,const char *option,char **result);
 gboolean is_config_file_ok(void)
 {
 	FILE *fp;
-
+	
 	if((fp=fopen(get_conf_file_path(),"r"))==NULL)
 		return FALSE;
 
@@ -22,7 +22,7 @@ FILE *open_config(CONFDATA *data)
 	FILE *fp;
 
 	if(is_config_file_ok())
-		fp=fopen(get_conf_file_path(),"r+");
+		fp=fopen(get_conf_file_path(),"r");
 	else
 		return NULL;
 
@@ -31,7 +31,7 @@ FILE *open_config(CONFDATA *data)
 	data->python_path=get_python_path(fp);
 	data->goagent_path=get_goagent_path(fp);
 	data->language_env=get_language_env(fp);
-	
+
 	return fp;
 }
 
@@ -44,12 +44,11 @@ void close_config(FILE *fp,CONFDATA *data)
 	}
 
 	if(message_box_ok(_("Are You Want to Save Config File?\nClicked OK To Save,Click No To Not Save")))
-		save_config(fp,data);
-
+		save_config(&fp,data);
 	fclose(fp);
 }
 
-void save_config(FILE *fp,CONFDATA *data)
+void save_config(FILE **fp,CONFDATA *data)
 {
 	if(data->save)
 	{
@@ -57,13 +56,23 @@ void save_config(FILE *fp,CONFDATA *data)
 		return;
 	}
 
-	fwrite("#python path\n\npython_path ",26,1,fp);
-	fwrite(data->python_path,strlen(data->python_path),1,fp);
-	fwrite("\n\n#GoAgent path\n\ngoagent_path ",30,1,fp);
-	fwrite(data->goagent_path,strlen(data->goagent_path),1,fp);
-	fwrite("\n\n#Language\n\nlanguage_env ",26,1,fp);
-	fwrite(data->language_env,strlen(data->language_env),1,fp);
-	fwrite("\n\n#End Of Gtk GoAgent Config File\n",34,1,fp);
+	//remove(get_conf_file_path());
+	fclose(*fp);
+
+	if((*fp=fopen(get_conf_file_path(),"w"))==NULL)
+		message_box(NULL,strerror(errno));
+
+	fputs("#Python Path\n\npython_path ",*fp);
+	fputs(data->python_path,*fp);
+	fputs("\n\n#GoAgent Path\n\ngoagent_path ",*fp);
+	fputs(data->goagent_path,*fp);
+	fputs("\n\n#Language\n\nlanguage_env ",*fp);
+	fputs(data->language_env,*fp);
+	fputs("\n\n#End Of Gtk GoAgent Config File\n",*fp);
+
+	fclose(*fp);
+
+	*fp=fopen(get_conf_file_path(),"r");
 
 	data->save=TRUE;
 }
@@ -148,11 +157,10 @@ char *get_conf_file_path(void)
 	char *path;
 
 	path=malloc(strlen(HOME)+strlen(CONFFILE)+1);
+	bzero(path,strlen(HOME)+strlen(CONFFILE)+1);
 
 	strncpy(path,HOME,strlen(HOME));
 	strncat(path,CONFFILE,strlen(CONFFILE));
-
-	//g_printf("%s\n",path);
 
 	return path;
 }
@@ -177,10 +185,13 @@ gboolean test_argument(FILE *fp,const char *option,char **result)
 		}
 	}
 
-	fseek(fp,0L,SEEK_SET);
-
 	if(feof(fp))
+	{
+		fseek(fp,0,SEEK_SET);
 		return FALSE;
+	}
+
+	fseek(fp,0,SEEK_SET);
 
 	return TRUE;
 }

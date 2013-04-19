@@ -2,10 +2,9 @@
 #define _CONFIG_H
 
 #include <stdio.h>
-#include <stdlib.h>
 #include "dialog.h"
 
-#define HOME (getenv("HOME"))
+#define HOME getenv("HOME")
 #define CONFFILE "/.gtk_goagentrc"
 #define PYPATH "/local/proxy.py"
 #define UPPATH "/server/uploader.zip"
@@ -24,7 +23,7 @@ FILE *open_config(CONFDATA *data);
 
 void close_config(FILE *fp,CONFDATA *data);
 
-void save_config(FILE *fp,CONFDATA *data);
+void save_config(FILE **fp,CONFDATA *data);
 
 char *get_python_path(FILE *fp);
 
