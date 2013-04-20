@@ -129,25 +129,14 @@ gboolean _get_connect(DATA *data)
 	}
 
 	if(strstr(buf,"WARNING"))
-	{
-		gtk_text_buffer_create_tag(buffer,"green_fg",
-				"foreground","green",NULL);
 		gtk_text_buffer_insert_with_tags_by_name(buffer,&end,buf,
 				len,"green_fg",NULL);
-		return TRUE;
-	}
-
-	if(strstr(buf,"ERROR"))
-	{
-		gtk_text_buffer_create_tag(buffer,"red_fg","foreground",
-				"red",NULL);
+	else if(strstr(buf,"ERROR"))
 		gtk_text_buffer_insert_with_tags_by_name(buffer,&end,buf,
 				len,"red_fg",NULL);
-		return TRUE;
-	}
-
-	gtk_text_buffer_insert(buffer,&end,buf,len);
-	//usleep(100);
+	else
+		gtk_text_buffer_insert_with_tags_by_name(buffer,&end,buf,
+				len,"black_fg",NULL);
 
 	return TRUE;
 }

@@ -91,12 +91,15 @@ int main(int argc,char **argv)
 	GtkWidget *open;
 	GtkWidget *close;
 	GtkWidget *clean;
+	GtkTextBuffer *buffer;
 	GtkAccelGroup *accel_group;
 	DATA data;
 	CONFDATA conf;
 	struct sigaction act,old;
 
 	init_with_conf(&conf);
+	data.python_path=conf.python_path;
+	data.goagent_path=conf.goagent_path;
 	setlocale(LC_ALL,"");
 
 	if(conf.language_env == NULL)
@@ -137,6 +140,15 @@ int main(int argc,char **argv)
 	gtk_container_add(GTK_CONTAINER(win),vbox);
 
 	text=gtk_text_view_new();
+
+	buffer=gtk_text_view_get_buffer(GTK_TEXT_VIEW(text));
+	gtk_text_buffer_create_tag(buffer,"green_fg",
+			"foreground","green",NULL);
+	gtk_text_buffer_create_tag(buffer,"red_fg","foreground",
+			"red",NULL);
+	gtk_text_buffer_create_tag(buffer,"black_fg","foreground",
+			"black",NULL);
+
 	data.text=text;
 	data.off=0;
 	//data.python_path=NULL;

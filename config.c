@@ -109,9 +109,19 @@ char *get_python_path(FILE *fp)
 char *get_goagent_path(FILE *fp)
 {
 	char *goagent_path;
+	char *temp;
 
-	if(test_argument(fp,"goagent_path",&goagent_path))
+	if(test_argument(fp,"goagent_path",&temp))
+	{
+		goagent_path=malloc(strlen(temp)+strlen(PYPATH)+1);
+		bzero(goagent_path,strlen(goagent_path)+1);
+
+		strncpy(goagent_path,temp,strlen(temp));
+		strncat(goagent_path,PYPATH,strlen(PYPATH));
+
+		free(temp);
 		return goagent_path;
+	}
 
 	//message_box(NULL,_("Don't Find goagent_path Option!"));
 	return NULL;
@@ -209,7 +219,7 @@ char *get_argument(const char *option)
 	bzero(buf,sizeof(buf));
 	//g_printf("%d:%s\n",i,buf);
 
-	for(j=0;option[i];++j,++i)
+	for(j=0;option[i]!=' ' && option[i];++j,++i)
 	{
 		if(option[i]=='#')
 			break;
