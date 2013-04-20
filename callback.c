@@ -109,7 +109,7 @@ gboolean _get_connect(DATA *data)
 {
 	GtkTextBuffer *buffer=gtk_text_view_get_buffer(GTK_TEXT_VIEW(data->text));
 	GtkTextIter end;
-	char buf[512];
+	char buf[2048];
 	int len;
 
 	len=read(data->pipefd[0],buf,sizeof(buf)-1);

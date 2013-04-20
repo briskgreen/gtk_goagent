@@ -101,7 +101,7 @@ char *get_python_path(FILE *fp)
 	if(test_argument(fp,"python_path",&python_path))
 		return python_path;
 
-	message_box(NULL,_("Don't Find python_path Option!"));
+	//message_box(NULL,_("Don't Find python_path Option!"));
 	return NULL;
 
 }
@@ -113,7 +113,7 @@ char *get_goagent_path(FILE *fp)
 	if(test_argument(fp,"goagent_path",&goagent_path))
 		return goagent_path;
 
-	message_box(NULL,_("Don't Find goagent_path Option!"));
+	//message_box(NULL,_("Don't Find goagent_path Option!"));
 	return NULL;
 }
 
@@ -124,7 +124,7 @@ char *get_language_env(FILE *fp)
 	if(test_argument(fp,"language_env",&language_env))
 		return language_env;
 
-	message_box(NULL,_("Don't Find language_env Option!"));
+	//message_box(NULL,_("Don't Find language_env Option!"));
 	return NULL;
 }
 

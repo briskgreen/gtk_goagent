@@ -3,6 +3,7 @@
 
 #include <stdio.h>
 #include "dialog.h"
+#include <errno.h>
 
 #define HOME getenv("HOME")
 #define CONFFILE "/.gtk_goagentrc"

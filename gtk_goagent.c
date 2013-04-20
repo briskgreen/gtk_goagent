@@ -63,6 +63,22 @@ void kill_signal(void)
 	sigaction(SIGKILL,&act,&old);
 }*/
 
+void init_with_conf(CONFDATA *data)
+{
+	FILE *fp;
+
+	if((fp=open_config(data))==NULL)
+	{
+		data->python_path=NULL;
+		data->goagent_path=NULL;
+		data->language_env=NULL;
+		return;
+	}
+	//close_config(fp,data);     
+	
+	fclose(fp);
+}
+
 int main(int argc,char **argv)
 {
 	GtkWidget *win;
@@ -77,13 +93,24 @@ int main(int argc,char **argv)
 	GtkWidget *clean;
 	GtkAccelGroup *accel_group;
 	DATA data;
+	CONFDATA conf;
 	struct sigaction act,old;
 
-	/*setlocale(LC_ALL,"");
-	setlocale(LC_CTYPE,"zh_CN.UTF-8");
-	setenv("LANG","zh_CN.UTF-8",1);*/
+	init_with_conf(&conf);
+	setlocale(LC_ALL,"");
+
+	if(conf.language_env == NULL)
+	{
+		setlocale(LC_CTYPE,"zh_CN.UTF-8");
+		setenv("LANG","zh_CN.UTF-8",1);
+	}
+	else
+	{
+		setlocale(LC_CTYPE,conf.language_env);
+		setenv("LANG",conf.language_env,1);
+	}
 	
-	gtk_set_locale();
+	//gtk_set_locale();
 	//setlocale(LC_ALL,"");
 	bindtextdomain("gtk_goagent","./locale/");
 	textdomain("gtk_goagent");
@@ -114,10 +141,10 @@ int main(int argc,char **argv)
 	data.off=0;
 	//data.python_path=NULL;
 	//data.goagent_path=NULL;
-	char *python_path="/usr/bin/python";
-	char *goagent_path="/home/brisk/vbox-share/goagent/local/proxy.py";
-	data.python_path=python_path;
-	data.goagent_path=goagent_path;
+	//char *python_path="/usr/bin/python";
+	//char *goagent_path="/home/brisk/vbox-share/goagent/local/proxy.py";
+	//data.python_path=python_path;
+	//data.goagent_path=goagent_path;
 	//pthread_mutex_init(&data.mutex,NULL);
 
 	menu_bar=gtk_menu_bar_new();
