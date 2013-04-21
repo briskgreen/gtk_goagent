@@ -10,8 +10,6 @@ void create_tray(GtkWidget *win)
 	gtk_status_icon_set_tooltip_text(tray,"Gtk GoAgent");
 	gtk_status_icon_set_visible(tray,TRUE);
 	g_signal_connect(G_OBJECT(tray),"activate",G_CALLBACK(tray_on_click),win);
-	//menu_bar=malloc(sizeof(GtkWidget));
-	//menu=malloc(sizeof(GtkWidget));
 
 	menu=gtk_menu_new();
 	item=gtk_menu_item_new_with_mnemonic(_("_Show"));
@@ -48,34 +46,13 @@ void show_time(GtkWidget *widget)
 	g_timeout_add(1000,(GSourceFunc)change_time,label);
 }
 
-/*void wait_pid(int signum)
-{
-	message_box(NULL,"Killed");
-	waitpid(-1,NULL,WNOHANG);
-}
-
-void kill_signal(void)
-{
-	struct sigaction act,old;
-
-	act.sa_flags=0;
-	act.sa_handler=wait_pid;
-	sigaction(SIGKILL,&act,&old);
-}*/
-
 void init_with_conf(CONFDATA *data)
 {
 	FILE *fp;
 
 	if((fp=open_config(data))==NULL)
-	{
-		data->python_path=NULL;
-		data->goagent_path=NULL;
-		data->language_env=NULL;
 		return;
-	}
-	//close_config(fp,data);     
-	
+
 	fclose(fp);
 }
 
@@ -113,8 +90,6 @@ int main(int argc,char **argv)
 		setenv("LANG",conf.language_env,1);
 	}
 	
-	//gtk_set_locale();
-	//setlocale(LC_ALL,"");
 	bindtextdomain("gtk_goagent","./locale/");
 	textdomain("gtk_goagent");
 
@@ -128,11 +103,9 @@ int main(int argc,char **argv)
 	gtk_window_set_position(GTK_WINDOW(win),GTK_WIN_POS_CENTER);
 	gtk_window_set_title(GTK_WINDOW(win),"Gtk GoAgent");
 	gtk_window_set_icon_from_file(GTK_WINDOW(win),"gtk_goagent.png",NULL);
-	//g_signal_connect(G_OBJECT(win),"delete_event",G_CALLBACK(really_quit),NULL);
 
-	//accel_group=gtk_accel_group_new();
 	create_tray(win);
-	//kill_signal();
+	create_pre_ui(&pre,&conf);
 
 	vbox=gtk_vbox_new(FALSE,0);
 	accel_group=gtk_accel_group_new();
@@ -151,13 +124,6 @@ int main(int argc,char **argv)
 
 	data.text=text;
 	data.off=0;
-	//data.python_path=NULL;
-	//data.goagent_path=NULL;
-	//char *python_path="/usr/bin/python";
-	//char *goagent_path="/home/brisk/vbox-share/goagent/local/proxy.py";
-	//data.python_path=python_path;
-	//data.goagent_path=goagent_path;
-	//pthread_mutex_init(&data.mutex,NULL);
 
 	menu_bar=gtk_menu_bar_new();
 	gtk_box_pack_start(GTK_BOX(vbox),menu_bar,FALSE,FALSE,0);
@@ -174,8 +140,9 @@ int main(int argc,char **argv)
 	menu=create_menu(menu_bar,_("_Help"));
 	create_menu_with_image(menu,GTK_STOCK_HELP,accel_group,help,NULL);
 	create_menu_with_image(menu,GTK_STOCK_ABOUT,accel_group,about,NULL);
+	gtk_menu_shell_append(GTK_MENU_SHELL(menu),gtk_separator_menu_item_new());
+	create_menu_with_image(menu,_("_Update"),accel_group,update,NULL);
 
-	//text=gtk_text_view_new();
 	gtk_widget_set_size_request(text,0x300,0x180);
 	gtk_text_view_set_editable(GTK_TEXT_VIEW(text),FALSE);
 	gtk_text_view_set_wrap_mode(GTK_TEXT_VIEW(text),GTK_WRAP_CHAR);
@@ -206,13 +173,10 @@ int main(int argc,char **argv)
 	gtk_widget_show_all(win);
 
 	gtk_main();
-	//pthread_mutex_unlock(&data.mutex);
 
 	kill(data.pid,SIGKILL);
 	while(waitpid(-1,NULL,WNOHANG)!=-1);
 	g_idle_remove_by_data(&data);
-	//pthread_cancel(data.thread);
-	//pthread_mutex_destroy(&data.mutex);
 
 	return 0;
 }

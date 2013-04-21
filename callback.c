@@ -12,7 +12,6 @@ DATA *sig_data;
 
 void connect_goagent(GtkWidget *widget,DATA *data)
 {
-	//static pthread_t thread;
 	if(data->off)
 	{
 		message_box(widget,_("Connected Now\n"));
@@ -22,8 +21,6 @@ void connect_goagent(GtkWidget *widget,DATA *data)
 	if(!is_python_and_goagent_path(data->python_path,data->goagent_path))
 		return;
 
-	//pthread_create(&thread,NULL,(void *)get_connect,data);
-	//data->thread=thread;
 	get_connect(data);
 	data->off=1;
 }
@@ -43,30 +40,29 @@ void disconnect_goagent(GtkWidget *widget,DATA *data)
 	while(waitpid(-1,NULL,WNOHANG)!=-1);
 	close(data->pipefd[0]);
 	g_idle_remove_by_data(data);
-	/*pthread_cancel(data->thread);
 
-	while(gtk_events_pending())
-		gtk_main_iteration();
+	/*while(gtk_events_pending())
+		gtk_main_iteration();*/
 
-	pthread_mutex_lock(&data->mutex);*/
 	gtk_text_buffer_set_text(buffer,"",0);
-	//pthread_mutex_unlock(&data->mutex);
 }
 
 void clean_buffer(GtkWidget *widget,DATA *data)
 {
 	/*while(gtk_events_pending())
-		gtk_main_iteration();
-	pthread_mutex_lock(&data->mutex);*/
+		gtk_main_iteration();*/
+
 	gtk_text_buffer_set_text(gtk_text_view_get_buffer(
 				GTK_TEXT_VIEW(data->text)),"",0);
-	//pthread_mutex_unlock(&data->mutex);
 }
 
 void help(GtkWidget *widget,gpointer data)
 {}
 
 void about(GtkWidget *widget,gpointer data)
+{}
+
+void update(GtkWidget *widget,gpointer data)
 {}
 
 void properties(GtkWidget *widget,gpointer data)

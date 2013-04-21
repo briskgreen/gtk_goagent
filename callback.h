@@ -16,6 +16,8 @@ void help(GtkWidget *widget,gpointer data);
 
 void about(GtkWidget *widget,gpointer data);
 
+void update(GtkWidget *widget,gpointer data);
+
 void properties(GtkWidget *widget,gpointer data);
 
 //void change_language(GtkWidget *widget,gpointer data);
