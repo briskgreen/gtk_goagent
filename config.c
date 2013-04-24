@@ -69,6 +69,8 @@ void save_config(FILE **fp,CONFDATA *data)
 	fputs(data->goagent_path,*fp);
 	fputs("\n\n#Language\n\nlanguage_env ",*fp);
 	fputs(data->language_env,*fp);
+	fputs("\n\n#Gtk GoAgent Path\n\ngtk_goagent_path ",*fp);
+	fputs(data->gtk_goagent_path,*fp);
 	fputs("\n\n#End Of Gtk GoAgent Config File\n",*fp);
 
 	fclose(*fp);
