@@ -16,6 +16,7 @@ typedef struct
 	char *python_path;
 	char *goagent_path;
 	char *language_env;
+	char *gtk_goagent_path;
 }CONFDATA;
 
 gboolean is_config_file_ok(void);
@@ -32,10 +33,14 @@ char *get_goagent_path(FILE *fp);
 
 char *get_language_env(FILE *fp);
 
+char *get_gtk_goagent_path(FILE *fp);
+
 void set_python_path(CONFDATA *data,char *arg);
 
 void set_goagent_path(CONFDATA *data,char *arg);
 
 void set_language_env(CONFDATA *data,char *arg);
+
+void set_gtk_goagent_path(CONFDATA *data,char *arg);
 
 #endif

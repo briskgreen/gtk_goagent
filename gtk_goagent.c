@@ -89,7 +89,10 @@ int main(int argc,char **argv)
 		setlocale(LC_CTYPE,conf.language_env);
 		setenv("LANG",conf.language_env,1);
 	}
-	
+
+	if(conf.gtk_goagent_path!=NULL)
+		chdir(conf.gtk_goagent_path);
+
 	bindtextdomain("gtk_goagent","./locale/");
 	textdomain("gtk_goagent");
 
@@ -105,7 +108,7 @@ int main(int argc,char **argv)
 	gtk_window_set_icon_from_file(GTK_WINDOW(win),"gtk_goagent.png",NULL);
 
 	create_tray(win);
-	create_pre_ui(&pre,&conf);
+	//create_pre_ui(&pre,&conf);
 
 	vbox=gtk_vbox_new(FALSE,0);
 	accel_group=gtk_accel_group_new();

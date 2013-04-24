@@ -31,6 +31,7 @@ FILE *open_config(CONFDATA *data)
 	data->python_path=get_python_path(fp);
 	data->goagent_path=get_goagent_path(fp);
 	data->language_env=get_language_env(fp);
+	data->gtk_goagent_path=get_gtk_goagent_path(fp);
 
 	return fp;
 }
@@ -138,6 +139,16 @@ char *get_language_env(FILE *fp)
 	return NULL;
 }
 
+char *get_gtk_goagent_path(FILE *fp)
+{
+	char *gtk_goagent_path;
+
+	if(test_argument(fp,"gtk_goagent_path",&gtk_goagent_path))
+		return gtk_goagent_path;
+
+	return NULL;
+}
+
 void set_python_path(CONFDATA *data,char *arg)
 {
 	if(data->save)
@@ -160,6 +171,14 @@ void set_language_env(CONFDATA *data,char *arg)
 		data->save=FALSE;
 
 	data->language_env=arg;
+}
+
+void set_gtk_goagent_path(CONFDATA *data,char *arg)
+{
+	if(data->save)
+		data->save=FALSE;
+
+	data->gtk_goagent_path=arg;
 }
 
 char *get_conf_file_path(void)

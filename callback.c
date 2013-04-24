@@ -112,7 +112,7 @@ gboolean _get_connect(DATA *data)
 
 	if(len<=0)
 	{
-		usleep(100);
+		usleep(300);
 		return TRUE;
 	}
 
