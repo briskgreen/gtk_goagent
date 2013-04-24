@@ -2,7 +2,7 @@
 
 int main(int argc,char **argv)
 {
-	GtkWidget *win;
+	GtkWidget *dialog;
 	GtkWidget *notebook;
 	GtkWidget *page;
 	GtkWidget *hbox;
