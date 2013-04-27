@@ -263,3 +263,12 @@ gboolean is_python_and_goagent_path(char *python_path,char *goagent_path)
 
 	return TRUE;
 }
+
+void select_python_path(GtkWidget *widget,gpointer data)
+{}
+
+void select_goagent_path(GtkWidget *widget,gpointer data)
+{}
+
+void select_gtk_goagent_path(GtkWidget *widget,gpointer data)
+{}

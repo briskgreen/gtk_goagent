@@ -21,11 +21,14 @@ callback.o:callback.c callback.h dialog.h config.h
 config.o:config.c config.h dialog.h 
 	gcc -c config.c $(PKG_LIBS)
 
-pre_ui:pre_ui.o $(LIBS)
-	gcc -o pre_ui pre_ui.o $(LIBS) $(PKG_LIBS)
+pre_ui:pre_ui.o ui.o $(LIBS)
+	gcc -o pre_ui pre_ui.o ui.o $(LIBS) $(PKG_LIBS)
 
-pre_ui.o:pre_ui.c callback.h
+pre_ui.o:pre_ui.c ui.h
 	gcc -c pre_ui.c $(PKG_LIBS)
+
+ui.o:ui.c ui.h callback.h
+	gcc -c ui.c $(PKG_LIBS)
 
 clean:
 	rm gtk_goagent pre_ui *.o

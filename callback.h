@@ -34,4 +34,10 @@ void tray_on_click(GtkWidget *widget,gpointer data);
 
 void kill_pthread(int signum);
 
+void select_python_path(GtkWidget *widget,gpointer data);
+
+void select_goagent_path(GtkWidget *widget,gpointer data);
+
+void select_gtk_goagent_path(GtkWidget *widget,gpointer data);
+
 #endif
