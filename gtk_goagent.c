@@ -137,7 +137,7 @@ int main(int argc,char **argv)
 	create_menu_with_image(menu,GTK_STOCK_QUIT,accel_group,really_quit,&data);
 
 	menu=create_menu(menu_bar,_("_Edit"));
-	create_menu_with_image(menu,GTK_STOCK_PROPERTIES,accel_group,properties,NULL);
+	create_menu_with_image(menu,GTK_STOCK_PREFERENCES,accel_group,preferences,NULL);
 	//create_menu_with_image(menu,"_Language",accel_group,change_language,NULL);
 
 	menu=create_menu(menu_bar,_("_Help"));

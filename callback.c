@@ -65,11 +65,15 @@ void about(GtkWidget *widget,gpointer data)
 void update(GtkWidget *widget,gpointer data)
 {}
 
-void properties(GtkWidget *widget,gpointer data)
+void preferences(GtkWidget *widget,gpointer data)
 {
 	/*setlocale(LC_ALL,"");
 	setlocale(LC_CTYPE,"zh_CN.UTF-8");
 	setenv("LANG","zh_CN.UTF-8",1);*/
+	if(fork()==0)
+		execl("pre_ui","./pre_ui",NULL);
+
+	wait(NULL);
 }
 
 void tray_on_menu(GtkWidget *widget,guint button,
