@@ -13,6 +13,8 @@ void init_with_conf(CONFDATA *conf)
 void create_combo_box(GtkWidget *page,CONFDATA *conf)
 {
 	GtkWidget *combo_box;
+	GtkWidget *hbox;
+	GtkWidget *label;
 	char *language[]={_("Chinese"),_("English")};
 	int index;
 
@@ -26,7 +28,11 @@ void create_combo_box(GtkWidget *page,CONFDATA *conf)
 	gtk_combo_box_append_text(GTK_COMBO_BOX(combo_box),language[1]);
 	gtk_combo_box_set_active(GTK_COMBO_BOX(combo_box),index);
 
-	gtk_box_pack_start(GTK_BOX(page),combo_box,FALSE,FALSE,10);
+	hbox=gtk_hbox_new(FALSE,10);
+	gtk_box_pack_start(GTK_BOX(page),hbox,TRUE,TRUE,10);
+	label=gtk_label_new(_("Language:"));
+	gtk_box_pack_end(GTK_BOX(hbox),combo_box,FALSE,FALSE,10);
+	gtk_box_pack_end(GTK_BOX(hbox),label,FALSE,FALSE,10);
 	g_signal_connect(G_OBJECT(combo_box),"changed",G_CALLBACK(select_language),conf);
 }
 
