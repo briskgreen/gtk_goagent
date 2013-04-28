@@ -67,6 +67,8 @@ int main(int argc,char **argv)
 	hbox=gtk_hbox_new(FALSE,0);
 	gtk_box_pack_start(GTK_BOX(page),hbox,FALSE,FALSE,0);
 
+	create_env_interface(_("Python Path     : "),hbox,select_python_path,conf.python_path,conf.save);
+
 	hbox=gtk_hbox_new(FALSE,10);
 	gtk_box_pack_start(GTK_BOX(page),hbox,FALSE,FALSE,10);
 	create_env_interface(_("GoAgent Path    :"),hbox,select_goagent_path,conf.goagent_path,conf.save);
