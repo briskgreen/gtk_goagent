@@ -90,7 +90,7 @@ int main(int argc,char **argv)
 		setlocale(LC_CTYPE,conf.language_env);
 		setenv("LANG",conf.language_env,1);
 	}
-
+	
 	if(conf.gtk_goagent_path!=NULL)
 		chdir(conf.gtk_goagent_path);
 
