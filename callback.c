@@ -18,7 +18,7 @@ void connect_goagent(GtkWidget *widget,DATA *data)
 		return;
 	}
 
-	if(!is_python_and_goagent_path(data->python_path,data->goagent_path))
+	if(!is_python_and_goagent_path(data->python_path,data->proxy_py_path))
 		return;
 
 	get_connect(data);
@@ -162,7 +162,7 @@ void get_connect(DATA *data)
 		dup2(data->pipefd[1],STDOUT_FILENO);
 
 		//execl("/usr/bin/python","python","/home/brisk/vbox-share/goagent/local/proxy.py",NULL);
-		if(execl(data->python_path,"python",data->goagent_path,NULL)==-1)
+		if(execl(data->python_path,"python",data->proxy_py_path,NULL)==-1)
 		{
 			write(STDERR_FILENO,_("Error Python Path!"),
 					strlen(_("Error Python Path!")));
@@ -278,3 +278,6 @@ void select_language(GtkWidget *widget,gpointer data)
 	g_printf("%d:%s\n",gtk_combo_box_get_active(GTK_COMBO_BOX(widget)),
 			gtk_combo_box_get_active_text(GTK_COMBO_BOX(widget)));
 }
+
+void select_font(GtkWidget *widget,gpointer data)
+{}

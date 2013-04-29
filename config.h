@@ -14,9 +14,11 @@ typedef struct
 {
 	gboolean save;
 	char *python_path;
+	char *proxy_py_path;
 	char *goagent_path;
 	char *language_env;
 	char *gtk_goagent_path;
+	char *font;
 }CONFDATA;
 
 gboolean is_config_file_ok(void);
@@ -29,11 +31,15 @@ void save_config(FILE **fp,CONFDATA *data);
 
 char *get_python_path(FILE *fp);
 
-char *get_goagent_path(FILE *fp);
+char *get_proxy_py_path(FILE *fp);
 
 char *get_language_env(FILE *fp);
 
 char *get_gtk_goagent_path(FILE *fp);
+
+char *get_font_name(FILE *fp);
+
+char *get_goagent_path(FILE *fp);
 
 void set_python_path(CONFDATA *data,char *arg);
 
@@ -42,5 +48,7 @@ void set_goagent_path(CONFDATA *data,char *arg);
 void set_language_env(CONFDATA *data,char *arg);
 
 void set_gtk_goagent_path(CONFDATA *data,char *arg);
+
+void set_font_by_name(CONFDATA *data,char *arg);
 
 #endif

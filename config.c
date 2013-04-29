@@ -29,9 +29,11 @@ FILE *open_config(CONFDATA *data)
 	data->save=TRUE;
 
 	data->python_path=get_python_path(fp);
+	data->proxy_py_path=get_proxy_py_path(fp);
 	data->goagent_path=get_goagent_path(fp);
 	data->language_env=get_language_env(fp);
 	data->gtk_goagent_path=get_gtk_goagent_path(fp);
+	data->font=get_font_name(fp);
 
 	return fp;
 }
@@ -71,6 +73,8 @@ void save_config(FILE **fp,CONFDATA *data)
 	fputs(data->language_env,*fp);
 	fputs("\n\n#Gtk GoAgent Path\n\ngtk_goagent_path ",*fp);
 	fputs(data->gtk_goagent_path,*fp);
+	fputs("\n\n#Font\n\n",*fp);
+	fputs(data->font,*fp);
 	fputs("\n\n#End Of Gtk GoAgent Config File\n",*fp);
 
 	fclose(*fp);
@@ -112,18 +116,28 @@ char *get_python_path(FILE *fp)
 char *get_goagent_path(FILE *fp)
 {
 	char *goagent_path;
+
+	if(test_argument(fp,"goagent_path",&goagent_path))
+		return goagent_path;
+
+	return NULL;
+}
+
+char *get_proxy_py_path(FILE *fp)
+{
+	char *proxy_py_path;
 	char *temp;
 
 	if(test_argument(fp,"goagent_path",&temp))
 	{
-		goagent_path=malloc(strlen(temp)+strlen(PYPATH)+1);
-		bzero(goagent_path,strlen(goagent_path)+1);
+		proxy_py_path=malloc(strlen(temp)+strlen(PYPATH)+1);
+		bzero(proxy_py_path,strlen(proxy_py_path)+1);
 
-		strncpy(goagent_path,temp,strlen(temp));
-		strncat(goagent_path,PYPATH,strlen(PYPATH));
+		strncpy(proxy_py_path,temp,strlen(temp));
+		strncat(proxy_py_path,PYPATH,strlen(PYPATH));
 
 		free(temp);
-		return goagent_path;
+		return proxy_py_path;
 	}
 
 	//message_box(NULL,_("Don't Find goagent_path Option!"));
@@ -151,6 +165,16 @@ char *get_gtk_goagent_path(FILE *fp)
 	return NULL;
 }
 
+char *get_font_name(FILE *fp)
+{
+	char *font;
+
+	if(test_argument(fp,"font",&font))
+		return font;
+
+	return NULL;
+}
+
 void set_python_path(CONFDATA *data,char *arg)
 {
 	if(data->save)
@@ -164,7 +188,7 @@ void set_goagent_path(CONFDATA *data,char *arg)
 	if(data->save)
 		data->save=FALSE;
 
-	data->goagent_path=arg;
+	data->proxy_py_path=arg;
 }
 
 void set_language_env(CONFDATA *data,char *arg)
@@ -181,6 +205,14 @@ void set_gtk_goagent_path(CONFDATA *data,char *arg)
 		data->save=FALSE;
 
 	data->gtk_goagent_path=arg;
+}
+
+void set_font_by_name(CONFDATA *data,char *arg)
+{
+	if(data->save)
+		data->save=FALSE;
+
+	data->font=arg;
 }
 
 char *get_conf_file_path(void)
@@ -240,7 +272,7 @@ char *get_argument(const char *option)
 	bzero(buf,sizeof(buf));
 	//g_printf("%d:%s\n",i,buf);
 
-	for(j=0;option[i]!=' ' && option[i];++j,++i)
+	for(j=0;option[i]!='\n' && option[i];++j,++i)
 	{
 		if(option[i]=='#')
 			break;
@@ -248,7 +280,7 @@ char *get_argument(const char *option)
 		buf[j]=option[i];
 	}
 
-	if(buf[j-1]=='\n')
+	if(buf[j-1]==' ')
 		buf[j-1]='\0';
 	else
 		buf[j]='\0';

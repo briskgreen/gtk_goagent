@@ -42,4 +42,6 @@ void select_gtk_goagent_path(GtkWidget *widget,gpointer data);
 
 void select_language(GtkWidget *widget,gpointer data);
 
+void select_font(GtkWidget *widget,gpointer data);
+
 #endif

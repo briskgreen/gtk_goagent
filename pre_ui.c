@@ -36,6 +36,56 @@ void create_combo_box(GtkWidget *page,CONFDATA *conf)
 	g_signal_connect(G_OBJECT(combo_box),"changed",G_CALLBACK(select_language),conf);
 }
 
+void change_save(GtkWidget *widget,gpointer data)
+{
+	gboolean save=*(gboolean *)data;
+
+	if(save)
+		save=FALSE;
+}
+
+GtkWidget *read_and_edit_proxy_ini(GtkWidget *page,char *path,gboolean save)
+{
+	GtkWidget *text;
+	GtkWidget *scrolled;
+	FILE *fp;
+	char *buf;
+	unsigned long len;
+	char *p=getcwd(NULL,0);
+
+	chdir(path);
+
+	if((fp=fopen("local/proxy.ini","r"))==NULL)
+	{
+		message_box(NULL,strerror(errno));
+		chdir(p);
+		return NULL;
+	}
+
+	chdir(p);
+
+	text=gtk_text_view_new();
+	gtk_text_view_set_wrap_mode(GTK_TEXT_VIEW(text),GTK_WRAP_CHAR);
+	scrolled=gtk_scrolled_window_new(NULL,NULL);
+	gtk_scrolled_window_set_policy(GTK_SCROLLED_WINDOW(scrolled),
+			GTK_POLICY_AUTOMATIC,GTK_POLICY_AUTOMATIC);
+	gtk_container_add(GTK_CONTAINER(scrolled),text);
+
+	gtk_container_add(GTK_CONTAINER(page),scrolled);
+	g_signal_connect(G_OBJECT(gtk_text_view_get_buffer(GTK_TEXT_VIEW(text))),"changed",G_CALLBACK(change_save),&save);
+
+	fseek(fp,0L,SEEK_END);
+	len=ftell(fp);
+	rewind(fp);
+
+	buf=malloc(len);
+	fread(buf,len,1,fp);
+	gtk_text_buffer_set_text(gtk_text_view_get_buffer(GTK_TEXT_VIEW(text)),buf,-1);
+	free(buf);
+	
+	return text;
+}
+
 int main(int argc,char **argv)
 {
 	GtkWidget *dialog;
@@ -43,12 +93,13 @@ int main(int argc,char **argv)
 	GtkWidget *page;
 	GtkWidget *hbox;
 	GtkWidget *vbox;
-	GtkWidget *button;
+	GtkWidget *font;
 	GtkWidget *save;
 	GtkWidget *cancel;
 	GtkWidget *open;
 	GtkWidget *label;
 	GtkWidget *entry;
+	GtkWidget *text;
 	CONFDATA conf;
 	ENV_DATA env;
 
@@ -70,6 +121,7 @@ int main(int argc,char **argv)
 	page=gtk_vbox_new(FALSE,0);
 	label=gtk_label_new(_("Environment"));
 	gtk_notebook_append_page(GTK_NOTEBOOK(notebook),page,label);
+
 	hbox=gtk_hbox_new(FALSE,0);
 	gtk_box_pack_start(GTK_BOX(page),hbox,FALSE,FALSE,0);
 
@@ -83,7 +135,22 @@ int main(int argc,char **argv)
 	gtk_box_pack_start(GTK_BOX(page),hbox,FALSE,FALSE,10);
 	create_env_interface(_("Gtk GoAgent Path:"),hbox,select_gtk_goagent_path,conf.gtk_goagent_path,conf.save);
 
+	gtk_box_pack_start(GTK_BOX(page),gtk_hseparator_new(),FALSE,FALSE,10);
+
 	create_combo_box(page,&conf);
+
+	font=gtk_button_new_with_label(conf.font);
+	gtk_box_pack_start(GTK_BOX(page),font,TRUE,TRUE,10);
+	g_signal_connect(G_OBJECT(font),"clicked",G_CALLBACK(select_font),&conf);
+
+	gtk_box_pack_start(GTK_BOX(page),gtk_hseparator_new(),FALSE,FALSE,10);
+	label=gtk_label_new(_("All Changes Will Take Effect After Restart"));
+	gtk_box_pack_start(GTK_BOX(page),label,FALSE,FALSE,0);
+
+	page=gtk_vbox_new(FALSE,0);
+	label=gtk_label_new("proxy.ini");
+	gtk_notebook_append_page(GTK_NOTEBOOK(notebook),page,label);
+	text=read_and_edit_proxy_ini(page,conf.goagent_path,conf.save);
 
 	gtk_widget_show_all(dialog);
 

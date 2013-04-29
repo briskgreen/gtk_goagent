@@ -70,13 +70,14 @@ int main(int argc,char **argv)
 	GtkWidget *clean;
 	GtkTextBuffer *buffer;
 	GtkAccelGroup *accel_group;
+	PangoFontDescription *font_name;
 	DATA data;
 	CONFDATA conf;
 	struct sigaction act,old;
 
 	init_with_conf(&conf);
 	data.python_path=conf.python_path;
-	data.goagent_path=conf.goagent_path;
+	data.proxy_py_path=conf.proxy_py_path;
 	setlocale(LC_ALL,"");
 
 	if(conf.language_env == NULL)
@@ -116,6 +117,12 @@ int main(int argc,char **argv)
 	gtk_container_add(GTK_CONTAINER(win),vbox);
 
 	text=gtk_text_view_new();
+
+	if(conf.font!=NULL)
+	{
+		font_name=pango_font_description_from_string(conf.font);
+		gtk_widget_modify_font(text,font_name);
+	}
 
 	buffer=gtk_text_view_get_buffer(GTK_TEXT_VIEW(text));
 	gtk_text_buffer_create_tag(buffer,"green_fg",

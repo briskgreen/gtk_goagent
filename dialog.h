@@ -19,7 +19,7 @@ typedef struct
 	int off;
 	pid_t pid;
 	char *python_path;
-	char *goagent_path;
+	char *proxy_py_path;
 }DATA;
 
 void init_help_data(HELP *help);
