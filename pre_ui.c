@@ -99,6 +99,7 @@ int main(int argc,char **argv)
 	GtkWidget *open;
 	GtkWidget *label;
 	GtkWidget *entry;
+	GtkWidget *button;
 	GtkWidget *text;
 	CONFDATA conf;
 	ENV_DATA env;
@@ -112,7 +113,7 @@ int main(int argc,char **argv)
 
 	dialog=gtk_dialog_new();
 	gtk_window_set_title(GTK_WINDOW(dialog),_("Preferences"));
-	g_signal_connect(G_OBJECT(dialog),"delete_event",G_CALLBACK(gtk_main_quit),NULL);
+	g_signal_connect(G_OBJECT(dialog),"delete_event",G_CALLBACK(exit_pre),&conf);
 
 	notebook=gtk_notebook_new();
 	gtk_box_pack_start(GTK_BOX(GTK_DIALOG(dialog)->vbox),notebook,
@@ -143,14 +144,41 @@ int main(int argc,char **argv)
 	gtk_box_pack_start(GTK_BOX(page),font,TRUE,TRUE,10);
 	g_signal_connect(G_OBJECT(font),"clicked",G_CALLBACK(select_font),&conf);
 
-	gtk_box_pack_start(GTK_BOX(page),gtk_hseparator_new(),FALSE,FALSE,10);
+	gtk_box_pack_start(GTK_BOX(GTK_DIALOG(dialog)->vbox),gtk_hseparator_new(),FALSE,FALSE,10);
 	label=gtk_label_new(_("All Changes Will Take Effect After Restart"));
-	gtk_box_pack_start(GTK_BOX(page),label,FALSE,FALSE,0);
+	gtk_box_pack_start(GTK_BOX(GTK_DIALOG(dialog)->vbox),label,FALSE,FALSE,10);
 
 	page=gtk_vbox_new(FALSE,0);
 	label=gtk_label_new("proxy.ini");
 	gtk_notebook_append_page(GTK_NOTEBOOK(notebook),page,label);
 	text=read_and_edit_proxy_ini(page,conf.goagent_path,conf.save);
+
+	page=gtk_vbox_new(FALSE,0);
+	label=gtk_label_new(_("Upgrade"));
+	gtk_notebook_append_page(GTK_NOTEBOOK(notebook),page,label);
+
+	button=gtk_check_button_new_with_label(_("Auto Upgrade GoAgent"));
+	if(strcmp(conf.goagent_auto_upgrade,"true")==0)
+		gtk_button_clicked(GTK_BUTTON(button));
+	gtk_box_pack_start(GTK_BOX(page),button,TRUE,TRUE,20);
+	g_signal_connect(G_OBJECT(button),"clicked",G_CALLBACK(select_auto_upgrade_goagent),&conf);
+
+	button=gtk_check_button_new_with_label(_("Auto Upgrade Gtk GoaGent"));
+	if(strcmp(conf.gtk_goagent_auto_upgrade,"true")==0)
+		gtk_button_clicked(GTK_BUTTON(button));
+	gtk_box_pack_start(GTK_BOX(page),button,TRUE,TRUE,20);
+	g_signal_connect(G_OBJECT(button),"clicked",G_CALLBACK(select_auto_upgrade_gtk_goagent),&conf);
+
+	hbox=gtk_hbox_new(FALSE,0);
+	gtk_box_pack_end(GTK_BOX(GTK_DIALOG(dialog)->vbox),hbox,FALSE,FALSE,0);
+
+	save=gtk_button_new_with_label(_("Save"));
+	gtk_box_pack_end(GTK_BOX(hbox),save,FALSE,FALSE,10);
+	g_signal_connect(G_OBJECT(save),"clicked",G_CALLBACK(save_conf_with_exit),&conf);
+
+	cancel=gtk_button_new_with_label(_("Cancel"));
+	gtk_box_pack_end(GTK_BOX(hbox),cancel,FALSE,FALSE,10);
+	g_signal_connect(G_OBJECT(cancel),"clicked",G_CALLBACK(exit_pre),&conf);
 
 	gtk_widget_show_all(dialog);
 

@@ -34,6 +34,8 @@ FILE *open_config(CONFDATA *data)
 	data->language_env=get_language_env(fp);
 	data->gtk_goagent_path=get_gtk_goagent_path(fp);
 	data->font=get_font_name(fp);
+	data->goagent_auto_upgrade=get_goagent_auto_upgrade(fp);
+	data->gtk_goagent_auto_upgrade=get_gtk_goagent_auto_upgrade(fp);
 
 	return fp;
 }
@@ -73,8 +75,13 @@ void save_config(FILE **fp,CONFDATA *data)
 	fputs(data->language_env,*fp);
 	fputs("\n\n#Gtk GoAgent Path\n\ngtk_goagent_path ",*fp);
 	fputs(data->gtk_goagent_path,*fp);
-	fputs("\n\n#Font\n\n",*fp);
+	fputs("\n\n#Font\n\nfont ",*fp);
 	fputs(data->font,*fp);
+	fputs("\n\n#GoAgent Auto Upgrade\n\ngoagent_auto_upgrade ",*fp);
+	fputs(data->goagent_auto_upgrade,*fp);
+	fputs("\n\n#Gtk GoAgent Auto Upgrade\n\ngtk_goagent_auto_upgrade ",
+			*fp);
+	fputs(data->gtk_goagent_auto_upgrade,*fp);
 	fputs("\n\n#End Of Gtk GoAgent Config File\n",*fp);
 
 	fclose(*fp);
@@ -175,6 +182,26 @@ char *get_font_name(FILE *fp)
 	return NULL;
 }
 
+char *get_goagent_auto_upgrade(FILE *fp)
+{
+	char *goagent_auto_upgrade;
+
+	if(test_argument(fp,"goagent_auto_upgrade",&goagent_auto_upgrade))
+		return goagent_auto_upgrade;
+
+	return NULL;
+}
+
+char *get_gtk_goagent_auto_upgrade(FILE *fp)
+{
+	char *gtk_goagent_auto_upgrade;
+
+	if(test_argument(fp,"gtk_goagent_auto_upgrade",&gtk_goagent_auto_upgrade))
+		return gtk_goagent_auto_upgrade;
+
+	return NULL;
+}
+
 void set_python_path(CONFDATA *data,char *arg)
 {
 	if(data->save)
@@ -213,6 +240,22 @@ void set_font_by_name(CONFDATA *data,char *arg)
 		data->save=FALSE;
 
 	data->font=arg;
+}
+
+void set_goagent_auto_upgrade(CONFDATA *data,char *arg)
+{
+	if(data->save)
+		data->save=FALSE;
+
+	data->goagent_auto_upgrade=arg;
+}
+
+void set_gtk_goagent_auto_upgrade(CONFDATA *data,char *arg)
+{
+	if(data->save)
+		data->save=FALSE;
+
+	data->gtk_goagent_auto_upgrade=arg;
 }
 
 char *get_conf_file_path(void)

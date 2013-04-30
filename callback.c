@@ -281,3 +281,17 @@ void select_language(GtkWidget *widget,gpointer data)
 
 void select_font(GtkWidget *widget,gpointer data)
 {}
+
+void select_auto_upgrade_goagent(GtkWidget *widget,gpointer data)
+{}
+
+void select_auto_upgrade_gtk_goagent(GtkWidget *widget,gpointer data)
+{}
+
+void exit_pre(GtkWidget *widget,gpointer data)
+{
+	gtk_main_quit();
+}
+
+void save_conf_with_exit(GtkWidget *widget,gpointer data)
+{}

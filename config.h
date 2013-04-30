@@ -19,6 +19,8 @@ typedef struct
 	char *language_env;
 	char *gtk_goagent_path;
 	char *font;
+	char *goagent_auto_upgrade;
+	char *gtk_goagent_auto_upgrade;
 }CONFDATA;
 
 gboolean is_config_file_ok(void);
@@ -37,6 +39,10 @@ char *get_language_env(FILE *fp);
 
 char *get_gtk_goagent_path(FILE *fp);
 
+char *get_goagent_auto_upgrade(FILE *fp);
+
+char *get_gtk_goagent_auto_upgrade(FILE *fp);
+
 char *get_font_name(FILE *fp);
 
 char *get_goagent_path(FILE *fp);
@@ -50,5 +56,9 @@ void set_language_env(CONFDATA *data,char *arg);
 void set_gtk_goagent_path(CONFDATA *data,char *arg);
 
 void set_font_by_name(CONFDATA *data,char *arg);
+
+void set_goagent_auto_upgrade(CONFDATA *data,char *arg);
+
+void set_gtk_goagent_auto_upgrade(CONFDATA *data,char *arg);
 
 #endif
