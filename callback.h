@@ -6,6 +6,13 @@
 #include <signal.h>
 #include <unistd.h>
 
+typedef struct
+{
+	char *goagent_path;
+	GtkWidget *text;
+	pid_t pid;
+}UP_DATA;
+
 void connect_goagent(GtkWidget *widget,DATA *data);
 
 void disconnect_goagent(GtkWidget *widget,DATA *data);
@@ -16,7 +23,11 @@ void help(GtkWidget *widget,gpointer data);
 
 void about(GtkWidget *widget,gpointer data);
 
-void update(GtkWidget *widget,gpointer data);
+void update_goagent(GtkWidget *widget,gpointer data);
+
+void update_gtk_goagent(GtkWidget *widget,gpointer data);
+
+void upload(GtkWidget *widget,gpointer data);
 
 void preferences(GtkWidget *widget,gpointer data);
 
@@ -51,5 +62,7 @@ void select_auto_upgrade_gtk_goagent(GtkWidget *widget,gpointer data);
 void exit_pre(GtkWidget *widget,gpointer data);
 
 void save_conf_with_exit(GtkWidget *widget,gpointer data);
+
+void upload_goagent(GtkWidget *widget,gpointer data);
 
 #endif

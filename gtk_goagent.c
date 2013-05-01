@@ -145,13 +145,14 @@ int main(int argc,char **argv)
 
 	menu=create_menu(menu_bar,_("_Edit"));
 	create_menu_with_image(menu,GTK_STOCK_PREFERENCES,accel_group,preferences,NULL);
-	//create_menu_with_image(menu,"_Language",accel_group,change_language,NULL);
+	create_menu_with_image(menu,_("Up_load"),accel_group,upload,&conf);
 
 	menu=create_menu(menu_bar,_("_Help"));
 	create_menu_with_image(menu,GTK_STOCK_HELP,accel_group,help,NULL);
 	create_menu_with_image(menu,GTK_STOCK_ABOUT,accel_group,about,NULL);
 	gtk_menu_shell_append(GTK_MENU_SHELL(menu),gtk_separator_menu_item_new());
-	create_menu_with_image(menu,_("_Update"),accel_group,update,NULL);
+	create_menu_with_image(menu,_("Update GoAg_ent"),accel_group,update_goagent,NULL);
+	create_menu_with_image(menu,_("Update _Gtk GoAGent"),accel_group,update_gtk_goagent,NULL);
 
 	gtk_widget_set_size_request(text,0x300,0x180);
 	gtk_text_view_set_editable(GTK_TEXT_VIEW(text),FALSE);
@@ -178,13 +179,13 @@ int main(int argc,char **argv)
 	gtk_box_pack_end(GTK_BOX(hbox),close,FALSE,FALSE,30);
 	g_signal_connect(G_OBJECT(close),"clicked",G_CALLBACK(disconnect_goagent),&data);
 
-	g_signal_connect(G_OBJECT(win),"delete_event",G_CALLBACK(really_quit),&data);
+	g_signal_connect(G_OBJECT(win),"delete_event",G_CALLBACK(really_quit),NULL);
 
 	gtk_widget_show_all(win);
 
 	gtk_main();
 
-	kill(data.pid,SIGKILL);
+	kill(0,SIGKILL);
 	while(waitpid(-1,NULL,WNOHANG)!=-1);
 	g_idle_remove_by_data(&data);
 

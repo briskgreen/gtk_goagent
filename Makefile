@@ -1,7 +1,7 @@
 PKG_LIBS=`pkg-config --cflags --libs gtk+-2.0`
 LIBS=dialog.o menu.o callback.o config.o
 
-all:gtk_goagent pre_ui
+all:gtk_goagent pre_ui upload
 
 gtk_goagent:gtk_goagent.o $(LIBS)
 	gcc -o gtk_goagent gtk_goagent.o $(LIBS) $(PKG_LIBS)
@@ -26,6 +26,12 @@ pre_ui:pre_ui.o ui.o $(LIBS)
 
 pre_ui.o:pre_ui.c ui.h
 	gcc -c pre_ui.c $(PKG_LIBS)
+
+upload:upload.o $(LIBS)
+	gcc -o upload upload.o $(LIBS) $(PKG_LIBS)
+
+upload.o:upload.c
+	gcc -c upload.c $(PKG_LIBS)
 
 ui.o:ui.c ui.h callback.h
 	gcc -c ui.c $(PKG_LIBS)

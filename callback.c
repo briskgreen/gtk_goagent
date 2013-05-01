@@ -62,8 +62,21 @@ void help(GtkWidget *widget,gpointer data)
 void about(GtkWidget *widget,gpointer data)
 {}
 
-void update(GtkWidget *widget,gpointer data)
+void update_goagent(GtkWidget *widget,gpointer data)
 {}
+
+void update_gtk_goagent(GtkWidget *widget,gpointer data)
+{}
+
+void upload(GtkWidget *widget,gpointer data)
+{
+	if(fork()==0)
+		if(execl("./upload","upload",NULL)==-1)
+		{
+			perror("Start Upload");
+			_exit(-1);
+		}
+}
 
 void preferences(GtkWidget *widget,gpointer data)
 {
@@ -71,9 +84,13 @@ void preferences(GtkWidget *widget,gpointer data)
 	setlocale(LC_CTYPE,"zh_CN.UTF-8");
 	setenv("LANG","zh_CN.UTF-8",1);*/
 	if(fork()==0)
-		execl("pre_ui","./pre_ui",NULL);
+		if(execl("./pre_ui","pre_ui",NULL)==-1)
+		{
+			perror("Start pre_ui");
+			_exit(-1);
+		}
 
-	wait(NULL);
+	//wait(NULL);
 }
 
 void tray_on_menu(GtkWidget *widget,guint button,
@@ -294,4 +311,7 @@ void exit_pre(GtkWidget *widget,gpointer data)
 }
 
 void save_conf_with_exit(GtkWidget *widget,gpointer data)
+{}
+
+void upload_goagent(GtkWidget *widget,gpointer data)
 {}
