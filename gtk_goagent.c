@@ -75,6 +75,8 @@ int main(int argc,char **argv)
 	CONFDATA conf;
 	struct sigaction act,old;
 
+	setpgrp();
+
 	init_with_conf(&conf);
 	data.python_path=conf.python_path;
 	data.proxy_py_path=conf.proxy_py_path;
@@ -185,9 +187,13 @@ int main(int argc,char **argv)
 
 	gtk_main();
 
-	kill(0,SIGKILL);
-	while(waitpid(-1,NULL,WNOHANG)!=-1);
 	g_idle_remove_by_data(&data);
+	//setpgrp();
+
+	kill(0,SIGKILL);
+	//killpg(getpgrp(),SIGKILL);
+	while(waitpid(-1,NULL,WNOHANG)!=-1);
+	//g_idle_remove_by_data(&data);
 
 	return 0;
 }
