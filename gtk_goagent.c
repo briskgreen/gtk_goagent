@@ -100,7 +100,7 @@ int main(int argc,char **argv)
 	textdomain("gtk_goagent");
 
 	act.sa_flags=0;
-	act.sa_handler=kill_pthread;
+	act.sa_handler=clean_data;
 	sigaction(SIGUSR1,&act,&old);
 
 	gtk_init(&argc,&argv);
@@ -187,8 +187,8 @@ int main(int argc,char **argv)
 
 	gtk_main();
 
-	g_idle_remove_by_data(&data);
 	//setpgrp();
+	g_idle_remove_by_data(&data);
 
 	kill(0,SIGKILL);
 	//killpg(getpgrp(),SIGKILL);

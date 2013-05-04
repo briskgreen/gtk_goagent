@@ -38,7 +38,6 @@ void disconnect_goagent(GtkWidget *widget,DATA *data)
 	data->off=0;
 	kill(data->pid,SIGKILL);
 	while(waitpid(-1,NULL,WNOHANG)!=-1);
-	close(data->pipefd[0]);
 	g_idle_remove_by_data(data);
 
 	/*while(gtk_events_pending())
@@ -127,15 +126,35 @@ gboolean _get_connect(DATA *data)
 	GtkTextBuffer *buffer=gtk_text_view_get_buffer(GTK_TEXT_VIEW(data->text));
 	GtkTextIter end;
 	char buf[2048];
+	int ret;
 	int len;
+	fd_set reads;
+	struct timeval timeout;
 
-	len=read(data->pipefd[0],buf,sizeof(buf)-1);
+	/*len=read(data->pipefd[0],buf,sizeof(buf)-1);
 
 	if(len<=0)
 	{
 		usleep(300);
 		return TRUE;
-	}
+	}*/
+	timeout.tv_sec=0;
+	timeout.tv_usec=300;
+
+	FD_ZERO(&reads);
+	FD_SET(data->pty,&reads);
+
+	ret=select(data->pty+1,&reads,NULL,NULL,&timeout);
+
+	if(ret==-1 || ret==0)
+		return TRUE;
+
+	len=read(data->pty,buf,sizeof(buf)-1);
+
+	if(len<=0)
+		return TRUE;
+
+	buf[len]='\0';
 
 	gtk_text_buffer_get_end_iter(buffer,&end);
 	if(gtk_text_iter_get_offset(&end)>INT_MAX)
@@ -160,25 +179,30 @@ gboolean _get_connect(DATA *data)
 
 void get_connect(DATA *data)
 {
-	/*GtkTextBuffer *buffer=gtk_text_view_get_buffer(GTK_TEXT_VIEW(data->text));
-	GtkTextIter end;
-	int pipefd[2];
-	char buf[1024];
-	int len;
-	guint offset;*/
-	int flags;
 
-	//gtk_text_buffer_get_iter_at_mark(buffer,&iter,mark);
-	pipe(data->pipefd);
+	//pipe(data->pipefd);
 	sig_data=data;
 
-	if((data->pid=fork())==0)
+	//RD_DATA *put_data=malloc(sizeof(RD_DATA));
+	//put_data->text=data->text;
+
+	if((data->pid=forkpty(&data->pty,NULL,NULL,NULL))==0)
+	{
+		if(execl(data->python_path,"python",data->proxy_py_path,NULL)==-1)
+		{
+			write(STDERR_FILENO,_("Error Python Path!"),
+					strlen(_("Error Python Path!")));
+			kill(getppid(),SIGUSR1);
+			_exit(-1);
+		}
+	}
+
+	/*if((data->pid=fork())==0)
 	{
 		close(data->pipefd[0]);
 		dup2(data->pipefd[1],STDERR_FILENO);
 		dup2(data->pipefd[1],STDOUT_FILENO);
 
-		//execl("/usr/bin/python","python","/home/brisk/vbox-share/goagent/local/proxy.py",NULL);
 		if(execl(data->python_path,"python",data->proxy_py_path,NULL)==-1)
 		{
 			write(STDERR_FILENO,_("Error Python Path!"),
@@ -191,76 +215,17 @@ void get_connect(DATA *data)
 	close(data->pipefd[1]);
 	flags=fcntl(data->pipefd[0],F_GETFL,0);
 	flags|=O_NONBLOCK;
-	fcntl(data->pipefd[0],F_SETFL,flags);
+	fcntl(data->pipefd[0],F_SETFL,flags);*/
 
 	g_idle_add((GSourceFunc)_get_connect,data);
-
-	/*while(len=read(pipefd[0],buf,sizeof(buf))-1)
-	{
-		gtk_text_buffer_get_end_iter(buffer,&end);
-
-		if(len<=0)
-			continue;
-
-		if(gtk_text_iter_get_offset(&end)>INT_MAX)
-		{
-			gtk_text_buffer_set_text(buffer,"",0);
-			bzero(buf,sizeof(buf));
-			continue;
-		}
-
-		if(strstr(buf,"ERROR") || strstr(buf,"WARNING"))
-		{
-			gtk_text_buffer_insert(buffer,&end,buf,len);
-			gtk_text_buffer_insert(buffer,&end,"\n",1);
-		}
-		bzero(buf,sizeof(buf));
-	}*/
-	/*while(1)
-	{
-		len=read(pipefd[0],buf,sizeof(buf)-1);
-		if(len<=0)
-			continue;
-
-		while(gtk_events_pending())
-			gtk_main_iteration();
-
-		pthread_mutex_lock(&data->mutex);
-		gtk_text_buffer_get_end_iter(buffer,&end);
-		gtk_text_iter_get_offset(&end);
-		pthread_mutex_unlock(&data->mutex);
-
-		if(offset>INT_MAX)
-		{
-			while(gtk_events_pending())
-				gtk_main_iteration();
-
-			pthread_mutex_lock(&data->mutex);
-			gtk_text_buffer_set_text(buffer,"",0);
-			pthread_mutex_unlock(&data->mutex);
-
-			bzero(buf,sizeof(buf));
-			continue;
-		}
-
-		while(gtk_events_pending())
-			gtk_main_iteration();
-
-		pthread_mutex_lock(&data->mutex);
-		gtk_text_buffer_insert(buffer,&end,buf,len);
-		pthread_mutex_unlock(&data->mutex);
-		//gtk_text_buffer_insert(buffer,&end,"\n",1);
-		bzero(buf,sizeof(buf));
-	}*/
 }
 
-void kill_pthread(int signum)
+void clean_data(int signum)
 {
 	//message_box(NULL,strerror(errno));
 	sig_data->off=0;
 	while(waitpid(-1,NULL,WNOHANG)!=-1);
 	//pthread_cancel(sig_data->thread);
-	close(sig_data->pipefd[0]);
 	g_idle_remove_by_data(sig_data);
 }
 

@@ -5,13 +5,7 @@
 #include <string.h>
 #include <signal.h>
 #include <unistd.h>
-
-typedef struct
-{
-	char *goagent_path;
-	GtkWidget *text;
-	pid_t pid;
-}UP_DATA;
+#include <pty.h>
 
 void connect_goagent(GtkWidget *widget,DATA *data);
 
@@ -43,7 +37,7 @@ void hide_window(GtkWidget *widget,GdkEventWindowState *event,gpointer data);
 
 void tray_on_click(GtkWidget *widget,gpointer data);
 
-void kill_pthread(int signum);
+void clean_data(int signum);
 
 void select_python_path(GtkWidget *widget,gpointer data);
 

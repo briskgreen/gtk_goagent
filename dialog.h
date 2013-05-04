@@ -15,11 +15,11 @@ typedef struct
 typedef struct
 {
 	GtkWidget *text;
-	int pipefd[2];
 	int off;
 	pid_t pid;
-	char *python_path;
+	int pty;
 	char *proxy_py_path;
+	char *python_path;
 }DATA;
 
 void init_help_data(HELP *help);
