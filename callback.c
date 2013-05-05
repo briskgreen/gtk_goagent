@@ -377,7 +377,7 @@ char *get_input_string(const char *msg)
 	dialog=gtk_dialog_new();
 	gtk_window_set_title(GTK_WINDOW(dialog),msg);
 	entry=gtk_entry_new();
-	if(strcpm(msg,"Password")==0)
+	if(strcmp(msg,"Password")==0)
 		gtk_entry_set_visibility(GTK_ENTRY(entry),FALSE);
 
 	gtk_box_pack_start(GTK_BOX(GTK_DIALOG(dialog)->vbox),entry,FALSE,FALSE,10);
