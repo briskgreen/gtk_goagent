@@ -7,6 +7,8 @@
 void get_connect(DATA *data);
 gboolean is_python_and_goagent_path(char *python_path,char *goagent_path);
 gboolean _get_connect(DATA *data);
+gboolean _upload_goagent(UP_DATA *data);
+char *get_input_string(const char *msg);
 
 DATA *sig_data;
 
@@ -278,5 +280,117 @@ void exit_pre(GtkWidget *widget,gpointer data)
 void save_conf_with_exit(GtkWidget *widget,gpointer data)
 {}
 
-void upload_goagent(GtkWidget *widget,gpointer data)
-{}
+gboolean _upload_goagent(UP_DATA *data)
+{
+	GtkTextBuffer *buffer=gtk_text_view_get_buffer(GTK_TEXT_VIEW(data->text));
+	GtkTextIter end;
+	char buf[512];
+	int ret;
+	int len;
+	fd_set reads;
+	struct timeval timeout;
+
+	timeout.tv_sec=0;
+	timeout.tv_usec=300;
+
+	FD_ZERO(&reads);
+	FD_SET(data->pty,&reads);
+
+	ret=select(data->pty+1,&reads,NULL,NULL,&timeout);
+
+	if(ret==-1 || ret==0)
+		return TRUE;
+
+	len=read(data->pty,buf,sizeof(buf)-1);
+
+	if(len<=0)
+		return TRUE;
+
+	buf[len]='\0';
+
+	gtk_text_buffer_get_end_iter(buffer,&end);
+
+	if(strstr(buf,"WARNING"))
+		gtk_text_buffer_insert_with_tags_by_name(buffer,&end,buf,
+				len,"green_fg",NULL);
+	else if(strstr(buf,"ERROR"))
+		gtk_text_buffer_insert_with_tags_by_name(buffer,&end,buf,
+				len,"red_fg",NULL);
+	else
+		gtk_text_buffer_insert_with_tags_by_name(buffer,&end,buf,
+				len,"black_fg",NULL);
+
+	if(strstr(buf,"APPID:"))
+	{
+		write(data->pty,get_input_string("APPID:"),-1);
+		write(data->pty,"\n",1);
+	}
+
+	if(strstr(buf,"Email:"))
+	{
+		write(data->pty,get_input_string(_("Email:")),-1);
+		write(data->pty,"\n",1);
+	}
+
+	if(strstr(buf,"Password for"))
+	{
+		write(data->pty,get_input_string(_("Password")),-1);
+		write(data->pty,"\n",1);
+	}
+
+	return TRUE;
+}
+
+void upload_goagent(GtkWidget *widget,UP_DATA *data)
+{
+	if(data->off)
+	{
+		message_box(widget,_("Upload Now!"));
+		return;
+	}
+
+	if(!is_python_and_goagent_path(data->python_path,data->goagent_path))
+		return;
+
+	chdir(data->goagent_path);
+
+	if((data->pid=forkpty(&data->pty,NULL,NULL,NULL))==0)
+	{
+		if(execl(data->python_path,"python_upload","./server/uploader.zip",NULL)==-1)
+		{
+			write(STDERR_FILENO,_("Error Python Path!"),
+					strlen(_("Error Python Path!")));
+			_exit(-1);
+		}
+	}
+
+	g_idle_add((GSourceFunc)_upload_goagent,data);
+	data->off=1;
+}
+
+char *get_input_string(const char *msg)
+{
+	GtkWidget *entry;
+	GtkWidget *dialog;
+	//char *result;
+
+	dialog=gtk_dialog_new();
+	gtk_window_set_title(GTK_WINDOW(dialog),msg);
+	entry=gtk_entry_new();
+	if(strcpm(msg,"Password")==0)
+		gtk_entry_set_visibility(GTK_ENTRY(entry),FALSE);
+
+	gtk_box_pack_start(GTK_BOX(GTK_DIALOG(dialog)->vbox),entry,FALSE,FALSE,10);
+
+	gtk_dialog_add_button(GTK_DIALOG(dialog),GTK_STOCK_OK,GTK_RESPONSE_OK);
+
+	gtk_dialog_run(GTK_DIALOG(dialog));
+
+	gtk_widget_destroy(dialog);
+
+	//result=malloc(gtk_entry_get_text_length(GTK_ENTRY(entry))+1);
+
+	//result=gtk_entry_get_text(GTK_ENTRY(entry));
+
+	return gtk_entry_get_text(GTK_ENTRY(entry));
+}

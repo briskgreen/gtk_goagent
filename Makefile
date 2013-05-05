@@ -37,4 +37,4 @@ ui.o:ui.c ui.h callback.h
 	gcc -c ui.c $(PKG_LIBS)
 
 clean:
-	rm gtk_goagent pre_ui *.o
+	rm gtk_goagent pre_ui upload *.o

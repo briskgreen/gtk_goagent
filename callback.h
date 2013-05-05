@@ -7,6 +7,16 @@
 #include <unistd.h>
 #include <pty.h>
 
+typedef struct
+{
+	GtkWidget *text;
+	int off;
+	pid_t pid;
+	int pty;
+	char *python_path;
+	char *goagent_path;
+}UP_DATA;
+
 void connect_goagent(GtkWidget *widget,DATA *data);
 
 void disconnect_goagent(GtkWidget *widget,DATA *data);
@@ -25,9 +35,6 @@ void upload(GtkWidget *widget,gpointer data);
 
 void preferences(GtkWidget *widget,gpointer data);
 
-//void change_language(GtkWidget *widget,gpointer data);
-
-//void tray_on_menu(GtkWidget *widget,gpointer data);
 void tray_on_menu(GtkWidget *widget,guint button,
 		guint32 activate_time,gpointer data);
 
@@ -57,6 +64,6 @@ void exit_pre(GtkWidget *widget,gpointer data);
 
 void save_conf_with_exit(GtkWidget *widget,gpointer data);
 
-void upload_goagent(GtkWidget *widget,gpointer data);
+void upload_goagent(GtkWidget *widget,UP_DATA *data);
 
 #endif
