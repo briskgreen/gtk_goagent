@@ -10,11 +10,18 @@ void init_with_conf(CONFDATA *conf)
 	fclose(fp);
 }
 
-void quit_with_safe(GtkWidget *widget,gpointer data)
+void clean_upload_data(GtkWidget *widget,UP_DATA *data)
 {
-	//kill(0,SIGKILL);
-	//while(waitpid(-1,NULL,WNOHANG));
-	gtk_main_quit();
+	if(data->off==0)
+	{
+		message_box(NULL,_("No Upload Now!"));
+		return;
+	}
+
+	kill(data->pid,SIGKILL);
+	while(waitpid(-1,NULL,WNOHANG));
+	g_idle_remove_by_data(data);
+	data->off=0;
 }
 
 int main(int argc,char **argv)
@@ -42,8 +49,10 @@ int main(int argc,char **argv)
 	gtk_init(&argc,&argv);
 
 	dialog=gtk_dialog_new();
-	g_signal_connect(G_OBJECT(dialog),"delete_event",G_CALLBACK(quit_with_safe),NULL);
+	g_signal_connect(G_OBJECT(dialog),"delete_event",G_CALLBACK(gtk_main_quit),NULL);
 	text=gtk_text_view_new();
+	gtk_text_view_set_editable(GTK_TEXT_VIEW(text),FALSE);
+	gtk_text_view_set_wrap_mode(GTK_TEXT_VIEW(text),GTK_WRAP_CHAR);
 	data.text=text;
 	if(conf.font != NULL)
 	{
@@ -79,7 +88,7 @@ int main(int argc,char **argv)
 
 	cancel=gtk_button_new_with_label(_("Cancel"));
 	gtk_box_pack_end(GTK_BOX(hbox),cancel,FALSE,FALSE,10);
-	g_signal_connect(G_OBJECT(cancel),"clicked",G_CALLBACK(quit_with_safe),&data);
+	g_signal_connect(G_OBJECT(cancel),"clicked",G_CALLBACK(clean_upload_data),&data);
 
 	gtk_widget_show_all(dialog);
 

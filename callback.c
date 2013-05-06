@@ -9,6 +9,7 @@ gboolean is_python_and_goagent_path(char *python_path,char *goagent_path);
 gboolean _get_connect(DATA *data);
 gboolean _upload_goagent(UP_DATA *data);
 char *get_input_string(const char *msg);
+char *get_uploader_path(const char *goagent_path);
 
 DATA *sig_data;
 
@@ -286,6 +287,7 @@ gboolean _upload_goagent(UP_DATA *data)
 	GtkTextIter end;
 	char buf[512];
 	int ret;
+	char *result;
 	int len;
 	fd_set reads;
 	struct timeval timeout;
@@ -322,20 +324,31 @@ gboolean _upload_goagent(UP_DATA *data)
 
 	if(strstr(buf,"APPID:"))
 	{
-		write(data->pty,get_input_string("APPID:"),-1);
+		result=get_input_string("APPID");
+		write(data->pty,result,strlen(result));
 		write(data->pty,"\n",1);
 	}
 
 	if(strstr(buf,"Email:"))
 	{
-		write(data->pty,get_input_string(_("Email:")),-1);
+		result=get_input_string("Email");
+		write(data->pty,result,strlen(result));
 		write(data->pty,"\n",1);
 	}
 
 	if(strstr(buf,"Password for"))
 	{
-		write(data->pty,get_input_string(_("Password")),-1);
+		result=get_input_string("Password");
+		write(data->pty,result,strlen(result));
 		write(data->pty,"\n",1);
+	}
+
+	if(strstr(buf,"proxy.ini"))
+	{
+		kill(data->pid,SIGKILL);
+		while(waitpid(-1,NULL,WNOHANG)!=-1);
+		data->off=0;
+		return FALSE;
 	}
 
 	return TRUE;
@@ -352,11 +365,11 @@ void upload_goagent(GtkWidget *widget,UP_DATA *data)
 	if(!is_python_and_goagent_path(data->python_path,data->goagent_path))
 		return;
 
-	chdir(data->goagent_path);
+	//chdir(data->goagent_path);
 
 	if((data->pid=forkpty(&data->pty,NULL,NULL,NULL))==0)
 	{
-		if(execl(data->python_path,"python_upload","./server/uploader.zip",NULL)==-1)
+		if(execl(data->python_path,"python_upload",get_uploader_path(data->goagent_path),NULL)==-1)
 		{
 			write(STDERR_FILENO,_("Error Python Path!"),
 					strlen(_("Error Python Path!")));
@@ -372,7 +385,6 @@ char *get_input_string(const char *msg)
 {
 	GtkWidget *entry;
 	GtkWidget *dialog;
-	//char *result;
 
 	dialog=gtk_dialog_new();
 	gtk_window_set_title(GTK_WINDOW(dialog),msg);
@@ -381,16 +393,25 @@ char *get_input_string(const char *msg)
 		gtk_entry_set_visibility(GTK_ENTRY(entry),FALSE);
 
 	gtk_box_pack_start(GTK_BOX(GTK_DIALOG(dialog)->vbox),entry,FALSE,FALSE,10);
-
+	gtk_widget_show(entry);
 	gtk_dialog_add_button(GTK_DIALOG(dialog),GTK_STOCK_OK,GTK_RESPONSE_OK);
 
 	gtk_dialog_run(GTK_DIALOG(dialog));
 
-	gtk_widget_destroy(dialog);
-
-	//result=malloc(gtk_entry_get_text_length(GTK_ENTRY(entry))+1);
-
-	//result=gtk_entry_get_text(GTK_ENTRY(entry));
+	gtk_widget_hide(dialog);
 
 	return gtk_entry_get_text(GTK_ENTRY(entry));
+}
+
+char *get_uploader_path(const char *goagent_path)
+{
+	char *upload_path;
+	char *upload_name="/server/uploader.zip";
+
+	upload_path=malloc(strlen(goagent_path)+strlen(upload_name)+1);
+	bzero(upload_path,strlen(goagent_path)+strlen(upload_name)+1);
+	strncpy(upload_path,goagent_path,strlen(goagent_path));
+	strncat(upload_path,upload_name,strlen(upload_name));
+
+	return upload_path;
 }
