@@ -343,7 +343,7 @@ gboolean _upload_goagent(UP_DATA *data)
 		write(data->pty,"\n",1);
 	}
 
-	if(strstr(buf,"proxy.ini"))
+	if(strstr(buf,"proxy.ini") || strstr(buf,"python_upload:"))
 	{
 		kill(data->pid,SIGKILL);
 		while(waitpid(-1,NULL,WNOHANG)!=-1);
@@ -369,7 +369,8 @@ void upload_goagent(GtkWidget *widget,UP_DATA *data)
 
 	if((data->pid=forkpty(&data->pty,NULL,NULL,NULL))==0)
 	{
-		if(execl(data->python_path,"python_upload",get_uploader_path(data->goagent_path),NULL)==-1)
+		if(execl(data->python_path,"python_upload",
+			get_uploader_path(data->goagent_path),NULL)==-1)
 		{
 			write(STDERR_FILENO,_("Error Python Path!"),
 					strlen(_("Error Python Path!")));
