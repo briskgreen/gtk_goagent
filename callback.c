@@ -177,6 +177,9 @@ gboolean _get_connect(DATA *data)
 		gtk_text_buffer_insert_with_tags_by_name(buffer,&end,buf,
 				len,"black_fg",NULL);
 
+	gtk_text_view_scroll_to_iter(GTK_TEXT_VIEW(data->text),&end,
+			0,FALSE,FALSE,FALSE);
+
 	return TRUE;
 }
 
@@ -350,6 +353,9 @@ gboolean _upload_goagent(UP_DATA *data)
 		data->off=0;
 		return FALSE;
 	}
+
+	gtk_text_view_scroll_to_iter(GTK_TEXT_VIEW(data->text),&end,
+			0,FALSE,FALSE,FALSE);
 
 	return TRUE;
 }
