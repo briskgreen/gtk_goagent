@@ -128,6 +128,7 @@ gboolean _get_connect(DATA *data)
 {
 	GtkTextBuffer *buffer=gtk_text_view_get_buffer(GTK_TEXT_VIEW(data->text));
 	GtkTextIter end;
+	GtkTextMark *mark;
 	char buf[2048];
 	int ret;
 	int len;
@@ -177,8 +178,13 @@ gboolean _get_connect(DATA *data)
 		gtk_text_buffer_insert_with_tags_by_name(buffer,&end,buf,
 				len,"black_fg",NULL);
 
-	gtk_text_view_scroll_to_iter(GTK_TEXT_VIEW(data->text),&end,
-			0,FALSE,FALSE,FALSE);
+	/*gtk_text_view_scroll_to_iter(GTK_TEXT_VIEW(data->text),&end,
+			0,FALSE,FALSE,FALSE);*/
+
+	mark=gtk_text_buffer_create_mark(buffer,NULL,&end,TRUE);
+	gtk_text_buffer_move_mark(buffer,mark,&end);
+	gtk_text_view_scroll_to_mark(GTK_TEXT_VIEW(data->text),mark,
+			0,TRUE,TRUE,TRUE);
 
 	return TRUE;
 }
@@ -288,6 +294,7 @@ gboolean _upload_goagent(UP_DATA *data)
 {
 	GtkTextBuffer *buffer=gtk_text_view_get_buffer(GTK_TEXT_VIEW(data->text));
 	GtkTextIter end;
+	GtkTextMark *mark;
 	char buf[512];
 	int ret;
 	char *result;
@@ -354,8 +361,13 @@ gboolean _upload_goagent(UP_DATA *data)
 		return FALSE;
 	}
 
-	gtk_text_view_scroll_to_iter(GTK_TEXT_VIEW(data->text),&end,
-			0,FALSE,FALSE,FALSE);
+	/*gtk_text_view_scroll_to_iter(GTK_TEXT_VIEW(data->text),&end,
+			0,FALSE,FALSE,FALSE);*/
+
+	mark=gtk_text_buffer_create_mark(buffer,NULL,&end,TRUE);
+	gtk_text_buffer_move_mark(buffer,mark,&end);
+	gtk_text_view_scroll_to_mark(GTK_TEXT_VIEW(data->text),mark,
+			0,TRUE,TRUE,TRUE);
 
 	return TRUE;
 }
