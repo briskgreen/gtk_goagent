@@ -61,4 +61,6 @@ void set_goagent_auto_upgrade(CONFDATA *data,char *arg);
 
 void set_gtk_goagent_auto_upgrade(CONFDATA *data,char *arg);
 
+char *get_conf_file_path(void);
+
 #endif

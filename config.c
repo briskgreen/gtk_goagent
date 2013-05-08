@@ -1,7 +1,7 @@
 #include "config.h"
 #include <string.h>
 
-char *get_conf_file_path(void);
+//char *get_conf_file_path(void);
 char *get_argument(const char *option);
 gboolean test_argument(FILE *fp,const char *option,char **result);
 

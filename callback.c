@@ -258,38 +258,6 @@ gboolean is_python_and_goagent_path(char *python_path,char *goagent_path)
 	return TRUE;
 }
 
-void select_python_path(GtkWidget *widget,gpointer data)
-{}
-
-void select_goagent_path(GtkWidget *widget,gpointer data)
-{}
-
-void select_gtk_goagent_path(GtkWidget *widget,gpointer data)
-{}
-
-void select_language(GtkWidget *widget,gpointer data)
-{
-	g_printf("%d:%s\n",gtk_combo_box_get_active(GTK_COMBO_BOX(widget)),
-			gtk_combo_box_get_active_text(GTK_COMBO_BOX(widget)));
-}
-
-void select_font(GtkWidget *widget,gpointer data)
-{}
-
-void select_auto_upgrade_goagent(GtkWidget *widget,gpointer data)
-{}
-
-void select_auto_upgrade_gtk_goagent(GtkWidget *widget,gpointer data)
-{}
-
-void exit_pre(GtkWidget *widget,gpointer data)
-{
-	gtk_main_quit();
-}
-
-void save_conf_with_exit(GtkWidget *widget,gpointer data)
-{}
-
 gboolean _upload_goagent(UP_DATA *data)
 {
 	GtkTextBuffer *buffer=gtk_text_view_get_buffer(GTK_TEXT_VIEW(data->text));

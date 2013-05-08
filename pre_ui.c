@@ -1,4 +1,5 @@
 #include "ui.h"
+#include <unistd.h>
 
 void init_with_conf(CONFDATA *conf)
 {
@@ -105,6 +106,7 @@ int main(int argc,char **argv)
 	ENV_DATA env;
 
 	init_with_conf(&conf);
+	conf.save=TRUE;
 
 	bindtextdomain("pre_ui","locale");
 	textdomain("pre_ui");
