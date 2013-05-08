@@ -103,7 +103,6 @@ int main(int argc,char **argv)
 	GtkWidget *button;
 	GtkWidget *text;
 	CONFDATA conf;
-	ENV_DATA env;
 
 	init_with_conf(&conf);
 	conf.save=TRUE;
@@ -115,7 +114,7 @@ int main(int argc,char **argv)
 
 	dialog=gtk_dialog_new();
 	gtk_window_set_title(GTK_WINDOW(dialog),_("Preferences"));
-	g_signal_connect(G_OBJECT(dialog),"delete_event",G_CALLBACK(exit_pre),&conf);
+	g_signal_connect(G_OBJECT(dialog),"destroy",G_CALLBACK(exit_pre),&conf);
 
 	notebook=gtk_notebook_new();
 	gtk_box_pack_start(GTK_BOX(GTK_DIALOG(dialog)->vbox),notebook,
@@ -128,15 +127,15 @@ int main(int argc,char **argv)
 	hbox=gtk_hbox_new(FALSE,0);
 	gtk_box_pack_start(GTK_BOX(page),hbox,FALSE,FALSE,0);
 
-	create_env_interface(_("Python Path     : "),hbox,select_python_path,conf.python_path,conf.save);
+	create_env_interface(_("Python Path     : "),hbox,select_python_path,&conf.python_path,&conf.save);
 
 	hbox=gtk_hbox_new(FALSE,10);
 	gtk_box_pack_start(GTK_BOX(page),hbox,FALSE,FALSE,10);
-	create_env_interface(_("GoAgent Path    :"),hbox,select_goagent_path,conf.goagent_path,conf.save);
+	create_env_interface(_("GoAgent Path    :"),hbox,select_goagent_path,&conf.goagent_path,&conf.save);
 
 	hbox=gtk_hbox_new(FALSE,10);
 	gtk_box_pack_start(GTK_BOX(page),hbox,FALSE,FALSE,10);
-	create_env_interface(_("Gtk GoAgent Path:"),hbox,select_gtk_goagent_path,conf.gtk_goagent_path,conf.save);
+	create_env_interface(_("Gtk GoAgent Path:"),hbox,select_gtk_goagent_path,&conf.gtk_goagent_path,&conf.save);
 
 	gtk_box_pack_start(GTK_BOX(page),gtk_hseparator_new(),FALSE,FALSE,10);
 

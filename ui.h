@@ -8,11 +8,11 @@ typedef struct
 {
 	GtkWidget *entry;
 	char *title;
-	char *env;
-	gboolean save;
+	char **env;
+	gboolean *save;
 }ENV_DATA;
 
-void create_env_interface(char *title,GtkWidget *hbox,callback func,char *conf,gboolean save);
+void create_env_interface(char *title,GtkWidget *hbox,callback func,char **conf,gboolean *save);
 
 void select_python_path(GtkWidget *widget,gpointer data);
 
