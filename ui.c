@@ -43,18 +43,57 @@ void select_gtk_goagent_path(GtkWidget *widget,gpointer data)
 
 void select_language(GtkWidget *widget,gpointer data)
 {
-        g_printf("%d:%s\n",gtk_combo_box_get_active(GTK_COMBO_BOX(widget)),
-                        gtk_combo_box_get_active_text(GTK_COMBO_BOX(widget)));
+	CONFDATA *conf=(CONFDATA *)data;
+
+	gtk_combo_box_get_active(GTK_COMBO_BOX(widget)) == 0 ? set_language_env(conf,"zh_CN.UTF-8") : set_language_env(conf,"en_US.UTF-8");
+
+	conf->save=FALSE;
 }
 
 void select_font(GtkWidget *widget,gpointer data)
-{}
+{
+	GtkWidget *font;
+	guint status;
+
+	font=gtk_font_selection_dialog_new(_("Select Font"));
+	status=gtk_dialog_run(GTK_DIALOG(font));
+
+	switch(status)
+	{
+		case GTK_RESPONSE_OK:
+			set_font_by_name((CONFDATA *)data,
+				gtk_font_selection_dialog_get_font_name(
+					GTK_FONT_SELECTION_DIALOG(font)));
+			gtk_button_set_label(GTK_BUTTON(widget),
+				gtk_font_selection_dialog_get_font_name(
+					GTK_FONT_SELECTION_DIALOG(font)));
+			((CONFDATA *)data)->save=FALSE;
+					break;
+		case GTK_RESPONSE_CANCEL:
+		default:
+			break;
+	}
+	
+	gtk_widget_destroy(font);
+}
 
 void select_auto_upgrade_goagent(GtkWidget *widget,gpointer data)
-{}
+{
+	CONFDATA *conf=(CONFDATA *)data;
+
+	strcmp(conf->goagent_auto_upgrade,"true") == 0 ? set_goagent_auto_upgrade(conf,"false") : set_goagent_auto_upgrade(conf,"true");
+	
+	conf->save=FALSE;
+}
 
 void select_auto_upgrade_gtk_goagent(GtkWidget *widget,gpointer data)
-{}
+{
+	CONFDATA *conf=(CONFDATA *)data;
+
+	strcmp(conf->gtk_goagent_auto_upgrade,"true") ==0 ? set_gtk_goagent_auto_upgrade(conf,"false") : set_gtk_goagent_auto_upgrade(conf,"true");
+
+	conf->save=FALSE;
+}
 
 void exit_pre(GtkWidget *widget,CONFDATA *data)
 {
@@ -65,8 +104,18 @@ void exit_pre(GtkWidget *widget,CONFDATA *data)
         gtk_main_quit();
 }
 
-void save_conf_with_exit(GtkWidget *widget,gpointer data)
-{}
+void save_conf_now(GtkWidget *widget,gpointer data)
+{
+	CONFDATA *conf=(CONFDATA *)data;
+
+	if(conf->save == TRUE)
+	{
+		message_box(NULL,_("Saved Now!"));
+		return;
+	}
+
+	_save_config(conf);
+}
 
 void _save_config(CONFDATA *data)
 {

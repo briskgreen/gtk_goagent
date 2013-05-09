@@ -30,6 +30,6 @@ void select_auto_upgrade_gtk_goagent(GtkWidget *widget,gpointer data);
 
 void exit_pre(GtkWidget *widget,CONFDATA *data);
 
-void save_conf_with_exit(GtkWidget *widget,gpointer data);
+void save_conf_now(GtkWidget *widget,gpointer data);
 
 #endif
