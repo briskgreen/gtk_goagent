@@ -153,8 +153,8 @@ int main(int argc,char **argv)
 	create_menu_with_image(menu,GTK_STOCK_HELP,accel_group,help,NULL);
 	create_menu_with_image(menu,GTK_STOCK_ABOUT,accel_group,about,NULL);
 	gtk_menu_shell_append(GTK_MENU_SHELL(menu),gtk_separator_menu_item_new());
-	create_menu_with_image(menu,_("Update GoAg_ent"),accel_group,update_goagent,NULL);
-	create_menu_with_image(menu,_("Update _Gtk GoAGent"),accel_group,update_gtk_goagent,NULL);
+	create_menu_with_image(menu,_("Upgrade GoAg_ent"),accel_group,upgrade_goagent,NULL);
+	create_menu_with_image(menu,_("Upgrade _Gtk GoAGent"),accel_group,upgrade_gtk_goagent,NULL);
 
 	gtk_widget_set_size_request(text,0x300,0x180);
 	gtk_text_view_set_editable(GTK_TEXT_VIEW(text),FALSE);

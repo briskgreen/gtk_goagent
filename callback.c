@@ -64,10 +64,10 @@ void help(GtkWidget *widget,gpointer data)
 void about(GtkWidget *widget,gpointer data)
 {}
 
-void update_goagent(GtkWidget *widget,gpointer data)
+void upgrade_goagent(GtkWidget *widget,gpointer data)
 {}
 
-void update_gtk_goagent(GtkWidget *widget,gpointer data)
+void upgrade_gtk_goagent(GtkWidget *widget,gpointer data)
 {}
 
 void upload(GtkWidget *widget,gpointer data)
