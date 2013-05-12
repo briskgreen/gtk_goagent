@@ -60,6 +60,7 @@ char *get_version(char *path)
 	char buf[512];
 	char *version;
 	int len,i,j;
+	int index;
 
 	if((fp=fopen(path,"r"))==NULL)
 		error_quit("Open");
@@ -79,17 +80,23 @@ char *get_version(char *path)
 	if(feof(fp))
 		error_quit("Can Not Get Version");
 
-	for(i=0;buf[i] >= '0' || buf[i] <= '9';++i);
-	for(len=0;buf[i];++len);
-	if(buf[i-1] <= '0' || buf[i-1] >='9')
-		len-=1;
+	for(i=0;buf[i];++i)
+		if(buf[i] >= '0' && buf[i] <='9')
+			break;
+	index=i;
+
+	for(len=0;buf[i];++len,++i);
+	--len;
+
+	if(buf[i-2] < '0' || buf[i-2] >'9')
+		--len;
 
 	version=malloc(len+1);
 	bzero(version,len+1);
 
-	for(i=0;buf[i] >= '0' || buf[i] <= '9';++i);
-	for(j=0;len;++i,++j,--len)
-		version[j]=buf[i];
+	for(j=0;len;++index,++j,--len)
+		version[j]=buf[index];
 
 	return version;
 }
+
