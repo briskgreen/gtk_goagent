@@ -192,7 +192,7 @@ char *get_goagent_auto_upgrade(FILE *fp)
 	return NULL;
 }
 
-char *get_gtk_goagent_auto_upgrade(FILE *fp)
+/*char *get_gtk_goagent_auto_upgrade(FILE *fp)
 {
 	char *gtk_goagent_auto_upgrade;
 
@@ -200,7 +200,7 @@ char *get_gtk_goagent_auto_upgrade(FILE *fp)
 		return gtk_goagent_auto_upgrade;
 
 	return NULL;
-}
+}*/
 
 void set_python_path(CONFDATA *data,char *arg)
 {
@@ -242,13 +242,13 @@ void set_font_by_name(CONFDATA *data,char *arg)
 	data->font=arg;
 }
 
-void set_goagent_auto_upgrade(CONFDATA *data,char *arg)
+/*void set_goagent_auto_upgrade(CONFDATA *data,char *arg)
 {
 	if(data->save)
 		data->save=FALSE;
 
 	data->goagent_auto_upgrade=arg;
-}
+}*/
 
 void set_gtk_goagent_auto_upgrade(CONFDATA *data,char *arg)
 {

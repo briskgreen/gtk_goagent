@@ -29,7 +29,7 @@ void about(GtkWidget *widget,gpointer data);
 
 void upgrade_goagent(GtkWidget *widget,gpointer data);
 
-void upgrade_gtk_goagent(GtkWidget *widget,gpointer data);
+//void upgrade_gtk_goagent(GtkWidget *widget,gpointer data);
 
 void upload(GtkWidget *widget,gpointer data);
 

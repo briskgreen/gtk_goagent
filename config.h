@@ -20,7 +20,7 @@ typedef struct
 	char *gtk_goagent_path;
 	char *font;
 	char *goagent_auto_upgrade;
-	char *gtk_goagent_auto_upgrade;
+	//char *gtk_goagent_auto_upgrade;
 }CONFDATA;
 
 gboolean is_config_file_ok(void);
@@ -41,7 +41,7 @@ char *get_gtk_goagent_path(FILE *fp);
 
 char *get_goagent_auto_upgrade(FILE *fp);
 
-char *get_gtk_goagent_auto_upgrade(FILE *fp);
+//char *get_gtk_goagent_auto_upgrade(FILE *fp);
 
 char *get_font_name(FILE *fp);
 
@@ -59,7 +59,7 @@ void set_font_by_name(CONFDATA *data,char *arg);
 
 void set_goagent_auto_upgrade(CONFDATA *data,char *arg);
 
-void set_gtk_goagent_auto_upgrade(CONFDATA *data,char *arg);
+//void set_gtk_goagent_auto_upgrade(CONFDATA *data,char *arg);
 
 char *get_conf_file_path(void);
 

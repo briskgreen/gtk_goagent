@@ -4,18 +4,18 @@ void error_quit(const char *msg);
 char *get_version(char *path);
 size_t is_upgrade_goagent(char *ptr,size_t size,size_t nmebm,
 		void *stream);
-size_t is_upgrade_gtk_goagent(char *ptr,size_t size,size_t nmebm,
-		void *stream);
+//size_t is_upgrade_gtk_goagent(char *ptr,size_t size,size_t nmebm,
+//		void *stream);
 
 void download_file(char *path,char *is_upload);
 
 char *goagent_version;
-char *gtk_goagent_version;
+//char *gtk_goagent_version;
 
 int main(int argc,char **argv)
 {
-	if(argc!=2)
-		return -1;
+	/*if(argc!=2)
+		return -1;*/
 
 	CONFDATA conf;
 	FILE *fp;
@@ -39,9 +39,9 @@ int main(int argc,char **argv)
 	}*/
 
 	goagent_version=get_version(conf.proxy_py_path);
-	gtk_goagent_version=get_version("readme");
+	//gtk_goagent_version=get_version("readme");
 
-	if(strcmp(argv[1]"1")==0)
+	/*if(strcmp(argv[1]"1")==0)
 		auto_upgrade_goagent(GOAGENT_URL);
 	else if(strcmp(argv[1],"2")==0)
 		auto_upgrade_gtk_goagent(GTK_GOAGENT_URL);
@@ -49,7 +49,8 @@ int main(int argc,char **argv)
 	{
 		auto_upgrade_goagent(GOAGENT_URL);
 		auto_upgrade_gtk_goagent(GTK_GOAGENT_URL);
-	}
+	}*/
+	auto_upgrade_goagent(GOAGENT_URL);
 
 	return 0;
 }
@@ -126,7 +127,7 @@ void auto_upgrade_goagent(char *url)
 	}
 }
 
-void auto_upgrade_gtk_goagent(char *url)
+/*void auto_upgrade_gtk_goagent(char *url)
 {
 	if(fork()==0)
 	{
@@ -144,7 +145,7 @@ void auto_upgrade_gtk_goagent(char *url)
 			sleep(10*60);
 		}
 	}
-}
+}*/
 
 size_t is_upgrade_goagent(char *ptr,size_t size,size_t nmebm,
 		void *stream)
