@@ -147,7 +147,6 @@ int main(int argc,char **argv)
 	GtkWidget *cancel;
 	GtkWidget *open;
 	GtkWidget *label;
-	GtkWidget *entry;
 	GtkWidget *button;
 	CONFDATA conf;
 
@@ -211,11 +210,11 @@ int main(int argc,char **argv)
 	gtk_box_pack_start(GTK_BOX(page),button,TRUE,TRUE,20);
 	g_signal_connect(G_OBJECT(button),"clicked",G_CALLBACK(select_auto_upgrade_goagent),&conf);
 
-	button=gtk_check_button_new_with_label(_("Auto Upgrade Gtk GoaGent"));
+	/*button=gtk_check_button_new_with_label(_("Auto Upgrade Gtk GoaGent"));
 	if(strcmp(conf.gtk_goagent_auto_upgrade,"true")==0)
 		gtk_button_clicked(GTK_BUTTON(button));
 	gtk_box_pack_start(GTK_BOX(page),button,TRUE,TRUE,20);
-	g_signal_connect(G_OBJECT(button),"clicked",G_CALLBACK(select_auto_upgrade_gtk_goagent),&conf);
+	g_signal_connect(G_OBJECT(button),"clicked",G_CALLBACK(select_auto_upgrade_gtk_goagent),&conf);*/
 
 	hbox=gtk_hbox_new(FALSE,0);
 	gtk_box_pack_end(GTK_BOX(GTK_DIALOG(dialog)->vbox),hbox,FALSE,FALSE,0);

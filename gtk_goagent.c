@@ -6,7 +6,7 @@ void create_tray(GtkWidget *win)
 	GtkWidget *menu;
 	GtkWidget *item;
 
-	tray=gtk_status_icon_new_from_file("gtk_goagent.png");
+	tray=gtk_status_icon_new_from_file("img/gtk_goagent.png");
 	gtk_status_icon_set_tooltip_text(tray,"Gtk GoAgent");
 	gtk_status_icon_set_visible(tray,TRUE);
 	g_signal_connect(G_OBJECT(tray),"activate",G_CALLBACK(tray_on_click),win);
@@ -108,7 +108,7 @@ int main(int argc,char **argv)
 	win=gtk_window_new(GTK_WINDOW_TOPLEVEL);
 	gtk_window_set_position(GTK_WINDOW(win),GTK_WIN_POS_CENTER);
 	gtk_window_set_title(GTK_WINDOW(win),"Gtk GoAgent");
-	gtk_window_set_icon_from_file(GTK_WINDOW(win),"gtk_goagent.png",NULL);
+	gtk_window_set_icon_from_file(GTK_WINDOW(win),"img/gtk_goagent.png",NULL);
 
 	create_tray(win);
 	//create_pre_ui(&pre,&conf);

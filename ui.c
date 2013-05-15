@@ -86,14 +86,14 @@ void select_auto_upgrade_goagent(GtkWidget *widget,gpointer data)
 	conf->save=FALSE;
 }
 
-void select_auto_upgrade_gtk_goagent(GtkWidget *widget,gpointer data)
+/*void select_auto_upgrade_gtk_goagent(GtkWidget *widget,gpointer data)
 {
 	CONFDATA *conf=(CONFDATA *)data;
 
 	strcmp(conf->gtk_goagent_auto_upgrade,"true") ==0 ? set_gtk_goagent_auto_upgrade(conf,"false") : set_gtk_goagent_auto_upgrade(conf,"true");
 
 	conf->save=FALSE;
-}
+}*/
 
 void exit_pre(GtkWidget *widget,CONFDATA *data)
 {

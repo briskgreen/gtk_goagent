@@ -10,12 +10,13 @@ size_t is_upgrade_goagent(char *ptr,size_t size,size_t nmebm,
 void download_file(char *path,char *is_upload);
 
 char *goagent_version;
+CONFDATA *data;
 //char *gtk_goagent_version;
 
-int main(int argc,char **argv)
+/*int main(int argc,char **argv)
 {
-	/*if(argc!=2)
-		return -1;*/
+	if(argc!=2)
+		return -1;
 
 	CONFDATA conf;
 	FILE *fp;
@@ -28,7 +29,7 @@ int main(int argc,char **argv)
 	//close_config(fp,&conf);
 	fclose(fp);
 
-	/*if((fp=fopen(".upgrade.log","r"))==NULL)
+	if((fp=fopen(".upgrade.log","r"))==NULL)
 	{
 		if((fp=fopenh(".upgrade.log","w"))==NULL)
 			error_quit("Can Not Create Upgrade Log File");
@@ -36,12 +37,12 @@ int main(int argc,char **argv)
 		fputs(get_version(conf.proxy_py_path),fp);
 		fputs(get_version("readme"),fp);
 		fclose(fp);
-	}*/
+	}
 
 	goagent_version=get_version(conf.proxy_py_path);
 	//gtk_goagent_version=get_version("readme");
 
-	/*if(strcmp(argv[1]"1")==0)
+	if(strcmp(argv[1]"1")==0)
 		auto_upgrade_goagent(GOAGENT_URL);
 	else if(strcmp(argv[1],"2")==0)
 		auto_upgrade_gtk_goagent(GTK_GOAGENT_URL);
@@ -49,11 +50,11 @@ int main(int argc,char **argv)
 	{
 		auto_upgrade_goagent(GOAGENT_URL);
 		auto_upgrade_gtk_goagent(GTK_GOAGENT_URL);
-	}*/
+	}
 	auto_upgrade_goagent(GOAGENT_URL);
 
 	return 0;
-}
+}*/
 
 void error_quit(const char *msg)
 {
@@ -107,8 +108,11 @@ char *get_version(char *path)
 	return version;
 }
 
-void auto_upgrade_goagent(char *url)
+void auto_upgrade_goagent(char *url,CONFDATA *conf)
 {
+	data=conf;
+	goagent_version=get_version(conf->proxy_py_path);
+
 	if(fork()==0)
 	{
 		CURL *curl;
@@ -197,8 +201,8 @@ ok:
 			gtk_init(NULL,NULL);
 			if(message_box_ok(_("Have New Version GoAgent Do You Want To Upgrade Now?")))
 				download_file(path,buf);
-			else
-				return 0;
+
+			return 0;
 		}
 		else
 			return 0;
@@ -214,7 +218,7 @@ void download_file(char *path,char *is_upload)
 
 	gtk_init(NULL,NULL);
 
-	if((fp=fopen("/tmp/$goagent&","w"))==NULL)
+	if((fp=fopen("/tmp/$goagent$","w"))==NULL)
 	{
 		message_box(NULL,strerror(errno));
 		return;
@@ -227,6 +231,9 @@ void download_file(char *path,char *is_upload)
 
 	fclose(fp);
 	curl_easy_cleanup(curl);
+
+	unzip("/tmp/$goagent$",data->goagent_path);
+	goagent_path=get_version(data->proxy_py_path);
 
 	if(strstr(is_upload,"是"))
 		message_box(NULL,_("This Version Should Upload Again"));

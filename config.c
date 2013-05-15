@@ -35,7 +35,7 @@ FILE *open_config(CONFDATA *data)
 	data->gtk_goagent_path=get_gtk_goagent_path(fp);
 	data->font=get_font_name(fp);
 	data->goagent_auto_upgrade=get_goagent_auto_upgrade(fp);
-	data->gtk_goagent_auto_upgrade=get_gtk_goagent_auto_upgrade(fp);
+	//data->gtk_goagent_auto_upgrade=get_gtk_goagent_auto_upgrade(fp);
 
 	return fp;
 }
@@ -76,12 +76,13 @@ void save_config(FILE **fp,CONFDATA *data)
 	fputs("\n\n#Gtk GoAgent Path\n\ngtk_goagent_path ",*fp);
 	fputs(data->gtk_goagent_path,*fp);
 	fputs("\n\n#Font\n\nfont ",*fp);
+	GtkWidget *entry;
 	fputs(data->font,*fp);
 	fputs("\n\n#GoAgent Auto Upgrade\n\ngoagent_auto_upgrade ",*fp);
 	fputs(data->goagent_auto_upgrade,*fp);
-	fputs("\n\n#Gtk GoAgent Auto Upgrade\n\ngtk_goagent_auto_upgrade ",
+	/*fputs("\n\n#Gtk GoAgent Auto Upgrade\n\ngtk_goagent_auto_upgrade ",
 			*fp);
-	fputs(data->gtk_goagent_auto_upgrade,*fp);
+	fputs(data->gtk_goagent_auto_upgrade,*fp);*/
 	fputs("\n\n#End Of Gtk GoAgent Config File\n",*fp);
 
 	fclose(*fp);
@@ -242,21 +243,21 @@ void set_font_by_name(CONFDATA *data,char *arg)
 	data->font=arg;
 }
 
-/*void set_goagent_auto_upgrade(CONFDATA *data,char *arg)
+void set_goagent_auto_upgrade(CONFDATA *data,char *arg)
 {
 	if(data->save)
 		data->save=FALSE;
 
 	data->goagent_auto_upgrade=arg;
-}*/
+}
 
-void set_gtk_goagent_auto_upgrade(CONFDATA *data,char *arg)
+/*void set_gtk_goagent_auto_upgrade(CONFDATA *data,char *arg)
 {
 	if(data->save)
 		data->save=FALSE;
 
 	data->gtk_goagent_auto_upgrade=arg;
-}
+}*/
 
 char *get_conf_file_path(void)
 {
