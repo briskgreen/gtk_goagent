@@ -8,6 +8,9 @@ size_t is_upgrade_goagent(char *ptr,size_t size,size_t nmebm,
 //		void *stream);
 
 void download_file(char *path,char *is_upload);
+void _download_file(CURL_DATA *data);
+int update_progress(void *data,double dltotal,double dlnow,
+		double ultotal,double ulnow);
 
 char *goagent_version;
 CONFDATA *data;
@@ -213,7 +216,7 @@ ok:
 
 void download_file(char *path,char *is_upload)
 {
-	CURL *curl;
+	/*CURL *curl;
 	FILE *fp;
 
 	gtk_init(NULL,NULL);
@@ -230,11 +233,96 @@ void download_file(char *path,char *is_upload)
 	curl_easy_perform(curl);
 
 	fclose(fp);
+	curl_easy_cleanup(curl);*/
+	GtkWidget *progress_bar;
+	GtkWidget *win;
+	GtkWidget *vbox;
+	GtkWidget *label;
+	CURL_DATA data;
+
+	gdk_threads_init();
+	gtk_init(NULL,NULL);
+	data.url=path;
+	data.d_ok=FALSE;
+
+	win=gtk_window_new(GTK_WINDOW_TOPLEVEL);
+	gtk_window_set_position(GTK_WINDOW(win),GTK_WIN_POS_CENTER);
+	g_signal_connect(G_OBJECT(win),"delete_event",G_CALLBACK(quit_no_download),&data.d_ok);
+
+	vbox=gtk_vbox_new(FALSE,0);
+	gtk_container_add(GTK_CONTAINER(win),vbox);
+
+	label=gtk_label_new(_("Downloading . . ."));
+	gtk_box_pack_start(GTK_BOX(vbox),label,FALSE,FALSE,0);
+
+	progress_bar=gtk_progress_bar_new();
+	gtk_widget_set_size_request(progress_bar,500,30);
+	data.progress_bar=progress_bar;
+	gtk_box_pack_start(GTK_BOX(vbox),progress_bar,FALSE,FALSE,0);
+
+	gtk_widget_show_all(win);
+	g_thread_new(NULL,(GThreadFunc)_download_file,&data);
+
+	gdk_threads_enter();
+	gtk_main();
+	gdk_threads_leave();
+
+	if(data.d_ok == TRUE)
+	{
+
+		unzip("/tmp/$goagent$",data->goagent_path);
+		goagent_path=get_version(data->proxy_py_path);
+	
+		if(strstr(is_upload,"是"))
+			message_box(NULL,_("This Version Should Upload Again"));
+	}
+}
+
+void _download_file(CURL_DATA *data)
+{
+	CURL *curl;
+	FILE *fp;
+
+	if((fp=fopen("/tmp/$goagent$","w"))==NULL)
+		gtk_main_quit();
+
+	curl=curl_easy_init();
+
+	curl_easy_setopt(curl,CURLOPT_URL,data->url);
+	curl_easy_setopt(curl,CURLOPT_WRITEDATA,fp);
+	curl_easy_setopt(curl,CURLOPT_NOPROGRESS,0L);
+	curl_easy_setopt(curl,CURLOPT_PROGRESSDATA,data->progress_bar);
+	curl_easy_setopt(curl,CURLOPT_PROGRESSFUNCTION,update_progress);
+
+	curl_easy_perform(curl);
+
+	fclose(fp);
 	curl_easy_cleanup(curl);
 
-	unzip("/tmp/$goagent$",data->goagent_path);
-	goagent_path=get_version(data->proxy_py_path);
+	data->d_ok=TRUE;
+	gtk_main_quit();
+}
 
-	if(strstr(is_upload,"是"))
-		message_box(NULL,_("This Version Should Upload Again"));
+void quit_no_download(GtkWidget *widget,gpointer data)
+{
+	gboolean *d_ok=(gboolean *)data;
+
+	d_ok=FALSE;
+}
+
+int update_progress(void *data,double dltotal,double dlnow,
+		double ultotal,double ulnow)
+{
+	char buf[10];
+
+	bzero(buf,sizeof(buf));
+	snprintf(buf,sizeof(buf),"%.1lf %%",dlnow/dltotal*100.0);
+
+	gdk_threads_enter();
+	gtk_progress_bar_set_text(GTK_PROGRESS_BAR(data),buf);
+	gtk_progress_bar_set_fraction(GTK_PROGRESS_BAR(data),
+			dlnow/dltotal);
+	gdk_threads_leave();
+
+	return 0;
 }
