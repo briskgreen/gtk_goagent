@@ -8,6 +8,7 @@
 #define GOAGENT_URL "https://code.google.com/p/goagent/"
 //#define GTK_GOAGENT_URL "https://briskgreen.github.io/Download/Gtk GoAgent"
 #define PROXY "127.0.0.1:8087"
+#define UPDATE_TIME 60*10
 
 struct zip_head
 {

@@ -129,7 +129,7 @@ void auto_upgrade_goagent(char *url,CONFDATA *conf)
 		while(1)
 		{
 			curl_easy_perform(curl);
-			sleep(10*60);
+			sleep(UPDATE_TIME);
 		}
 	}
 }
