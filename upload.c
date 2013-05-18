@@ -49,6 +49,7 @@ int main(int argc,char **argv)
 	gtk_init(&argc,&argv);
 
 	dialog=gtk_dialog_new();
+	gtk_window_set_icon_from_file(GTK_WINDOW(dialog),"img/upload.png",NULL);
 	g_signal_connect(G_OBJECT(dialog),"delete_event",G_CALLBACK(gtk_main_quit),NULL);
 	text=gtk_text_view_new();
 	gtk_text_view_set_editable(GTK_TEXT_VIEW(text),FALSE);

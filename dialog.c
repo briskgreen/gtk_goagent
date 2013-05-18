@@ -17,6 +17,7 @@ void about_dialog(GtkWidget *about,gpointer data)
 	ABOUT *about_data=(ABOUT *)data;
 
 	dialog=gtk_about_dialog_new();
+	gtk_window_set_icon_from_file(GTK_WINDOW(dialog),"img/gtk_goagent.png",NULL);
 	gtk_about_dialog_set_program_name(GTK_ABOUT_DIALOG(dialog),about_data->name);
 	gtk_about_dialog_set_version(GTK_ABOUT_DIALOG(dialog),about_data->version);
 	gtk_about_dialog_set_copyright(GTK_ABOUT_DIALOG(dialog),about_data->copyright);
@@ -61,6 +62,7 @@ void error_message(GtkWidget *widget,gchar *error)
 	GtkWidget *dialog;
 
 	dialog=gtk_message_dialog_new(NULL,GTK_DIALOG_MODAL,GTK_MESSAGE_ERROR,GTK_BUTTONS_OK,"%s\n",error);
+	gtk_window_set_icon_from_file(GTK_WINDOW(dialog),"img/message.png",NULL);
 	gtk_dialog_run(GTK_DIALOG(dialog));
 
 	gtk_widget_destroy(dialog);
@@ -73,6 +75,7 @@ void message_box(GtkWidget *widget,gchar *error)
 
 	dialog=gtk_message_dialog_new(NULL,GTK_DIALOG_MODAL,GTK_MESSAGE_INFO,
 			GTK_BUTTONS_OK,"%s",error);
+	gtk_window_set_icon_from_file(GTK_WINDOW(dialog),"img/message.png",NULL);
 	gtk_dialog_run(GTK_DIALOG(dialog));
 
 	gtk_widget_destroy(dialog);
@@ -86,6 +89,7 @@ gboolean message_box_ok(gchar *data)
 
 	dialog=gtk_dialog_new();
 	gtk_window_set_title(GTK_WINDOW(dialog),_("Message Box"));
+	gtk_window_set_icon_from_file(GTK_WINDOW(dialog),"img/message.png",NULL);
 	label=gtk_label_new(data);
 	gtk_box_pack_start(GTK_BOX(GTK_DIALOG(dialog)->vbox),label,FALSE,FALSE,5);
 	gtk_widget_show(label);
@@ -116,6 +120,7 @@ void help_dialog(GtkWidget *help,gpointer data)
 
 	dialog=gtk_dialog_new();
 	gtk_window_set_title(GTK_WINDOW(dialog),_("Help"));
+	gtk_window_set_icon_from_file(GTK_WINDOW(dialog),"img/help.png",NULL);
 	set_help(dialog,help_data->name);
 	set_help(dialog,help_data->email);
 	set_help(dialog,help_data->readme);
