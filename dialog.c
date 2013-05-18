@@ -38,6 +38,7 @@ void really_quit(GtkWidget *widget,gpointer data)
 
 	dialog=gtk_dialog_new();
 	gtk_window_set_title(GTK_WINDOW(dialog),_("Really Quit?"));
+	gtk_window_set_icon_from_file(GTK_WINDOW(dialog),"img/quit.png",NULL);
 	label=gtk_label_new(_("Are You Really Want to Quit Application Now?\nClick OK To Quit,Click NO To Continue!"));
 	gtk_box_pack_start(GTK_BOX(GTK_DIALOG(dialog)->vbox),label,FALSE,FALSE,5);
 	gtk_widget_show(label);
