@@ -11,6 +11,8 @@ void download_file(char *path,char *is_upload);
 void _download_file(CURL_DATA *data);
 int update_progress(void *data,double dltotal,double dlnow,
 		double ultotal,double ulnow);
+void memcat(char *tmp,char *buf,unsigned long len);
+char *get_zip_first_file_name(char *zip_file);
 
 char *goagent_version;
 CONFDATA *data;
@@ -326,4 +328,171 @@ int update_progress(void *data,double dltotal,double dlnow,
 	gdk_threads_leave();
 
 	return 0;
+}
+
+void unzip(char *zip_file,char *goagent_path)
+{
+	struct zip_head zip;
+	FILE *fp,*out;
+	char *buf,*source,*name,*tmp;
+	char *first_name=get_zip_first_file_name(zip_file);
+	unsigned short s=0x9c78;
+	unsigned long blen;
+	CONFDATA conf;
+
+	chdir("/tmp/");
+
+	if((fp=fopen(zip_file,"rb"))==NULL)
+	{
+		perror("Open File");
+		return;
+	}
+
+	while(!feof(fp))
+	{
+		fread(&zip,sizeof(struct zip_head),1,fp);
+		if(zip.f_len <= 0)
+			break;
+		name=malloc(zip.f_len+1);
+		bzero(name,zip.f_len+1);
+		fread(name,zip.f_len,1,fp);
+
+		if(zip.e_len > 0)
+			fseek(fp,zip.e_len,SEEK_CUR);
+
+		if(zip.d_len == 0)
+			mkdir(name,0777);
+		else if(zip.d_len == zip.len)
+		{
+			if((out=fopen(name,"w"))==NULL)
+			{
+				perror("Create File");
+				return;
+			}
+
+			printf("Unzip %s . . .\n",name);
+
+			buf=malloc(zip.d_len+1);
+			bzero(buf,zip.d_len+1);
+
+			fread(buf,zip.d_len,1,fp);
+			fwrite(buf,zip.d_len,1,out);
+
+			fclose(out);
+			free(buf);
+
+			printf("Unzip %s Successed . . .\n",name);
+		}
+		else
+		{
+			buf=malloc(zip.d_len+1);
+			bzero(buf,zip.d_len+1);
+			fread(buf,zip.d_len,1,fp);
+
+			source=malloc(zip.len+1);
+			bzero(source,zip.len+1);
+
+			tmp=malloc(zip.d_len+3);
+			bzero(tmp,zip.d_len+3);
+			memcpy(tmp,&s,sizeof(s));
+			memcat(tmp,buf,zip.d_len);
+
+			if((out=fopen(name,"w"))==NULL)
+			{
+				perror("Create Error!");
+				return;
+			}
+
+			printf("Unzip %s . . .\n",name);
+
+			blen=compressBound(zip.len);
+			uncompress(source,&blen,tmp,zip.len);
+
+			fwrite(source,zip.len,1,out);
+
+			fclose(out);
+			free(source);
+			free(tmp);
+			free(buf);
+
+			printf("Unzip %s Successed . . .\n",name);
+		}
+
+		free(name);
+	}
+
+	fclose(fp);
+
+	fp=open_config(&conf);
+	chdir(first_name);
+	rename(conf.proxy_py_path,"locale/proxy.py.back");
+
+	rmdir(goagent_path);
+	rename(first_name,goagent_path);
+}
+
+int get_zip_file_num(char *zip_file)
+{
+	int i=0;
+	FILE *fp;
+	struct zip_head zip;
+
+	if((fp=fopen(zip_file,"rb"))==NULL)
+		return -1;
+
+	while(!feof(fp))
+	{
+		fread(&zip,sizeof(struct zip_head),1,fp);
+		if(zip.f_len <= 0)
+			break;
+		fseek(fp,zip.f_len,SEEK_CUR);
+
+		if(zip.e_len > 0)
+			fseek(fp,zip.e_len,SEEK_CUR);
+
+		if(zip.d_len > 0)
+			fseek(fp,zip.d_len,SEEK_CUR);
+
+		++i;
+	}
+
+	fclose(fp);
+
+	return i;
+}
+
+void memcat(char *tmp,char *buf,unsigned long len)
+{
+	int i=2,j=0;
+
+	while(len)
+	{
+		tmp[i]=buf[j];
+
+		++i;
+		++j;
+		--len;
+	}
+}
+
+char *get_zip_first_file_name(char *zip_file)
+{
+	struct zip_head zip;
+	char *name;
+	FILE *fp;
+
+	if((fp=fopen(zip_file,"rb")))
+	{
+		perror("Open FIle");
+		return NULL;
+	}
+
+	fread(&zip,sizeof(struct zip_head),1,fp);
+	fclose(fp);
+
+	name=malloc(zip.f_len+1);
+	bzero(name,zip.f_len+1);
+	fread(name,zip.f_len,1,fp);
+
+	return name;
 }

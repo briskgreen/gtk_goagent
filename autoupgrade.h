@@ -36,7 +36,9 @@ void auto_upgrade_goagent(char *url,CONFDATA *conf);
 
 //void auto_upgrade_gtk_goagent(char *url);
 
-void unzip(char *path,char *goagent_path);
+void unzip(char *zip_file,char *goagent_path);
+
+int get_zip_file_num(char *zip_file);
 
 void quit_no_download(GtkWidget *widget,gpointer data);
 
