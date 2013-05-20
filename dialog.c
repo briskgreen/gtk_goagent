@@ -1,7 +1,7 @@
 #include "dialog.h"
 #include <errno.h>
 
-void set_help(GtkWidget *dialog,gchar *help);
+//void set_help(GtkWidget *dialog,gchar *help);
 
 /*void init_help_data(HELP *help)
 {
@@ -166,7 +166,7 @@ void help_dialog(GtkWidget *help,gpointer data)
 	free(buf);
 }
 
-void set_help(GtkWidget *dialog,gchar *help)
+/*void set_help(GtkWidget *dialog,gchar *help)
 {
 	GtkWidget *label;
 
@@ -174,4 +174,4 @@ void set_help(GtkWidget *dialog,gchar *help)
 	gtk_box_pack_start(GTK_BOX(GTK_DIALOG(dialog)->vbox),label,FALSE,FALSE,0);
 
 	gtk_widget_show(label);
-}
+}*/
