@@ -1,4 +1,5 @@
 #include "autoupgrade.h"
+#include <string.h>
 
 void error_quit(const char *msg);
 char *get_version(char *path);
@@ -15,7 +16,7 @@ void memcat(char *tmp,char *buf,unsigned long len);
 char *get_zip_first_file_name(char *zip_file);
 
 char *goagent_version;
-CONFDATA *data;
+//CONFDATA *data;
 //char *gtk_goagent_version;
 
 /*int main(int argc,char **argv)
@@ -63,7 +64,7 @@ CONFDATA *data;
 
 void error_quit(const char *msg)
 {
-	perror(errno);
+	perror(msg);
 	exit(-2);
 }
 
@@ -115,7 +116,7 @@ char *get_version(char *path)
 
 void auto_upgrade_goagent(char *url,CONFDATA *conf)
 {
-	data=conf;
+	//data=conf;
 	goagent_version=get_version(conf->proxy_py_path);
 
 	if(fork()==0)
@@ -160,6 +161,7 @@ size_t is_upgrade_goagent(char *ptr,size_t size,size_t nmebm,
 		void *stream)
 {
 	char buf[40];
+	char temp[40];
 	char path[100];
 	int i,j;
 
@@ -264,7 +266,8 @@ void download_file(char *path,char *is_upload)
 	gtk_box_pack_start(GTK_BOX(vbox),progress_bar,FALSE,FALSE,0);
 
 	gtk_widget_show_all(win);
-	g_thread_new(NULL,(GThreadFunc)_download_file,&data);
+	//g_thread_new(NULL,(GThreadFunc)_download_file,&data);
+	g_thread_create((GThreadFunc)_download_file,&data,TRUE,NULL);
 
 	gdk_threads_enter();
 	gtk_main();
@@ -272,9 +275,14 @@ void download_file(char *path,char *is_upload)
 
 	if(data.d_ok == TRUE)
 	{
+		CONFDATA conf;
+		FILE *fp;
 
-		unzip("/tmp/$goagent$",data->goagent_path);
-		goagent_path=get_version(data->proxy_py_path);
+		if((fp=open_config(&conf))==NULL)
+			return;
+
+		unzip("/tmp/$goagent$",conf.goagent_path);
+		goagent_version=get_version(conf.proxy_py_path);
 	
 		if(strstr(is_upload,"是"))
 			message_box(NULL,_("This Version Should Upload Again"));

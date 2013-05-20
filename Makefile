@@ -3,11 +3,14 @@ LIBS=dialog.o menu.o callback.o config.o
 
 all:gtk_goagent pre_ui upload
 
-gtk_goagent:gtk_goagent.o $(LIBS)
-	gcc -o gtk_goagent gtk_goagent.o $(LIBS) $(PKG_LIBS) -lutil
+gtk_goagent:gtk_goagent.o autoupgrade.o $(LIBS)
+	gcc -o gtk_goagent gtk_goagent.o autoupgrade.o $(LIBS) $(PKG_LIBS) -lutil -lz -lcurl
 
-gtk_goagent.o:gtk_goagent.c callback.h
+gtk_goagent.o:gtk_goagent.c callback.h autoupgrade.h
 	gcc -c gtk_goagent.c $(PKG_LIBS)
+
+autoupgrade.o:autoupgrade.c autoupgrade.h config.h
+	gcc -c autoupgrade.c $(PKG_LIBS) -lz -lcurl
 
 dialog.o:dialog.c dialog.h menu.h
 	gcc -c dialog.c $(PKG_LIBS)
