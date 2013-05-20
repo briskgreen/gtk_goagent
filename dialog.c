@@ -15,9 +15,12 @@ void about_dialog(GtkWidget *about,gpointer data)
 {
 	GtkWidget *dialog;
 	ABOUT *about_data=(ABOUT *)data;
+	GdkPixbuf *logo=gdk_pixbuf_new_from_file("img/gtk_goagent.png",NULL);
 
 	dialog=gtk_about_dialog_new();
+
 	gtk_window_set_icon_from_file(GTK_WINDOW(dialog),"img/gtk_goagent.png",NULL);
+	gtk_about_dialog_set_logo(GTK_ABOUT_DIALOG(dialog),logo);
 	gtk_about_dialog_set_program_name(GTK_ABOUT_DIALOG(dialog),about_data->name);
 	gtk_about_dialog_set_version(GTK_ABOUT_DIALOG(dialog),about_data->version);
 	gtk_about_dialog_set_copyright(GTK_ABOUT_DIALOG(dialog),about_data->copyright);
