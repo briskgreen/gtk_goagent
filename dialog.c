@@ -24,7 +24,7 @@ void about_dialog(GtkWidget *about,gpointer data)
 	gtk_about_dialog_set_comments(GTK_ABOUT_DIALOG(dialog),about_data->comments);
 	gtk_about_dialog_set_license(GTK_ABOUT_DIALOG(dialog),about_data->license);
 	gtk_about_dialog_set_website(GTK_ABOUT_DIALOG(dialog),about_data->website);
-	//gtk_about_dialog_set_authors(GTK_ABOUT_DIALOG(dialog),authors);
+	//gtk_about_dialog_set_authors(GTK_ABOUT_DIALOG(dialog),about_data->authors);
 	
 	gtk_dialog_run(GTK_DIALOG(dialog));
 	gtk_widget_destroy(dialog);

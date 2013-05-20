@@ -74,11 +74,16 @@ int main(int argc,char **argv)
 	PangoFontDescription *font_name;
 	DATA data;
 	CONFDATA conf;
+	ABOUT about_data;
+	HELP help_data;
 	struct sigaction act,old;
 
 	setpgrp();
 
 	init_with_conf(&conf);
+	init_about_data(&about_data);
+	init_help_data(&help_data);
+
 	data.python_path=conf.python_path;
 	data.proxy_py_path=conf.proxy_py_path;
 	setlocale(LC_ALL,"");
@@ -154,8 +159,8 @@ int main(int argc,char **argv)
 	create_menu_with_image(menu,_("Up_load"),accel_group,upload,&conf);
 
 	menu=create_menu(menu_bar,_("_Help"));
-	create_menu_with_image(menu,GTK_STOCK_HELP,accel_group,help,NULL);
-	create_menu_with_image(menu,GTK_STOCK_ABOUT,accel_group,about,NULL);
+	create_menu_with_image(menu,GTK_STOCK_HELP,accel_group,help,&help_data);
+	create_menu_with_image(menu,GTK_STOCK_ABOUT,accel_group,about,&about_data);
 	gtk_menu_shell_append(GTK_MENU_SHELL(menu),gtk_separator_menu_item_new());
 	create_menu_with_image(menu,_("Upgrade GoAg_ent"),accel_group,upgrade_goagent,NULL);
 	//create_menu_with_image(menu,_("Upgrade _Gtk GoAGent"),accel_group,upgrade_gtk_goagent,NULL);

@@ -17,7 +17,7 @@ typedef struct
 	gchar *comments;
 	gchar *license;
 	gchar *website;
-	gchar **authors;
+	//const gchar **authors;
 }ABOUT;
 
 typedef void (*callback)(GtkWidget *,gpointer);

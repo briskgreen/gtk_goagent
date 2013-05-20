@@ -5,13 +5,19 @@ gchar *set_string(gchar *source);
 
 void init_about_data(ABOUT *about)
 {
+	/*const gchar *authors=malloc(strlen("Brisk")+1);
+
+	bzero(authors,strlen(authors)+1);
+	strncpy(authors,"Brisk",strlen("Brisk"));*/
+
 	about->name=set_string("Gtk GoAgent");
 	about->version=set_string("1.0");
-	about->copyright=set_string("Copyright © 2013-04 By 炕头哥");
+	about->copyright=set_string("Copyright © 2013-05 By 炕头哥");
 	about->comments=set_string("一个简单的GoAgent前端");
-	about->license=set_string("GPL");
+	about->license=set_string("GPLv2");
 	about->website=set_string("briskgreen@163.com");
-	*about->authors=set_string("Brisk");
+	//*about->authors=set_string("Brisk");
+	//about->authors=&authors;
 }
 
 void create_menu_with_image(GtkWidget *menu,gchar *item,\

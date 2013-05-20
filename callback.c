@@ -59,10 +59,14 @@ void clean_buffer(GtkWidget *widget,DATA *data)
 }
 
 void help(GtkWidget *widget,gpointer data)
-{}
+{
+	help_dialog(widget,data);
+}
 
 void about(GtkWidget *widget,gpointer data)
-{}
+{
+	about_dialog(widget,data);
+}
 
 void upgrade_goagent(GtkWidget *widget,gpointer data)
 {}
