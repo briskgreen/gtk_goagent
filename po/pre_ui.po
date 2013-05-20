@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2013-04-27 21:02+0800\n"
+"POT-Creation-Date: 2013-05-20 16:46+0800\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -17,6 +17,68 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: pre_ui.c:35
+#: pre_ui.c:25
+msgid "Chinese"
+msgstr "中文"
+
+#: pre_ui.c:25
+msgid "English"
+msgstr "英语"
+
+#: pre_ui.c:40
+msgid "Language:"
+msgstr "语言"
+
+#: pre_ui.c:118 pre_ui.c:223
+msgid "Save"
+msgstr "保存"
+
+#: pre_ui.c:163
 msgid "Preferences"
 msgstr "设置"
+
+#: pre_ui.c:171
+msgid "Environment"
+msgstr "环境"
+
+#: pre_ui.c:177
+msgid "Python Path     : "
+msgstr "Python 路径     : "
+
+#: pre_ui.c:181
+msgid "GoAgent Path    :"
+msgstr "GoAgent 路径    :"
+
+#: pre_ui.c:185
+msgid "Gtk GoAgent Path:"
+msgstr "Gtk GoAGent 路径:"
+
+#: pre_ui.c:196
+msgid "All Changes Will Take Effect After Restart"
+msgstr "所有更改将在重启应用程序后生效"
+
+#: pre_ui.c:205
+msgid "Upgrade"
+msgstr "更新"
+
+#: pre_ui.c:208
+msgid "Auto Upgrade GoAgent"
+msgstr "自动更新GoAgent"
+
+#: pre_ui.c:227
+msgid "Cancel"
+msgstr "取消"
+
+#: ui.c:58
+msgid "Select Font"
+msgstr "字体选择"
+
+#: ui.c:101
+msgid ""
+"No Saved Now\n"
+",Do You Want To Save?"
+msgstr "当前没有保存\n现在保存吗?"
+
+#: ui.c:113
+msgid "Saved Now!"
+msgstr "已保存!"

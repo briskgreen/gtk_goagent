@@ -42,8 +42,9 @@ int main(int argc,char **argv)
 	data.off=0;
 	data.python_path=conf.python_path;
 	data.goagent_path=conf.goagent_path;
+	data.pid=0;
 
-	bindtextdomain("upload","local");
+	bindtextdomain("upload","locale");
 	textdomain("upload");
 
 	gtk_init(&argc,&argv);
@@ -96,8 +97,9 @@ int main(int argc,char **argv)
 	gtk_main();
 
 	g_idle_remove_by_data(&data);
-	kill(data.pid,SIGKILL);
-	while(waitpid(-1,NULL,WNOHANG)!=-1);
+	if(data.pid)
+		kill(data.pid,SIGKILL);
+	//while(waitpid(-1,NULL,WNOHANG)!=-1);
 
 	return 0;
 }
