@@ -5,12 +5,12 @@
 #include <sys/types.h>
 #include <sys/wait.h>
 
-typedef struct
+/*typedef struct
 {
 	gchar *name;
 	gchar *email;
 	gchar *readme;
-}HELP;
+}HELP;*/
 
 typedef struct
 {
@@ -22,7 +22,7 @@ typedef struct
 	char *python_path;
 }DATA;
 
-void init_help_data(HELP *help);
+//void init_help_data(HELP *help);
 
 void about_dialog(GtkWidget *about,gpointer data);
 

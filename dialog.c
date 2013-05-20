@@ -1,15 +1,16 @@
 #include "dialog.h"
+#include <errno.h>
 
 void set_help(GtkWidget *dialog,gchar *help);
 
-void init_help_data(HELP *help)
+/*void init_help_data(HELP *help)
 {
 	gchar *readme="Gtk GoAgent是一个简单的GoAgent前端!\n";
 	extern gchar *set_string(gchar *source);
 	help->name=set_string("Gtk GoAgent");
 	help->email=set_string("briskgreen@163.com");
 	help->readme=set_string(readme);
-}
+}*/
 
 void about_dialog(GtkWidget *about,gpointer data)
 {
@@ -120,18 +121,49 @@ gboolean message_box_ok(gchar *data)
 void help_dialog(GtkWidget *help,gpointer data)
 {
 	GtkWidget *dialog;
-	HELP *help_data=(HELP *)data;
+	GtkWidget *text;
+	GtkWidget *scrolled;
+	char *buf;
+	FILE *fp;
+	unsigned long len;
+	//HELP *help_data=(HELP *)data;
+	//
+	if((fp=fopen("readme","rb"))==NULL)
+		error_message(NULL,strerror(errno));
+	fseek(fp,0L,SEEK_END);
+	len=ftell(fp);
+	rewind(fp);
+
+	buf=malloc(len+1);
+	fread(buf,len,1,fp);
+	fclose(fp);
 
 	dialog=gtk_dialog_new();
 	gtk_window_set_title(GTK_WINDOW(dialog),_("Help"));
 	gtk_window_set_icon_from_file(GTK_WINDOW(dialog),"img/64x64/help.png",NULL);
-	set_help(dialog,help_data->name);
+	/*set_help(dialog,help_data->name);
 	set_help(dialog,help_data->email);
-	set_help(dialog,help_data->readme);
+	set_help(dialog,help_data->readme);*/
+	text=gtk_text_view_new();
+	//gtk_text_view_set_wrap_mode(GTK_TEXT_VIEW(text),GTK_WRAP_CHAR);
+	gtk_text_view_set_editable(GTK_TEXT_VIEW(text),FALSE);
+	gtk_widget_set_size_request(text,0x300,0x200);
+
+	scrolled=gtk_scrolled_window_new(NULL,NULL);
+	gtk_scrolled_window_set_policy(GTK_SCROLLED_WINDOW(scrolled),
+			GTK_POLICY_AUTOMATIC,GTK_POLICY_AUTOMATIC);
+	gtk_container_add(GTK_CONTAINER(scrolled),text);
+	gtk_box_pack_start(GTK_BOX(GTK_DIALOG(dialog)->vbox),scrolled,
+			FALSE,FALSE,0);
+	gtk_text_buffer_set_text(gtk_text_view_get_buffer(GTK_TEXT_VIEW(text)),buf,-1);
+	gtk_widget_show_all(scrolled);
+
 	gtk_dialog_add_buttons(GTK_DIALOG(dialog),GTK_STOCK_OK,GTK_RESPONSE_OK,NULL);
 	gtk_dialog_run(GTK_DIALOG(dialog));
 
 	gtk_widget_destroy(dialog);
+
+	free(buf);
 }
 
 void set_help(GtkWidget *dialog,gchar *help)
