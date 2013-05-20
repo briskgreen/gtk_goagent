@@ -251,7 +251,7 @@ void download_file(char *path,char *is_upload)
 
 	win=gtk_window_new(GTK_WINDOW_TOPLEVEL);
 	gtk_window_set_position(GTK_WINDOW(win),GTK_WIN_POS_CENTER);
-	gtk_window_set_icon_from_file(GTK_WINDOW(win),"img/download.png",NULL);
+	gtk_window_set_icon_from_file(GTK_WINDOW(win),"img/64x64/download.png",NULL);
 	g_signal_connect(G_OBJECT(win),"delete_event",G_CALLBACK(quit_no_download),&data.d_ok);
 
 	vbox=gtk_vbox_new(FALSE,0);

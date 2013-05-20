@@ -159,7 +159,7 @@ int main(int argc,char **argv)
 	gtk_init(&argc,&argv);
 
 	dialog=gtk_dialog_new();
-	gtk_window_set_icon_from_file(GTK_WINDOW(dialog),"img/preferences.png",NULL);
+	gtk_window_set_icon_from_file(GTK_WINDOW(dialog),"img/64x64/preferences.png",NULL);
 	gtk_window_set_title(GTK_WINDOW(dialog),_("Preferences"));
 	g_signal_connect(G_OBJECT(dialog),"destroy",G_CALLBACK(exit_pre),&conf);
 
