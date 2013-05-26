@@ -42,4 +42,8 @@ int get_zip_file_num(char *zip_file);
 
 void quit_no_download(GtkWidget *widget,gpointer data);
 
+void copy_file(char *old_path,char *new_path);
+
+void rm_dir(char *path);
+
 #endif

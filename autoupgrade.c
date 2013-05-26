@@ -340,6 +340,8 @@ int update_progress(void *data,double dltotal,double dlnow,
 
 void unzip(char *zip_file,char *goagent_path)
 {
+	chdir("/tmp/");
+
 	struct zip_head zip;
 	FILE *fp,*out;
 	char *buf,*source,*name,*tmp;
@@ -348,7 +350,7 @@ void unzip(char *zip_file,char *goagent_path)
 	unsigned long blen;
 	CONFDATA conf;
 
-	chdir("/tmp/");
+	//chdir("/tmp/");
 
 	if((fp=fopen(zip_file,"rb"))==NULL)
 	{
@@ -432,11 +434,15 @@ void unzip(char *zip_file,char *goagent_path)
 	fclose(fp);
 
 	fp=open_config(&conf);
-	chdir(first_name);
-	rename(conf.proxy_py_path,"locale/proxy.py.back");
+	fclose(fp);
 
-	rmdir(goagent_path);
-	rename(first_name,goagent_path);
+	chdir(first_name);
+	//rename(conf.proxy_py_path,"locale/proxy.py.back");
+	copy_file(conf.proxy_py_path,"locale/proxy.py.back");
+
+	//rmdir(goagent_path);
+	rm_dir(goagent_path);
+	rename(getcwd(NULL,0),goagent_path);
 }
 
 int get_zip_file_num(char *zip_file)
@@ -496,11 +502,38 @@ char *get_zip_first_file_name(char *zip_file)
 	}
 
 	fread(&zip,sizeof(struct zip_head),1,fp);
-	fclose(fp);
 
 	name=malloc(zip.f_len+1);
 	bzero(name,zip.f_len+1);
 	fread(name,zip.f_len,1,fp);
 
+	fclose(fp);
+
 	return name;
+}
+
+void copy_file(char *old_path,char *new_path)
+{
+	FILE *in,*out;
+	char buf;
+
+	if(((in=fopen(old_path,"rb"))==NULL) && ((out=fopen(
+		new_path,"w"))==NULL))
+	{
+		perror("Open File");
+		return;
+	}
+
+	while(!feof(in))
+	{
+		fread(&buf,sizeof(buf),1,in);
+		fwrite(&buf,sizeof(buf),1,out);
+	}
+
+	fclose(in);
+	fclose(out);
+}
+
+void rm_dir(char *path)
+{
 }
