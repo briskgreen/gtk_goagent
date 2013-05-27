@@ -3,12 +3,19 @@
 
 #include <curl/curl.h>
 #include <zlib.h>
+#include <dirent.h>
+#include <sys/stat.h>
 #include "config.h"
 
 #define GOAGENT_URL "https://code.google.com/p/goagent/"
 //#define GTK_GOAGENT_URL "https://briskgreen.github.io/Download/Gtk GoAgent"
 #define PROXY "127.0.0.1:8087"
 #define UPDATE_TIME 60*10
+#define error_quit(s)\
+{\
+	perror(s);\
+	return;\
+}
 
 struct zip_head
 {
@@ -42,8 +49,8 @@ int get_zip_file_num(char *zip_file);
 
 void quit_no_download(GtkWidget *widget,gpointer data);
 
-void copy_file(char *old_path,char *new_path);
+void copy_file(const char *old_path,const char *new_path);
 
-void rm_dir(char *path);
+void rm_dir(const char *path);
 
 #endif

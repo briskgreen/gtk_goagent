@@ -1,7 +1,6 @@
 #include "autoupgrade.h"
 #include <string.h>
 
-void error_quit(const char *msg);
 char *get_version(char *path);
 size_t is_upgrade_goagent(char *ptr,size_t size,size_t nmebm,
 		void *stream);
@@ -14,6 +13,7 @@ int update_progress(void *data,double dltotal,double dlnow,
 		double ultotal,double ulnow);
 void memcat(char *tmp,char *buf,unsigned long len);
 char *get_zip_first_file_name(char *zip_file);
+void change_path(const char *path);
 
 char *goagent_version;
 //CONFDATA *data;
@@ -61,12 +61,6 @@ char *goagent_version;
 
 	return 0;
 }*/
-
-void error_quit(const char *msg)
-{
-	perror(msg);
-	exit(-2);
-}
 
 char *get_version(char *path)
 {
@@ -280,6 +274,7 @@ void download_file(char *path,char *is_upload)
 
 		if((fp=open_config(&conf))==NULL)
 			return;
+		fclose(fp);
 
 		unzip("/tmp/$goagent$",conf.goagent_path);
 		goagent_version=get_version(conf.proxy_py_path);
@@ -340,7 +335,8 @@ int update_progress(void *data,double dltotal,double dlnow,
 
 void unzip(char *zip_file,char *goagent_path)
 {
-	chdir("/tmp/");
+	//chdir("/tmp/");
+	change_path("/tmp/");
 
 	struct zip_head zip;
 	FILE *fp,*out;
@@ -436,13 +432,15 @@ void unzip(char *zip_file,char *goagent_path)
 	fp=open_config(&conf);
 	fclose(fp);
 
-	chdir(first_name);
+	//chdir(first_name);
+	change_path(first_name);
 	//rename(conf.proxy_py_path,"locale/proxy.py.back");
 	copy_file(conf.proxy_py_path,"locale/proxy.py.back");
 
 	//rmdir(goagent_path);
 	rm_dir(goagent_path);
-	rename(getcwd(NULL,0),goagent_path);
+	if(rename(getcwd(NULL,0),goagent_path)==-1)
+		error_quit("rename");
 }
 
 int get_zip_file_num(char *zip_file)
@@ -512,7 +510,7 @@ char *get_zip_first_file_name(char *zip_file)
 	return name;
 }
 
-void copy_file(char *old_path,char *new_path)
+void copy_file(const char *old_path,const char *new_path)
 {
 	FILE *in,*out;
 	char buf;
@@ -534,6 +532,57 @@ void copy_file(char *old_path,char *new_path)
 	fclose(out);
 }
 
-void rm_dir(char *path)
+void rm_dir(const char *path)
 {
+	DIR *dir;
+	struct dirent *dirp;
+	struct stat buf;
+	char *p=getcwd(NULL,0);
+
+	if((dir=opendir(path))==NULL)
+		error_quit("OpenDir");
+
+	change_path(path);
+
+	while(dirp=readdir(dir))
+	{
+		if((strcmp(dirp->d_name,".")==0) || (strcmp(dirp->d_name,"..")==0))
+			continue;
+
+		if(stat(dirp->d_name,&buf)==-1)
+			error_quit("stat");
+
+		if(S_ISDIR(buf.st_mode))
+		{
+			rm_dir(dirp->d_name);
+			/*if(rmdir(dirp->d_name)==-1)
+				error_quit("rmdir");
+			printf("rm %s Successed . . .\n",dirp->d_name);*/
+			continue;
+		}
+
+		if(remove(dirp->d_name)==-1)
+			error_quit("remove");
+
+		printf("rm %s Successed . . .\n",dirp->d_name);
+	}
+
+	closedir(dir);
+	change_path(p);
+
+	if(rmdir(path)==-1)
+		error_quit("rmdir");
+
+	printf("rm %s Successed . . .\n",path);
+
+}
+
+void change_path(const char *path)
+{
+	printf("Leave %s Successed . . .\n",getcwd(NULL,0));
+
+	if(chdir(path)==-1)
+		error_quit("chdir");
+
+	printf("ENtry %s Successed . . .\n",getcwd(NULL,0));
 }
