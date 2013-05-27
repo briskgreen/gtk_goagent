@@ -102,7 +102,10 @@ int main(int argc,char **argv)
 		chdir(conf.gtk_goagent_path);
 
 	if(strcmp(conf.goagent_auto_upgrade,"true")==0)
+	{
+		printf("OK\n");
 		auto_upgrade_goagent(GOAGENT_URL,&conf);
+	}
 
 	bindtextdomain("gtk_goagent","./locale/");
 	textdomain("gtk_goagent");
@@ -161,7 +164,7 @@ int main(int argc,char **argv)
 	create_menu_with_image(menu,GTK_STOCK_HELP,accel_group,help,NULL);
 	create_menu_with_image(menu,GTK_STOCK_ABOUT,accel_group,about,&about_data);
 	gtk_menu_shell_append(GTK_MENU_SHELL(menu),gtk_separator_menu_item_new());
-	create_menu_with_image(menu,_("Upgrade GoAg_ent"),accel_group,upgrade_goagent,conf.proxy_py_path);
+	create_menu_with_image(menu,_("Upgrade GoAg_ent"),accel_group,upgrade_goagent,get_proxy_ini_path(conf.goagent_path));
 	//create_menu_with_image(menu,_("Upgrade _Gtk GoAGent"),accel_group,upgrade_gtk_goagent,NULL);
 
 	gtk_widget_set_size_request(text,0x300,0x180);
