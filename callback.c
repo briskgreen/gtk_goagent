@@ -42,7 +42,7 @@ void disconnect_goagent(GtkWidget *widget,DATA *data)
 
 	data->off=0;
 	kill(data->pid,SIGKILL);
-	while(waitpid(-1,NULL,WNOHANG)!=-1);
+	//while(waitpid(-1,NULL,WNOHANG)!=-1);
 	g_idle_remove_by_data(data);
 
 	/*while(gtk_events_pending())
