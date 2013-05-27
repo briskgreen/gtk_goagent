@@ -334,3 +334,21 @@ char *get_argument(const char *option)
 
 	return result;
 }
+
+char *get_proxy_ini_path(char *goagent_path)
+{
+	char *proxy_ini="/local/proxy.ini";
+	char *proxy_ini_path;
+	int goagent_path_len=strlen(goagent_path);
+	int proxy_ini_len=strlen(proxy_ini);
+	int len=goagent_path_len+proxy_ini_len+1;
+
+	proxy_ini_path=malloc(len);
+	bzero(proxy_ini_path,len);
+
+	strncpy(proxy_ini_path,goagent_path,goagent_path_len);
+	strncat(proxy_ini_path,proxy_ini,proxy_ini_len);
+
+	return proxy_ini_path;
+}
+

@@ -11,7 +11,7 @@ gboolean _get_connect(DATA *data);
 gboolean _upload_goagent(UP_DATA *data);
 char *get_input_string(const char *msg);
 char *get_uploader_path(const char *goagent_path);
-void _upgrade_goagent(void);
+//void _upgrade_goagent(char *proxy_py_path);
 
 DATA *sig_data;
 
@@ -70,34 +70,10 @@ void about(GtkWidget *widget,gpointer data)
 	about_dialog(widget,data);
 }
 
-void _upgrade_goagent(void)
-{
-	CURL *curl;
-
-	extern char *goagent_version;
-	extern char *get_version(char *path);
-	extern size_t is_upgrade_goagent(char *ptr,size_t size,size_t nmebm,void *stream);
-	extern void download_file(char *path,char *is_upload);
-	extern void _download_file(CURL_DATA *data);
-	extern int update_progress(void *data,double dltotal,double dlnow,
-			double ultotal,double ulnow);
-	extern void memcat(char *tmp,char *buf,unsigned long len);
-	extern char *get_zip_first_file_name(char *zip_file);
-
-	curl=curl_easy_init();
-	curl_easy_setopt(curl,CURLOPT_URL,GOAGENT_URL);
-	curl_easy_setopt(curl,CURLOPT_WRITEFUNCTION,is_upgrade_goagent);
-	curl_easy_setopt(curl,CURLOPT_PROXY,PROXY);
-
-	curl_easy_perform(curl);
-
-	curl_easy_cleanup(curl);
-}
-
 void upgrade_goagent(GtkWidget *widget,gpointer data)
 {
 	if(fork()==0)
-		_upgrade_goagent();
+		execl("./upgrade","upgrade",GOAGENT_URL,(char *)data,NULL);
 }
 
 /*void upgrade_gtk_goagent(GtkWidget *widget,gpointer data)

@@ -41,6 +41,8 @@ char *get_gtk_goagent_path(FILE *fp);
 
 char *get_goagent_auto_upgrade(FILE *fp);
 
+char *get_proxy_ini_path(char *goagent_path);
+
 //char *get_gtk_goagent_auto_upgrade(FILE *fp);
 
 char *get_font_name(FILE *fp);

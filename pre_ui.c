@@ -43,7 +43,7 @@ void create_combo_box(GtkWidget *page,CONFDATA *conf)
 	g_signal_connect(G_OBJECT(combo_box),"changed",G_CALLBACK(select_language),conf);
 }
 
-char *get_proxy_ini_path(char *goagent_path)
+/*char *get_proxy_ini_path(char *goagent_path)
 {
 	char *proxy_ini="/local/proxy.ini";
 	char *proxy_ini_path;
@@ -58,7 +58,7 @@ char *get_proxy_ini_path(char *goagent_path)
 	strncat(proxy_ini_path,proxy_ini,proxy_ini_len);
 
 	return proxy_ini_path;
-}
+}*/
 
 void change_save(GtkWidget *widget,gpointer data)
 {

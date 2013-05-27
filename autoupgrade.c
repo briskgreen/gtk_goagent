@@ -1,67 +1,6 @@
 #include "autoupgrade.h"
 #include <string.h>
 
-char *get_version(char *path);
-size_t is_upgrade_goagent(char *ptr,size_t size,size_t nmebm,
-		void *stream);
-//size_t is_upgrade_gtk_goagent(char *ptr,size_t size,size_t nmebm,
-//		void *stream);
-
-void download_file(char *path,char *is_upload);
-void _download_file(CURL_DATA *data);
-int update_progress(void *data,double dltotal,double dlnow,
-		double ultotal,double ulnow);
-void memcat(char *tmp,char *buf,unsigned long len);
-char *get_zip_first_file_name(char *zip_file);
-void change_path(const char *path);
-
-char *goagent_version;
-//CONFDATA *data;
-//char *gtk_goagent_version;
-
-/*int main(int argc,char **argv)
-{
-	if(argc!=2)
-		return -1;
-
-	CONFDATA conf;
-	FILE *fp;
-
-	//gtk_init(&argc,&argv);
-
-	if((fp=open_config(&conf))==NULL)
-		error_quit("Open Conf");
-
-	//close_config(fp,&conf);
-	fclose(fp);
-
-	if((fp=fopen(".upgrade.log","r"))==NULL)
-	{
-		if((fp=fopenh(".upgrade.log","w"))==NULL)
-			error_quit("Can Not Create Upgrade Log File");
-
-		fputs(get_version(conf.proxy_py_path),fp);
-		fputs(get_version("readme"),fp);
-		fclose(fp);
-	}
-
-	goagent_version=get_version(conf.proxy_py_path);
-	//gtk_goagent_version=get_version("readme");
-
-	if(strcmp(argv[1]"1")==0)
-		auto_upgrade_goagent(GOAGENT_URL);
-	else if(strcmp(argv[1],"2")==0)
-		auto_upgrade_gtk_goagent(GTK_GOAGENT_URL);
-	else if(strcmp(argv[1],"3")==0)
-	{
-		auto_upgrade_goagent(GOAGENT_URL);
-		auto_upgrade_gtk_goagent(GTK_GOAGENT_URL);
-	}
-	auto_upgrade_goagent(GOAGENT_URL);
-
-	return 0;
-}*/
-
 char *get_version(char *path)
 {
 	FILE *fp;
@@ -181,9 +120,11 @@ ok:
 
 		for(++i,j=0;ptr[i] != '"';++i,++j)
 			path[j]=ptr[i];
+
+		path[j]='\0';
 	}
 
-	if(strstr(ptr,"最近更新") && strstr(ptr,"</li><li><tt>"))
+	if(strstr(ptr,"最近更新") && strstr(ptr,"</li><ol><li>"))
 	{
 		bzero(buf,sizeof(buf));
 
@@ -199,8 +140,8 @@ ok:
 
 		if(!strstr(buf,goagent_version))
 		{
-			gtk_init(NULL,NULL);
-			if(message_box_ok(_("Have New Version GoAgent Do You Want To Upgrade Now?")))
+			/*gtk_init(NULL,NULL);
+			if(message_box_ok(_("Have New Version GoAgent Do You Want To Upgrade Now?")))*/
 				download_file(path,buf);
 
 			return 0;
@@ -314,6 +255,8 @@ void quit_no_download(GtkWidget *widget,gpointer data)
 	gboolean *d_ok=(gboolean *)data;
 
 	d_ok=FALSE;
+
+	gtk_main_quit();
 }
 
 int update_progress(void *data,double dltotal,double dlnow,
@@ -344,7 +287,6 @@ void unzip(char *zip_file,char *goagent_path)
 	char *first_name=get_zip_first_file_name(zip_file);
 	unsigned short s=0x9c78;
 	unsigned long blen;
-	CONFDATA conf;
 
 	//chdir("/tmp/");
 
@@ -429,18 +371,16 @@ void unzip(char *zip_file,char *goagent_path)
 
 	fclose(fp);
 
-	fp=open_config(&conf);
-	fclose(fp);
-
 	//chdir(first_name);
 	change_path(first_name);
 	//rename(conf.proxy_py_path,"locale/proxy.py.back");
-	copy_file(conf.proxy_py_path,"locale/proxy.py.back");
+	copy_file(get_proxy_ini_path(goagent_path),"locale/proxy.py.back");
 
 	//rmdir(goagent_path);
 	rm_dir(goagent_path);
-	if(rename(getcwd(NULL,0),goagent_path)==-1)
-		error_quit("rename");
+	/*if(rename(getcwd(NULL,0),goagent_path)==-1)
+		error_quit("rename");*/
+	copy_dir(getcwd(NULL,0),goagent_path);
 }
 
 int get_zip_file_num(char *zip_file)
@@ -493,9 +433,9 @@ char *get_zip_first_file_name(char *zip_file)
 	char *name;
 	FILE *fp;
 
-	if((fp=fopen(zip_file,"rb")))
+	if((fp=fopen(zip_file,"rb"))==NULL)
 	{
-		perror("Open FIle");
+		perror("Open File");
 		return NULL;
 	}
 
@@ -586,3 +526,6 @@ void change_path(const char *path)
 
 	printf("ENtry %s Successed . . .\n",getcwd(NULL,0));
 }
+
+void copy_dir(const char *old_path,const char *new_path)
+{}

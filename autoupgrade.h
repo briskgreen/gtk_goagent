@@ -39,6 +39,26 @@ typedef struct
 	GtkWidget *progress_bar;
 }CURL_DATA;
 
+char *goagent_version;
+
+char *get_version(char *path);
+
+size_t is_upgrade_goagent(char *ptr,size_t size,size_t nmebm,
+		void *stream);
+
+void download_file(char *path,char *is_upload);
+
+void _download_file(CURL_DATA *data);
+
+int update_progress(void *data,double dltotal,double dlnow,
+		double ultotal,double ulnow);
+
+void memcat(char *tmp,char *buf,unsigned long len);
+
+char *get_zip_first_file_name(char *zip_file);
+
+char *get_zip_first_file_name(char *zip_file);
+
 void auto_upgrade_goagent(char *url,CONFDATA *conf);
 
 //void auto_upgrade_gtk_goagent(char *url);
@@ -52,5 +72,7 @@ void quit_no_download(GtkWidget *widget,gpointer data);
 void copy_file(const char *old_path,const char *new_path);
 
 void rm_dir(const char *path);
+
+void copy_dir(const char *old_path,const char *new_path);
 
 #endif
