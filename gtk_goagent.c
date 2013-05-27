@@ -102,10 +102,7 @@ int main(int argc,char **argv)
 		chdir(conf.gtk_goagent_path);
 
 	if(strcmp(conf.goagent_auto_upgrade,"true")==0)
-	{
-		printf("OK\n");
 		auto_upgrade_goagent(GOAGENT_URL,&conf);
-	}
 
 	bindtextdomain("gtk_goagent","./locale/");
 	textdomain("gtk_goagent");
