@@ -47,3 +47,9 @@ upgrade.o:upgrade.c autoupgrade.h
 
 clean:
 	rm gtk_goagent pre_ui upload *.o
+
+install:
+	./install.sh
+
+uninstall:
+	rm -rf /usr/local/share/gtk_goagent && rm $HOME/.gtk_goagentrc

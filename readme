@@ -3,3 +3,112 @@ Gtk GoAgent
 version 1.0
 
 Gtk GoAgent是一个用GTK+2编写的的GoAgent简易前端
+
+Gtk GoAgent与GoAgent
+
+GoAgent是使用Python编写的网络软件，可以运行在Windows/Mac/Linux/Android/iTouch/iPhone/iPad/webOS/OpenWRT/Maemo上。
+而Gtk GoAgent只是为GoAgent写的一个前端UI，而本人并非GoAgent项目参与者，所以任何GoAgent的问题本人没有任何责任。
+
+Gtk GoAgent的功能
+
+GoAgent貌似没有一个好用的UI（当然，本应用也不见得好用），而GoAgent的操作“复杂”性对于一个有一定计算机基础的人来说还是很简单的，但对于一般用户似乎还是有些复杂的，所以我做了这个应用，一来方便自己，二来如果有人需要，也方便别人。
+本应用将一些GoAgent客户端的操作进行了“集成”，这其中包括 启动、停止、上传、修改proxy.ini、自动更新GoAgent几个部分
+
+注：以下所有操作均在已经运行的Gtk GoAgent中进行
+
+启动
+
+启动GoAgent只需要点击连接按钮，或者从文件菜单中选择打开，已经启动后再次进行启动时会提示当前已连接
+
+停止
+
+停止GoAgent只需要点击断开按钮，或者从文件菜单中选择关闭即可，已经停止后再次进行关闭会提示当前没有连接
+
+上传
+
+从编辑菜单选择上传即可进行上传，点击上传按钮开始上传，如第一次上传会要求输入APPID、邮箱地址、密码，相应内容根据自己的相应情况填写即可，点击取消按钮取消上传，如当前正在上传或未上传均有提示，点击关闭窗口按钮，上传会取消
+
+修改proxy.ini
+
+看配置部分
+
+自动更新
+
+其实GoAgent一般来说不需要频繁地更新，只要用着顺手就可以了，不过考虑到有些人可能会比较喜欢新的版本，于是加上了这个功能，点击帮助菜单--更新GoAgent可手动进行更新
+
+配置
+
+点击编辑菜单--首先项可进行相关配置
+
+环境
+
+在这里进行设置Python路径、GoAgent路径、Gtk GoAgent路径、语言、字体
+
+Python 路径
+
+GoAgent是使用python写的，而Gtk GoAgent只是GoAgent的一个前端，所以想要启动GoAgent就必需使用python，在这里进行Python路径设置，点击. . .按钮选择Python可执行文件所在位置，Linux下的用户可使用whereis python来查看
+
+GoAgent路径
+
+GoAgent路径是用来设置你下载的GoAgent所在的路径的位置，点击. . .按钮进行选择
+
+语言
+
+略
+
+字体
+
+略
+
+proxy.ini
+
+GoAgent的教程中都有一处修改proxy.ini的部分，这里将这个文件放在配置中，方便大家进行修改，修改完成后点击下面的保存即可进行保存
+
+更新
+
+这里本来是想做成GoAgent的自动更新和Gtk GoAgent的自动更新，但想想Gtk GoAgent基本不会再有什么大的改变，所以不需要进行更新，所以这里最终只做了GoAgent的自动更新，打上勾后便会自动更新
+
+以上为所有配置内容，点击保存后进行保存配置，点击取消则取消刚刚进行了配置工作，配置文件所在目录为!/.gtk_goagentrc,可以自己进行手动更改，其中各选项功能如下：
+
+注：以上所有配置均在重新启动Gtk GoAgent后才会生效
+
+.gtk_goagentrc
+
+文件中以#开关的行为注释行，注释行只起提醒作用，没有特殊含义
+
+python_path Python可执行文件的绝对路径
+
+goagent_path GoAgent所在的文件路径
+
+language_env 语言环境
+
+gtk_goagent_path Gtk GoAgent所在文件路径
+
+font 字体
+
+goagent_auto_upgrade 是否自动更新GoAgent，true为自动更新，false关闭自动更新
+
+简介
+
+Gtk GoAgent是本人在使用GoAgent过程中对于各种操作细节分立所造成的“麻烦”而写成的，该应用将这些分立的操作进行了整合，让这些操作变得直观、简单，程序在最小化时会隐藏在系统托盘上，点击Gtk GoAgent的图标便会再次显示主界面，或者右键选择显示可达到同样的效果。
+Gtk GoAgent的主界面由菜单栏、GoAgent日志栏、时间栏以及按钮栏组成，其中按钮栏中的清屏按钮可清除GoAgent日志框中众多的内容，如果你觉得日志太多了，可以使用清屏进行清除。
+时间栏显示当前的系统时间，后来考虑是否要做个GoAgent使用时间以及流量的使用等，不过暂时搁浅了，以后如果有兴趣的话可以在时间栏中加入这两个功能棋块。
+对于GoAgent日志，曾经看到过有人希望GoAgent开发者做一个保存日志的功能，但GoAgent开发者貌似没有做，不同于GoAgent所提供的UI，Gtk GoAgent所能显示的GoAgent日志内容要多得多，这个字符量使用c语言的定义的INT_MAX得到，这个数字在我的linux下为2147483647，已经足够保存大量的日志了。
+
+
+对于Windows
+
+由于本人所使用的是Linux操作系统，所以这里的应用是在Linux平台开发并使用的，目前还没有移植到Windows平台，但是Gtk2是跨平台的，在windows下有相应的开发库，而且本应用代码量也不是太大，不可移植的代码也非常的少，主要需要移植的方面恐怕就是对python路径设置的移植了，所以移植到windows平台只需要修改几行代码就能达到目的，而如果你在windows平台上搭建了python开发环境的话，甚至不需要修改任何代码就能够使用也说不定，所以这里，我暂时不做Windows平台的移植，如果能力足够的话，可自行进行移植，或者某天我心血来潮给移植了，或者其它什么原因我给移植了。
+
+作者
+
+炕头哥
+
+邮箱地址
+
+briskgreen@163.com
+briskgreen20080415@gmail.com
+
+QQ
+
+337658268 (虽然我已经不用QQ了- -)

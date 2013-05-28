@@ -1,0 +1,20 @@
+编译本应用所需要的库及其它
+
+gcc
+make
+zlib
+libcurl
+gtk2
+
+编译 
+
+cd Gtk GoAgent Path
+make
+
+安装
+
+sudo make install
+
+卸载
+
+sudo make uninstall
