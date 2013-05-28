@@ -1,6 +1,9 @@
 #include "autoupgrade.h"
 #include <string.h>
 
+void _copy_file(const char *old_path,const char *new_path);
+char *get_rel_path(const char *dir,const char *path);
+
 char *get_version(char *path)
 {
 	FILE *fp;
@@ -10,7 +13,7 @@ char *get_version(char *path)
 	int index;
 
 	if((fp=fopen(path,"r"))==NULL)
-		error_quit("Open");
+		error_quit(path);
 
 	while(!feof(fp))
 	{
@@ -140,9 +143,11 @@ ok:
 
 		if(!strstr(buf,goagent_version))
 		{
-			/*gtk_init(NULL,NULL);
-			if(message_box_ok(_("Have New Version GoAgent Do You Want To Upgrade Now?")))*/
+			gtk_init(NULL,NULL);
+			if(message_box_ok(_("Have New Version GoAgent Do You Want To Upgrade Now?")))
 				download_file(path,buf);
+
+			gtk_init(NULL,NULL);
 
 			return 0;
 		}
@@ -374,13 +379,15 @@ void unzip(char *zip_file,char *goagent_path)
 	//chdir(first_name);
 	change_path(first_name);
 	//rename(conf.proxy_py_path,"locale/proxy.py.back");
-	copy_file(get_proxy_ini_path(goagent_path),"locale/proxy.py.back");
+	copy_file(get_proxy_ini_path(goagent_path),"local/proxy.ini.back");
 
 	//rmdir(goagent_path);
 	rm_dir(goagent_path);
 	/*if(rename(getcwd(NULL,0),goagent_path)==-1)
 		error_quit("rename");*/
 	copy_dir(getcwd(NULL,0),goagent_path);
+
+	printf(_("Unzip And Copy Successed . . .\n"));
 }
 
 int get_zip_file_num(char *zip_file)
@@ -453,9 +460,10 @@ char *get_zip_first_file_name(char *zip_file)
 void copy_file(const char *old_path,const char *new_path)
 {
 	FILE *in,*out;
-	char buf;
+	char buf[64];
+	size_t len;
 
-	if(((in=fopen(old_path,"rb"))==NULL) && ((out=fopen(
+	if(((in=fopen(old_path,"rb"))==NULL) || ((out=fopen(
 		new_path,"w"))==NULL))
 	{
 		perror("Open File");
@@ -464,8 +472,10 @@ void copy_file(const char *old_path,const char *new_path)
 
 	while(!feof(in))
 	{
-		fread(&buf,sizeof(buf),1,in);
-		fwrite(&buf,sizeof(buf),1,out);
+		bzero(buf,sizeof(buf));
+
+		len=fread(buf,1,sizeof(buf)-1,in);
+		fwrite(buf,len,1,out);
 	}
 
 	fclose(in);
@@ -524,8 +534,86 @@ void change_path(const char *path)
 	if(chdir(path)==-1)
 		error_quit("chdir");
 
-	printf("ENtry %s Successed . . .\n",getcwd(NULL,0));
+	printf("Entry %s Successed . . .\n",getcwd(NULL,0));
 }
 
 void copy_dir(const char *old_path,const char *new_path)
-{}
+{
+	DIR *dir;
+	struct stat buf;
+	struct dirent *dirp;
+	char *p=getcwd(NULL,0);
+
+	if((dir=opendir(old_path))==NULL)
+		error_quit(old_path);
+	if(mkdir(new_path,0777)==-1)
+		error_quit(new_path);
+
+	change_path(old_path);
+
+	while((dirp=readdir(dir)))
+	{
+		if(strcmp(dirp->d_name,".")==0 || strcmp(dirp->d_name,"..")==0)
+			continue;
+		if(stat(dirp->d_name,&buf)==-1)
+			error_quit("stat");
+		if(S_ISDIR(buf.st_mode))
+		{
+			copy_dir(dirp->d_name,get_rel_path(dirp->d_name,new_path));
+			continue;
+		}
+
+		_copy_file(dirp->d_name,new_path);
+	}
+
+	closedir(dir);
+	change_path(p);
+}
+
+char *get_rel_path(const char *dir,const char *path)
+{
+	char *rel_path;
+	unsigned long d_len,p_len;
+
+	d_len=strlen(dir);
+	p_len=strlen(path);
+	if((rel_path=malloc(d_len+p_len+2))==NULL)
+		error_quit("malloc");
+	bzero(rel_path,d_len+p_len+2);
+
+	strncpy(rel_path,path,p_len);
+	strncat(rel_path,"/",sizeof(char));
+	strncat(rel_path,dir,d_len);
+
+	return rel_path;
+}
+
+void _copy_file(const char *old_path,const char *new_path)
+{
+	FILE *in,*out;
+	size_t len;
+	char buf[64];
+	char *p=getcwd(NULL,0);
+
+	if((in=fopen(old_path,"rb"))==NULL)
+		error_quit(old_path);
+
+	change_path(new_path);
+
+	if((out=fopen(old_path,"wb"))==NULL)
+		error_quit(old_path);
+
+	while(!feof(in))
+	{
+		bzero(buf,sizeof(buf));
+
+		len=fread(&buf,1,sizeof(buf)-1,in);
+		fwrite(&buf,len,1,out);
+	}
+
+	fclose(in);
+	fclose(out);
+
+	change_path(p);
+}
+

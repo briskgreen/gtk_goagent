@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2013-05-21 23:09+0800\n"
+"POT-Creation-Date: 2013-05-28 22:50+0800\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -17,17 +17,22 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: autoupgrade.c:209
+#: autoupgrade.c:147
 msgid "Have New Version GoAgent Do You Want To Upgrade Now?"
 msgstr "GoAgent有新的版本,你想现在更新吗?"
 
-#: autoupgrade.c:260
+#: autoupgrade.c:200
 msgid "Downloading . . ."
-msgstr "下载中 . . ."
+msgstr "正在下载中 . . ."
 
-#: autoupgrade.c:288
+#: autoupgrade.c:229
 msgid "This Version Should Upload Again"
-msgstr "这个版本需要重新上传"
+msgstr "GoAgent有新的版本,你想现在更新吗?"
+
+#: autoupgrade.c:390
+#, c-format
+msgid "Unzip And Copy Successed . . .\n"
+msgstr "解压与复制成功!\n"
 
 #: callback.c:22
 msgid "Connected Now\n"
@@ -37,19 +42,19 @@ msgstr "已经连接!\n"
 msgid "No Connected Now!"
 msgstr "没有连接!"
 
-#: callback.c:238 callback.c:239 callback.c:394 callback.c:395
+#: callback.c:214 callback.c:215 callback.c:370 callback.c:371
 msgid "Error Python Path!"
 msgstr "错误的Python路径!"
 
-#: callback.c:281
+#: callback.c:257
 msgid "You Should Set Python Path!"
 msgstr "你需要设置Python的路径!"
 
-#: callback.c:287
+#: callback.c:263
 msgid "You Should Set GoAgent Path!"
-msgstr "You Should Set GoAgent Path!"
+msgstr "你需要设置GoAgent路径!"
 
-#: callback.c:380
+#: callback.c:356
 msgid "Upload Now!"
 msgstr "正在上传!"
 
@@ -61,7 +66,7 @@ msgstr "是否保存配置文件?\n点击确定退出,点击否继续!"
 
 #: config.c:60
 msgid "Saved"
-msgstr "保存"
+msgstr "已保存"
 
 #: dialog.c:44
 msgid "Really Quit?"
@@ -75,48 +80,52 @@ msgstr "你确定要退出应用程序吗?\n点击确定退出,点击否继续!"
 
 #: dialog.c:96
 msgid "Message Box"
-msgstr "消息盒子"
+msgstr "消息框"
 
 #: dialog.c:142
 msgid "Help"
 msgstr "帮助"
 
-#: gtk_goagent.c:16
+#: gtk_goagent.c:15
 msgid "_Show"
 msgstr "显示(_S)"
 
-#: gtk_goagent.c:19
+#: gtk_goagent.c:18
 msgid "H_ide"
 msgstr "隐藏(_i)"
 
-#: gtk_goagent.c:151
+#: gtk_goagent.c:150
 msgid "_File"
 msgstr "文件(_F)"
 
-#: gtk_goagent.c:157
+#: gtk_goagent.c:156
 msgid "_Edit"
 msgstr "编辑(_E)"
 
-#: gtk_goagent.c:159
+#: gtk_goagent.c:158
 msgid "Up_load"
 msgstr "上传(_l)"
 
-#: gtk_goagent.c:161
+#: gtk_goagent.c:160
 msgid "_Help"
 msgstr "帮助(_H)"
 
-#: gtk_goagent.c:165
+#: gtk_goagent.c:164
 msgid "Upgrade GoAg_ent"
 msgstr "更新GoAgent(_e)"
 
-#: gtk_goagent.c:183
+#: gtk_goagent.c:182
 msgid "Connect"
 msgstr "连接"
 
-#: gtk_goagent.c:186
+#: gtk_goagent.c:185
 msgid "Clean"
 msgstr "清屏"
 
-#: gtk_goagent.c:189
+#: gtk_goagent.c:188
 msgid "Disconnect"
 msgstr "断开"
+
+#: upgrade.c:20
+msgid "New Version Now!"
+msgstr "已是最新看到!"
