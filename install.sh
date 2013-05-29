@@ -11,6 +11,8 @@ cp -R locale $GTK_GOAGENT_PATH
 cp -R po $GTK_GOAGENT_PATH
 cp -R img $GTK_GOAGENT_PATH
 
+ln -s $GTK_GOAGENT_PATH/gtk_goagent /usr/bin/gtk_goagent
+
 
 echo '#Python Path' > $HOME/.gtk_goagentrc
 echo 'python_path '`whereis python | awk '{print $2}'` >> $HOME/.gtk_goagentrc 
