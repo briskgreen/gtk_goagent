@@ -14,7 +14,7 @@ void init_about_data(ABOUT *about)
 	about->version=set_string("1.0");
 	about->copyright=set_string("Copyright © 2013-05 By 炕头哥");
 	about->comments=set_string("一个简单的GoAgent前端");
-	about->license=set_string("GPLv2");
+	about->license=set_string("GPL\nsee <http://www.gnu.org/licenses/>.");
 	about->website=set_string("briskgreen@163.com");
 	//*about->authors=set_string("Brisk");
 	//about->authors=&authors;
