@@ -7,9 +7,12 @@
 #include <sys/stat.h>
 #include "config.h"
 
+//GoAgent项目主页地址
 #define GOAGENT_URL "https://code.google.com/p/goagent/"
 //#define GTK_GOAGENT_URL "https://briskgreen.github.io/Download/Gtk GoAgent"
+//代理地址与端口
 #define PROXY "127.0.0.1:8087"
+//更新周期
 #define UPDATE_TIME 60*10
 #define error_quit(s)\
 {\
@@ -17,6 +20,23 @@
 	return;\
 }
 
+/*
+         组成    　                长度
+      文件头标记                  4 bytes  (0x04034b50)
+      解压文件所需 pkware 版本    2 bytes
+      全局方式位标记              2 bytes
+  　　压缩方式                    2 bytes
+  　　最后修改文件时间             2 bytes
+ 　　 最后修改文件日期             2 bytes
+ 　　 CRC-32校验                  4 bytes
+ 　 　压缩后尺寸                  4 bytes
+ 　 　未压缩尺寸                  4 bytes
+ 　　 文件名长度                  2 bytes
+
+      扩展记录长度                2 bytes
+ 　　 文件名                     （不定长度）
+ 　　 扩展字段                   （不定长度）
+*/
 struct zip_head
 {
 	unsigned long head;
@@ -30,7 +50,13 @@ struct zip_head
 	unsigned long len;
 	unsigned short f_len;
 	unsigned short e_len;
-}__attribute__((packed));
+}__attribute__((packed)); //通知编译器不要对该结构体进行内存对齐
+
+/*CURL相关数据
+ * 目标地址
+ * 数据下载是否完成
+ * 进度条构件
+ */
 
 typedef struct
 {
@@ -39,17 +65,22 @@ typedef struct
 	GtkWidget *progress_bar;
 }CURL_DATA;
 
-char *goagent_version;
+char *goagent_version; //goagent的当前版本号
 
+/*得到当前goagent版本号*/
 char *get_version(char *path);
 
+/*检查是否需要更新*/
 size_t is_upgrade_goagent(char *ptr,size_t size,size_t nmebm,
 		void *stream);
 
+/*下载主界面*/
 void download_file(char *path,char *is_upload);
 
+/*下载文件线程*/
 void _download_file(CURL_DATA *data);
 
+/*更新进度条函数*/
 int update_progress(void *data,double dltotal,double dlnow,
 		double ultotal,double ulnow);
 
@@ -61,12 +92,17 @@ char *get_zip_first_file_name(char *zip_file);
 
 void auto_upgrade_goagent(char *url,CONFDATA *conf);
 
+/*由于目测Gtk GoAgent不会有什么发动的样子
+ * 所以取消了Gtk GoAgent的自动更新*/
+
 //void auto_upgrade_gtk_goagent(char *url);
 
+/*解压并复制文件*/
 void unzip(char *zip_file,char *goagent_path);
 
 int get_zip_file_num(char *zip_file);
 
+/*在没有完成下载的情况下退出设置d_ok为FALSE*/
 void quit_no_download(GtkWidget *widget,gpointer data);
 
 void copy_file(const char *old_path,const char *new_path);

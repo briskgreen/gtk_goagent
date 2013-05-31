@@ -46,7 +46,7 @@ upgrade.o:upgrade.c autoupgrade.h
 	gcc -c upgrade.c $(PKG_LIBS)
 
 clean:
-	rm gtk_goagent pre_ui upload *.o
+	rm gtk_goagent pre_ui upload upgrade *.o
 
 install:
 	./install.sh
