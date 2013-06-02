@@ -146,8 +146,6 @@ size_t is_upgrade_goagent(char *ptr,size_t size,size_t nmebm,
 
 	if(strstr(ptr,"https://nodeload.github.com"))
 	{
-		bzero(buf,sizeof(buf));
-
 		for(i=0;ptr[i];++i)
 		{
 			if(ptr[i] == '"')
