@@ -17,6 +17,7 @@ void init_with_conf(CONFDATA *conf)
 	fclose(fp);
 }
 
+/*创建语言选择框*/
 void create_combo_box(GtkWidget *page,CONFDATA *conf)
 {
 	GtkWidget *combo_box;
@@ -25,6 +26,7 @@ void create_combo_box(GtkWidget *page,CONFDATA *conf)
 	char *language[]={_("Chinese"),_("English")};
 	int index;
 
+	/*设置下标*/
 	if(strstr(conf->language_env,"zh"))
 		index=0;
 	else if(strstr(conf->language_env,"en"))
@@ -68,6 +70,7 @@ void change_save(GtkWidget *widget,gpointer data)
 	FILE *fp;
 	char *buf;
 
+	/*修改proxy.ini内容*/
 	if((fp=fopen(get_proxy_ini_path(ini->goagent_path),"w"))==NULL)
 	{
 		message_box(NULL,strerror(errno));
@@ -85,6 +88,7 @@ void change_save(GtkWidget *widget,gpointer data)
 	g_free(buf);
 }
 
+/*显示proxy.ini文件*/
 GtkWidget *read_and_edit_proxy_ini(GtkWidget *page,char *path)
 {
 	GtkWidget *text;
@@ -108,8 +112,10 @@ GtkWidget *read_and_edit_proxy_ini(GtkWidget *page,char *path)
 	chdir(p);
 
 	text=gtk_text_view_new();
+	/*设置自行换行*/
 	gtk_text_view_set_wrap_mode(GTK_TEXT_VIEW(text),GTK_WRAP_CHAR);
 	scrolled=gtk_scrolled_window_new(NULL,NULL);
+	/*设置滚动条自动更新*/
 	gtk_scrolled_window_set_policy(GTK_SCROLLED_WINDOW(scrolled),
 			GTK_POLICY_AUTOMATIC,GTK_POLICY_AUTOMATIC);
 	gtk_container_add(GTK_CONTAINER(scrolled),text);
@@ -129,12 +135,14 @@ GtkWidget *read_and_edit_proxy_ini(GtkWidget *page,char *path)
 
 	buf=malloc(len);
 	fread(buf,len,1,fp);
+	/*显示内容*/
 	gtk_text_buffer_set_text(gtk_text_view_get_buffer(GTK_TEXT_VIEW(text)),buf,-1);
 	free(buf);
 	
 	return text;
 }
 
+/*配置界面进入点*/
 int main(int argc,char **argv)
 {
 	GtkWidget *dialog;
@@ -153,6 +161,7 @@ int main(int argc,char **argv)
 	init_with_conf(&conf);
 	conf.save=TRUE;
 
+	/*国际化*/
 	bindtextdomain("pre_ui","locale");
 	textdomain("pre_ui");
 
@@ -163,12 +172,14 @@ int main(int argc,char **argv)
 	gtk_window_set_title(GTK_WINDOW(dialog),_("Preferences"));
 	g_signal_connect(G_OBJECT(dialog),"destroy",G_CALLBACK(exit_pre),&conf);
 
+	/*使用翻页来构建配置界面*/
 	notebook=gtk_notebook_new();
 	gtk_box_pack_start(GTK_BOX(GTK_DIALOG(dialog)->vbox),notebook,
 			FALSE,FALSE,0);
 
 	page=gtk_vbox_new(FALSE,0);
 	label=gtk_label_new(_("Environment"));
+	/*添加页*/
 	gtk_notebook_append_page(GTK_NOTEBOOK(notebook),page,label);
 
 	hbox=gtk_hbox_new(FALSE,0);
@@ -206,6 +217,9 @@ int main(int argc,char **argv)
 	gtk_notebook_append_page(GTK_NOTEBOOK(notebook),page,label);
 
 	button=gtk_check_button_new_with_label(_("Auto Upgrade GoAgent"));
+	/*如果自动更新为true
+	 * 则在选项前打勾
+	 */
 	if(strcmp(conf.goagent_auto_upgrade,"true")==0)
 		gtk_button_clicked(GTK_BUTTON(button));
 	gtk_box_pack_start(GTK_BOX(page),button,TRUE,TRUE,20);

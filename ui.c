@@ -1,6 +1,7 @@
 #include "ui.h"
 
 void _save_config(CONFDATA *data);
+/*文件选择对话框*/
 void file_select(ENV_DATA *data,gboolean folder);
 
 void create_env_interface(char *title,GtkWidget *hbox,callback func,

@@ -2,7 +2,11 @@
 #include <string.h>
 
 //char *get_conf_file_path(void);
+/*得到配置文件中的数据*/
 char *get_argument(const char *option);
+/*取相应配置数据
+ * result返回绝对数据
+ */
 gboolean test_argument(FILE *fp,const char *option,char **result);
 
 gboolean is_config_file_ok(void)
@@ -64,6 +68,9 @@ void save_config(FILE **fp,CONFDATA *data)
 	//remove(get_conf_file_path());
 	fclose(*fp);
 
+	/*关闭并重启打开这个文件
+	 * 以写的方式将所有的配置重新写回到配置文件
+	 */
 	if((*fp=fopen(get_conf_file_path(),"w"))==NULL)
 		message_box(NULL,strerror(errno));
 
@@ -87,6 +94,9 @@ void save_config(FILE **fp,CONFDATA *data)
 
 	fclose(*fp);
 
+	/*再重启以只读方式打开
+	 * 做到保存不影响其它配置操作
+	 */
 	*fp=fopen(get_conf_file_path(),"r");
 
 	data->save=TRUE;
@@ -282,6 +292,7 @@ gboolean test_argument(FILE *fp,const char *option,char **result)
 
 		fgets(buf,sizeof(buf)-1,fp);
 
+		/*以#开头的为注释被忽视掉*/
 		if(buf[0]=='#')
 			continue;
 
@@ -318,6 +329,7 @@ char *get_argument(const char *option)
 
 	for(j=0;option[i]!='\n' && option[i];++j,++i)
 	{
+		/*以#开头为注释*/
 		if(option[i]=='#')
 			break;
 

@@ -4,6 +4,12 @@
 #include "config.h"
 #include <string.h>
 
+/*配置环境数据结构
+ * 读数据构件
+ * 标题
+ * 环境
+ * 是否保存
+ */
 typedef struct
 {
 	GtkWidget *entry;
@@ -12,8 +18,10 @@ typedef struct
 	gboolean *save;
 }ENV_DATA;
 
+/*创建环境配置界面*/
 void create_env_interface(char *title,GtkWidget *hbox,callback func,char **conf,gboolean *save);
 
+/*以下以select开头函数为选择相应配置数据*/
 void select_python_path(GtkWidget *widget,gpointer data);
 
 void select_goagent_path(GtkWidget *widget,gpointer data);

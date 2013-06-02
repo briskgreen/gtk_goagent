@@ -1,5 +1,6 @@
 #include "callback.h"
 
+/*创建系统托盘*/
 void create_tray(GtkWidget *win)
 {
 	GtkStatusIcon *tray;
@@ -8,6 +9,7 @@ void create_tray(GtkWidget *win)
 
 	tray=gtk_status_icon_new_from_file("img/64x64/gtk_goagent.png");
 	gtk_status_icon_set_tooltip_text(tray,"Gtk GoAgent");
+	/*设置系统托盘可见*/
 	gtk_status_icon_set_visible(tray,TRUE);
 	g_signal_connect(G_OBJECT(tray),"activate",G_CALLBACK(tray_on_click),win);
 
@@ -32,6 +34,7 @@ void change_time(gpointer *label)
 	static time_t t;
 	static char buf[30];
 
+	/*时间框更新函数*/
 	t=time(NULL);
 	snprintf(buf,strlen(ctime(&t)),"%s",ctime(&t));
 	gtk_label_set_text(GTK_LABEL(label),buf);
@@ -50,12 +53,14 @@ void init_with_conf(CONFDATA *data)
 {
 	FILE *fp;
 
+	/*打开并初始化配置数据*/
 	if((fp=open_config(data))==NULL)
 		return;
 
 	fclose(fp);
 }
 
+/*主界面进入点*/
 int main(int argc,char **argv)
 {
 	GtkWidget *win;
@@ -87,6 +92,7 @@ int main(int argc,char **argv)
 	data.proxy_py_path=conf.proxy_py_path;
 	setlocale(LC_ALL,"");
 
+	/*设置语言环境*/
 	if(conf.language_env == NULL)
 	{
 		setlocale(LC_CTYPE,"zh_CN.UTF-8");
@@ -101,14 +107,21 @@ int main(int argc,char **argv)
 	if(conf.gtk_goagent_path!=NULL)
 		chdir(conf.gtk_goagent_path);
 
+	/*是否自动更新
+	 * 如果是则在后台运行版更新进程
+	 */
 	if(strcmp(conf.goagent_auto_upgrade,"true")==0)
 		auto_upgrade_goagent(GOAGENT_URL,&conf);
 
+	/*国际化*/
 	bindtextdomain("gtk_goagent","./locale/");
 	textdomain("gtk_goagent");
 
 	act.sa_flags=0;
 	act.sa_handler=clean_data;
+	/*设置自定义信号处理
+	 * 用于在启动GoAgent失败时清理数据
+	 */
 	sigaction(SIGUSR1,&act,&old);
 
 	gtk_init(&argc,&argv);
@@ -128,6 +141,7 @@ int main(int argc,char **argv)
 
 	text=gtk_text_view_new();
 
+	/*设置日志显示框字体*/
 	if(conf.font!=NULL)
 	{
 		font_name=pango_font_description_from_string(conf.font);
@@ -135,6 +149,11 @@ int main(int argc,char **argv)
 	}
 
 	buffer=gtk_text_view_get_buffer(GTK_TEXT_VIEW(text));
+	/*创建红色黑色和黄色标记
+	 * 正常日志黑色输出
+	 * 绿色用于警告
+	 * 红色用于错误
+	 */
 	gtk_text_buffer_create_tag(buffer,"green_fg",
 			"foreground","green",NULL);
 	gtk_text_buffer_create_tag(buffer,"red_fg","foreground",
@@ -147,6 +166,7 @@ int main(int argc,char **argv)
 
 	menu_bar=gtk_menu_bar_new();
 	gtk_box_pack_start(GTK_BOX(vbox),menu_bar,FALSE,FALSE,0);
+	/*创建菜单*/
 	menu=create_menu(menu_bar,_("_File"));
 	create_menu_with_image(menu,GTK_STOCK_OPEN,accel_group,connect_goagent,&data);
 	create_menu_with_image(menu,GTK_STOCK_CLOSE,accel_group,disconnect_goagent,&data);
@@ -165,8 +185,10 @@ int main(int argc,char **argv)
 	//create_menu_with_image(menu,_("Upgrade _Gtk GoAGent"),accel_group,upgrade_gtk_goagent,NULL);
 
 	gtk_widget_set_size_request(text,0x300,0x180);
+	/*设置显示构件不可编辑和自动换行*/
 	gtk_text_view_set_editable(GTK_TEXT_VIEW(text),FALSE);
 	gtk_text_view_set_wrap_mode(GTK_TEXT_VIEW(text),GTK_WRAP_CHAR);
+	/*创建滚动条并设置自动更新*/
 	scrolled=gtk_scrolled_window_new(NULL,NULL);
 	gtk_scrolled_window_set_policy(GTK_SCROLLED_WINDOW(scrolled),GTK_POLICY_AUTOMATIC,GTK_POLICY_AUTOMATIC);
 	gtk_container_add(GTK_CONTAINER(scrolled),text);

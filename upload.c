@@ -24,6 +24,7 @@ void clean_upload_data(GtkWidget *widget,UP_DATA *data)
 	data->off=0;
 }
 
+/*上传程序主进入点*/
 int main(int argc,char **argv)
 {
 	GtkWidget *dialog;
@@ -44,6 +45,7 @@ int main(int argc,char **argv)
 	data.goagent_path=conf.goagent_path;
 	data.pid=0;
 
+	/*国际化*/
 	bindtextdomain("upload","locale");
 	textdomain("upload");
 
@@ -53,9 +55,11 @@ int main(int argc,char **argv)
 	gtk_window_set_icon_from_file(GTK_WINDOW(dialog),"img/64x64/upload.png",NULL);
 	g_signal_connect(G_OBJECT(dialog),"delete_event",G_CALLBACK(gtk_main_quit),NULL);
 	text=gtk_text_view_new();
+	/*设置显示构件不可编辑和自动换行*/
 	gtk_text_view_set_editable(GTK_TEXT_VIEW(text),FALSE);
 	gtk_text_view_set_wrap_mode(GTK_TEXT_VIEW(text),GTK_WRAP_CHAR);
 	data.text=text;
+	/*设置显示字体*/
 	if(conf.font != NULL)
 	{
 		font_name=pango_font_description_from_string(conf.font);
@@ -63,7 +67,8 @@ int main(int argc,char **argv)
 	}
 
 	gtk_widget_set_size_request(text,0x200,0x100);
-	gtk_text_view_set_editable(GTK_TEXT_VIEW(text),FALSE);
+	//gtk_text_view_set_editable(GTK_TEXT_VIEW(text),FALSE);
+	/*创建滚动条并设置自动更新*/
 	scrolled=gtk_scrolled_window_new(NULL,NULL);
 	gtk_scrolled_window_set_policy(GTK_SCROLLED_WINDOW(scrolled),
 			GTK_POLICY_AUTOMATIC,GTK_POLICY_AUTOMATIC);
@@ -77,6 +82,11 @@ int main(int argc,char **argv)
 	gtk_box_pack_start(GTK_BOX(GTK_DIALOG(dialog)->vbox),hbox,TRUE,TRUE,10);
 
 	buffer=gtk_text_view_get_buffer(GTK_TEXT_VIEW(text));
+	/*创建显示颜色标记
+	 * 警告使用绿色
+	 * 错误使用红色
+	 * 正确使用黑色
+	 */
 	gtk_text_buffer_create_tag(buffer,"green_fg",
 			"foreground","green",NULL);
 	gtk_text_buffer_create_tag(buffer,"red_fg","foreground",

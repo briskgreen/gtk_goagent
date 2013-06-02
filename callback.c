@@ -5,18 +5,26 @@
 #include <limits.h>
 #include <fcntl.h>
 
+/*初始化数据并启动GoAgent*/
 void get_connect(DATA *data);
+/*判断python和goagent路径是否已经设置，如果为NULL，则未设置*/
 gboolean is_python_and_goagent_path(char *python_path,char *goagent_path);
+/*重定向标准输出与日志输出到主界面日志框*/
 gboolean _get_connect(DATA *data);
+/*上传到服务器*/
 gboolean _upload_goagent(UP_DATA *data);
+/*返回重写向交互输入*/
 char *get_input_string(const char *msg);
+/*返回上传文件所在绝对路径*/
 char *get_uploader_path(const char *goagent_path);
 //void _upgrade_goagent(char *proxy_py_path);
 
+/*信号处理函数所处理的数据*/
 DATA *sig_data;
 
 void connect_goagent(GtkWidget *widget,DATA *data)
 {
+	/*如果off为开，则当前已经启动*/
 	if(data->off)
 	{
 		message_box(widget,_("Connected Now\n"));
@@ -40,6 +48,7 @@ void disconnect_goagent(GtkWidget *widget,DATA *data)
 		return;
 	}
 
+	/*断开连接设置off开关并杀死所调用的进程*/
 	data->off=0;
 	kill(data->pid,SIGKILL);
 	//while(waitpid(-1,NULL,WNOHANG)!=-1);
@@ -48,6 +57,7 @@ void disconnect_goagent(GtkWidget *widget,DATA *data)
 	/*while(gtk_events_pending())
 		gtk_main_iteration();*/
 
+	/*清除主界面日志框内容*/
 	gtk_text_buffer_set_text(buffer,"",0);
 }
 
@@ -123,6 +133,7 @@ void hide_window(GtkWidget *widget,GdkEventWindowState *event,gpointer data)
 
 void tray_on_click(GtkWidget *widget,gpointer data)
 {
+	/*如果当前窗口可见，刚隐藏，否则显示*/
 	if(!gtk_widget_get_visible(GTK_WIDGET(data)))
 	{
 		gtk_widget_show_all(GTK_WIDGET(data));
@@ -151,12 +162,17 @@ gboolean _get_connect(DATA *data)
 		usleep(300);
 		return TRUE;
 	}*/
+	/*设置超时*/
 	timeout.tv_sec=0;
 	timeout.tv_usec=300;
 
 	FD_ZERO(&reads);
 	FD_SET(data->pty,&reads);
 
+	/*侦听读，直到有可读数据，或者超时
+	 * 如果超时则返回TRUE，断续运行
+	 * 否则将显示读到的数据
+	 */
 	ret=select(data->pty+1,&reads,NULL,NULL,&timeout);
 
 	if(ret==-1 || ret==0)
@@ -177,6 +193,7 @@ gboolean _get_connect(DATA *data)
 		return TRUE;
 	}
 
+	/*对WARNING与ERROR关键字设置颜色*/
 	if(strstr(buf,"WARNING"))
 		gtk_text_buffer_insert_with_tags_by_name(buffer,&end,buf,
 				len,"green_fg",NULL);
@@ -190,6 +207,10 @@ gboolean _get_connect(DATA *data)
 	/*gtk_text_view_scroll_to_iter(GTK_TEXT_VIEW(data->text),&end,
 			0,FALSE,FALSE,FALSE);*/
 
+	/*创建一个mark标记
+	 * 并移动到文本最后
+	 * 然后将滚动条移动到最后面
+	 */
 	mark=gtk_text_buffer_create_mark(buffer,NULL,&end,TRUE);
 	gtk_text_buffer_move_mark(buffer,mark,&end);
 	gtk_text_view_scroll_to_mark(GTK_TEXT_VIEW(data->text),mark,
@@ -244,6 +265,7 @@ void get_connect(DATA *data)
 void clean_data(int signum)
 {
 	//message_box(NULL,strerror(errno));
+	/*信息处理函数*/
 	sig_data->off=0;
 	while(waitpid(-1,NULL,WNOHANG)!=-1);
 	//pthread_cancel(sig_data->thread);
@@ -285,6 +307,11 @@ gboolean _upload_goagent(UP_DATA *data)
 	FD_ZERO(&reads);
 	FD_SET(data->pty,&reads);
 
+	/*侦听读，直到有数据可读
+	 * 或者超时
+	 * 如果超时则返回TRUE
+	 * 否则显示内容
+	 */
 	ret=select(data->pty+1,&reads,NULL,NULL,&timeout);
 
 	if(ret==-1 || ret==0)
@@ -309,6 +336,7 @@ gboolean _upload_goagent(UP_DATA *data)
 		gtk_text_buffer_insert_with_tags_by_name(buffer,&end,buf,
 				len,"black_fg",NULL);
 
+	/*交互输入APPID Email与Password*/
 	if(strstr(buf,"APPID:"))
 	{
 		result=get_input_string("APPID");
@@ -341,6 +369,7 @@ gboolean _upload_goagent(UP_DATA *data)
 	/*gtk_text_view_scroll_to_iter(GTK_TEXT_VIEW(data->text),&end,
 			0,FALSE,FALSE,FALSE);*/
 
+	/*移动滚动条到最后*/
 	mark=gtk_text_buffer_create_mark(buffer,NULL,&end,TRUE);
 	gtk_text_buffer_move_mark(buffer,mark,&end);
 	gtk_text_view_scroll_to_mark(GTK_TEXT_VIEW(data->text),mark,
@@ -385,6 +414,7 @@ char *get_input_string(const char *msg)
 	dialog=gtk_dialog_new();
 	gtk_window_set_title(GTK_WINDOW(dialog),msg);
 	entry=gtk_entry_new();
+	/*如果传过来的字符为Password则设置密码输入不可见*/
 	if(strcmp(msg,"Password")==0)
 		gtk_entry_set_visibility(GTK_ENTRY(entry),FALSE);
 
