@@ -19,7 +19,7 @@ void clean_upload_data(GtkWidget *widget,UP_DATA *data)
 	}
 
 	kill(data->pid,SIGKILL);
-	while(waitpid(-1,NULL,WNOHANG));
+	//while(waitpid(-1,NULL,WNOHANG));
 	g_idle_remove_by_data(data);
 	data->off=0;
 }
