@@ -1,16 +1,19 @@
 PKG_LIBS=`pkg-config --cflags --libs gtk+-2.0`
-LIBS=dialog.o menu.o callback.o config.o autoupgrade.o
+LIBS=dialog.o menu.o callback.o config.o autoupgrade.o mysock.o
 
 all:gtk_goagent pre_ui upload upgrade
 
 gtk_goagent:gtk_goagent.o autoupgrade.o $(LIBS)
-	gcc -o gtk_goagent gtk_goagent.o $(LIBS) $(PKG_LIBS) -lutil -lcurl
+	gcc -o gtk_goagent gtk_goagent.o $(LIBS) $(PKG_LIBS) -lutil -lcurl -lssl
 
 gtk_goagent.o:gtk_goagent.c callback.h autoupgrade.h
 	gcc -c gtk_goagent.c $(PKG_LIBS)
 
 autoupgrade.o:autoupgrade.c autoupgrade.h config.h
 	gcc -c autoupgrade.c $(PKG_LIBS) -lz -lcurl
+
+mysock.o:mysock/mysock.h mysock/mysock.c 
+	gcc -c mysock/mysock.c
 
 dialog.o:dialog.c dialog.h menu.h
 	gcc -c dialog.c $(PKG_LIBS)
@@ -25,13 +28,13 @@ config.o:config.c config.h dialog.h
 	gcc -c config.c $(PKG_LIBS)
 
 pre_ui:pre_ui.o ui.o $(LIBS)
-	gcc -o pre_ui pre_ui.o ui.o $(LIBS) $(PKG_LIBS) -lutil -lcurl
+	gcc -o pre_ui pre_ui.o ui.o $(LIBS) $(PKG_LIBS) -lutil -lcurl -lssl
 
 pre_ui.o:pre_ui.c ui.h
 	gcc -c pre_ui.c $(PKG_LIBS)
 
 upload:upload.o $(LIBS)
-	gcc -o upload upload.o $(LIBS) $(PKG_LIBS) -lcurl -lutil
+	gcc -o upload upload.o $(LIBS) $(PKG_LIBS) -lcurl -lutil -lssl
 
 upload.o:upload.c
 	gcc -c upload.c $(PKG_LIBS)
@@ -40,7 +43,7 @@ ui.o:ui.c ui.h callback.h
 	gcc -c ui.c $(PKG_LIBS)
 
 upgrade:upgrade.o $(LIBS)
-	gcc -o upgrade upgrade.o $(LIBS) $(PKG_LIBS) -lcurl -lutil
+	gcc -o upgrade upgrade.o $(LIBS) $(PKG_LIBS) -lcurl -lutil -lssl
 
 upgrade.o:upgrade.c autoupgrade.h
 	gcc -c upgrade.c $(PKG_LIBS)

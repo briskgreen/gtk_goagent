@@ -5,6 +5,7 @@ make
 zlib
 libcurl
 gtk2
+mysock
 
 编译 
 

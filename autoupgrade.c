@@ -4,7 +4,6 @@
  */
 
 #include "autoupgrade.h"
-#include <string.h>
 
 /*复制文件，与copy_file不同之处在于该函数会进入在目录再复制*/
 
@@ -85,23 +84,44 @@ void auto_upgrade_goagent(char *url,CONFDATA *conf)
 
 	if(fork()==0)
 	{
-		CURL *curl;
+		char *res;
+		HTTP *http;
+		char *host;
+		char *proxy=PROXY;
+		int port;
+/*		CURL *curl;
 
 		curl=curl_easy_init();
 		curl_easy_setopt(curl,CURLOPT_URL,url);
 		curl_easy_setopt(curl,CURLOPT_WRITEFUNCTION,
-				is_upgrade_goagent);
+				is_upgrade_goagent);*/
 
 		//由于众所周知的原因，所以需要使用代理
 		//
-		curl_easy_setopt(curl,CURLOPT_PROXY,PROXY);
+		//curl_easy_setopt(curl,CURLOPT_PROXY,PROXY);
+		http=http_head_init();
+		http_head_add(http,url);
+		http_head_add(http,"Host: code.google.com\n");
+		http_head_add(http,"Accept: */*\n");
+		http_head_add(http,"Connection: close\n\n");
+		
+		host=match_string(".[^:]*",proxy);
+		port=atoi(proxy+strlen(host)+1);
 
 		while(1)
 		{
-			curl_easy_perform(curl);
+			//curl_easy_perform(curl);
 
 			//每隔UPDATE_TIME检查一次
 			//
+			res=http_perform(http,host,port);
+			while(res == NULL)
+			{
+				res=http_perform(http,host,port);
+				sleep(1);
+			}
+			is_upgrade_goagent(res);
+
 			sleep(UPDATE_TIME);
 		}
 	}
@@ -134,84 +154,41 @@ void auto_upgrade_goagent(char *url,CONFDATA *conf)
 
 /*判断是否有新的版本需要更新*/
 
-size_t is_upgrade_goagent(char *ptr,size_t size,size_t nmebm,
-		void *stream)
+void is_upgrade_goagent(char *buf)
 {
-	char buf[40];
-	char temp[40];
-	char path[100];
-	int i,j;
+	char *url;
+	char *temp;
+	int download=0;
+	int is_upload=0;
+	char *version;
 
-/*首先得到当前最新版本下载地址并保存*/
-
-	if(strstr(ptr,"https://nodeload.github.com"))
+	temp=match_string("<p>goagent.*正式版下载.*",buf);
+	free(buf);
+	version=match_string("<p>goagent.[^<]*",temp);
+	if(!strstr(goagent_version,version))
+		download=1;
+	free(version);
+	if(!download)
 	{
-		for(i=0;ptr[i];++i)
-		{
-			if(ptr[i] == '"')
-			{
-				bzero(temp,sizeof(temp));
-
-/*每一次检查时先匹配到"
- * 然后将指针移动到该字符目标进行读39个字符操作
- */
-
-				snprintf(temp,39,"%s",ptr+i);
-
-				if(strstr(temp,"https://nodeload.github.com"))
-					goto ok;
-			}
-		}
-ok:
-
-		/*如果返回的数据已经读到了结尾，则没有得到下载地址*/
-
-		if(ptr[i] == '\0')
-			return 0;
-
-		for(++i,j=0;ptr[i] != '"';++i,++j)
-			path[j]=ptr[i];
-
-		path[j]='\0';
+		free(temp);
+		return;
 	}
-
-	if(strstr(ptr,"最近更新") && strstr(ptr,"</li><ol><li>"))
-	{
-		bzero(buf,sizeof(buf));
-
-		for(i=0;ptr[i] != '[';++i);
-		for(j=0;ptr[i-1] != ']';++i,++j)
-			buf[j]=ptr[i];
-
-		buf[j]=' ';
-
-		for(++j;ptr[i] != ' ';++i);
-		for(++i;ptr[i] != ' ';++i,++j)
-			buf[j]=ptr[i];
-
-		if(!strstr(buf,goagent_version))
-		{
-			/*如果当前版本与最新版本不同
-			 * 则弹出对话框询问是否更新*/
-
-			gtk_init(NULL,NULL);
-			if(message_box_ok(_("Have New Version GoAgent Do You Want To Upgrade Now?")))
-				download_file(path,buf);
-
-			gtk_init(NULL,NULL);
-
-			return 0;
-		}
-		else
-			return 0;
-	}
-
-	return nmebm;
+	version=match_string("正式版下载 <a href=\".[^\"]*",temp);
+	url=string_add("%s",version+strlen("正式版下载 <a href=\""));
+	free(version);
+	version=match_string("\\\[.[^<]*",temp);
+	if(strstr(version,"是"))
+		is_upload=1;
+	free(version);
+	free(temp);
+	gtk_init(NULL,NULL);
+	if(message_box_ok(_("Have New Version GoAgent Do You Want To Upgrade Now?")))
+		download_file(url,is_upload);
 }
 
 /*下载文件界面*/
 
-void download_file(char *path,char *is_upload)
+void download_file(char *path,int is_upload)
 {
 	GtkWidget *progress_bar;
 	GtkWidget *win;
@@ -269,9 +246,11 @@ void download_file(char *path,char *is_upload)
 
 	/*如果新版本需要重新上传服务端，弹出对话框进行提示*/
 
-		if(strstr(is_upload,"是"))
+		if(is_upload)
 			message_box(NULL,_("This Version Should Upload Again"));
 	}
+	
+	free(path);
 }
 
 /*下载文件线程*/
@@ -288,7 +267,8 @@ void _download_file(CURL_DATA *data)
 
 	curl_easy_setopt(curl,CURLOPT_URL,data->url);
 	curl_easy_setopt(curl,CURLOPT_WRITEDATA,fp);
-	curl_easy_setopt(curl,CURLOPT_NOPROGRESS,0L);
+	//curl_easy_setopt(curl,CURLOPT_NOPROGRESS,0L);
+	curl_easy_setopt(curl,CURLOPT_PROXY,PROXY);
 
 	//设置下载进度函数参数
 	//

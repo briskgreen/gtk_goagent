@@ -6,14 +6,15 @@
 #include <dirent.h>
 #include <sys/stat.h>
 #include "config.h"
+#include "mysock/mysock.h"
 
 //GoAgent项目主页地址
-#define GOAGENT_URL "https://code.google.com/p/goagent/"
+#define GOAGENT_URL "GET https://code.google.com/p/goagent/ HTTP/1.1\n"
 //#define GTK_GOAGENT_URL "https://briskgreen.github.io/Download/Gtk GoAgent"
 //代理地址与端口
 #define PROXY "127.0.0.1:8087"
 //更新周期
-#define UPDATE_TIME 60*10
+#define UPDATE_TIME 10
 #define error_quit(s)\
 {\
 	perror(s);\
@@ -71,11 +72,10 @@ char *goagent_version; //goagent的当前版本号
 char *get_version(char *path);
 
 /*检查是否需要更新*/
-size_t is_upgrade_goagent(char *ptr,size_t size,size_t nmebm,
-		void *stream);
+void is_upgrade_goagent(char *buf);
 
 /*下载主界面*/
-void download_file(char *path,char *is_upload);
+void download_file(char *path,int is_upload);
 
 /*下载文件线程*/
 void _download_file(CURL_DATA *data);
