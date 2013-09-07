@@ -182,20 +182,20 @@ int main(int argc,char **argv)
 	/*添加页*/
 	gtk_notebook_append_page(GTK_NOTEBOOK(notebook),page,label);
 
-	hbox=gtk_hbox_new(FALSE,0);
-	gtk_box_pack_start(GTK_BOX(page),hbox,FALSE,FALSE,0);
+	hbox=gtk_hbox_new(FALSE,20);
+	gtk_box_pack_start(GTK_BOX(page),hbox,FALSE,FALSE,10);
 
 	create_env_interface(_("Python Path     : "),hbox,select_python_path,&conf.python_path,&conf.save);
 
 	hbox=gtk_hbox_new(FALSE,20);
-	gtk_box_pack_start(GTK_BOX(page),hbox,FALSE,FALSE,20);
+	gtk_box_pack_start(GTK_BOX(page),hbox,FALSE,FALSE,10);
 	create_env_interface(_("GoAgent Path    :"),hbox,select_goagent_path,&conf.goagent_path,&conf.save);
 
 	hbox=gtk_hbox_new(FALSE,20);
-	gtk_box_pack_start(GTK_BOX(page),hbox,FALSE,FALSE,20);
+	gtk_box_pack_start(GTK_BOX(page),hbox,FALSE,FALSE,10);
 	create_env_interface(_("Gtk GoAgent Path:"),hbox,select_gtk_goagent_path,&conf.gtk_goagent_path,&conf.save);
 
-	gtk_box_pack_start(GTK_BOX(page),gtk_hseparator_new(),FALSE,FALSE,20);
+	gtk_box_pack_start(GTK_BOX(page),gtk_hseparator_new(),FALSE,FALSE,10);
 
 	create_combo_box(page,&conf);
 
