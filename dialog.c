@@ -83,6 +83,7 @@ void message_box(GtkWidget *widget,gchar *error)
 	gtk_window_set_icon_from_file(GTK_WINDOW(dialog),"img/64x64/message.png",NULL);
 	gtk_dialog_run(GTK_DIALOG(dialog));
 
+	gtk_widget_hide(dialog);
 	gtk_widget_destroy(dialog);
 }
 
