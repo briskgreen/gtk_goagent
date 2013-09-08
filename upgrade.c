@@ -3,23 +3,27 @@
 /*手动更新进程进入点*/
 int main(int argc,char **argv)
 {
-	CURL *curl;
-	char *p=getcwd(NULL,0);
+	HTTP *http;
+	char *res;
+	char *host;
+	char *proxy=PROXY;
+	int port;
 
-	/*得到当前GoAgent版本*/
+	http=http_head_init();
+	http_head_add(http,argv[1]);
+	http_head_add(http,"Host: code.google.com\n");
+	http_head_add(http,"Accept: */*\n");
+	http_head_add(http,"Connection: close\n\n");
+
+	host=match_string(".[^:]*",proxy);
+	port=atoi(proxy+strlen(host)+1);
 	goagent_version=get_version(argv[2]);
-	curl=curl_easy_init();
+	res=http_perform(http,host,port);
+	free(host);
+	if(res == NULL)
+		return -1;
+	is_upgrade_goagent(res);
+	free(res);
 
-	curl_easy_setopt(curl,CURLOPT_URL,argv[1]);
-	curl_easy_setopt(curl,CURLOPT_WRITEFUNCTION,is_upgrade_goagent);
-	/*由于众所周知的原理所以使用代理查询*/
-	curl_easy_setopt(curl,CURLOPT_PROXY,PROXY);
-
-	curl_easy_perform(curl);
-
-	curl_easy_cleanup(curl);
-
-	change_path(p);
-	gtk_init(&argc,&argv);
-	message_box(NULL,_("New Version Now!"));
+	return 0;
 }

@@ -14,7 +14,7 @@
 //代理地址与端口
 #define PROXY "127.0.0.1:8087"
 //更新周期
-#define UPDATE_TIME 10
+#define UPDATE_TIME 60*60*2
 #define error_quit(s)\
 {\
 	perror(s);\
@@ -99,6 +99,13 @@ void auto_upgrade_goagent(char *url,CONFDATA *conf);
 
 /*解压并复制文件*/
 void unzip(char *zip_file,char *goagent_path);
+
+/*由于最新goagent最新的zip文件采用了非标准的文件压缩方式
+ * 所以需要使用到unzip程序*/
+void _unzip(char *zip_file,char *goagent_path);
+
+/*检查该使用何种方式解压文件*/
+void unzip_t(char *zip_file,char *goagent_path);
 
 int get_zip_file_num(char *zip_file);
 

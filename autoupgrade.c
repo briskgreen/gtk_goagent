@@ -78,7 +78,7 @@ void auto_upgrade_goagent(char *url,CONFDATA *conf)
 	//data=conf;
 	//得到goagent当前的版本号
 	//
-	goagent_version=get_version(conf->proxy_py_path);
+	//goagent_version=get_version(conf->proxy_py_path);
 
 /*在后台运行*/
 
@@ -114,6 +114,7 @@ void auto_upgrade_goagent(char *url,CONFDATA *conf)
 
 			//每隔UPDATE_TIME检查一次
 			//
+			goagent_version=get_version(conf->proxy_py_path);
 			res=http_perform(http,host,port);
 			while(res == NULL)
 			{
@@ -197,7 +198,7 @@ void download_file(char *path,int is_upload)
 	CURL_DATA data;
 
 	gdk_threads_init();
-	gtk_init(NULL,NULL);
+	//gtk_init(NULL,NULL);
 	data.url=path;
 	data.d_ok=FALSE;
 
@@ -229,6 +230,8 @@ void download_file(char *path,int is_upload)
 	gdk_threads_enter();
 	gtk_main();
 	gdk_threads_leave();
+	gtk_widget_hide(win);
+	gtk_widget_destroy(win);
 
 /*如果下载完成，则将下载后的文件解压*/
 
@@ -241,15 +244,16 @@ void download_file(char *path,int is_upload)
 			return;
 		fclose(fp);
 
-		unzip("/tmp/$goagent$",conf.goagent_path);
+		unzip_t("/tmp/$goagent$",conf.goagent_path);
 		goagent_version=get_version(conf.proxy_py_path);
+		change_path(conf.gtk_goagent_path);
 
 	/*如果新版本需要重新上传服务端，弹出对话框进行提示*/
 
 		if(is_upload)
 			message_box(NULL,_("This Version Should Upload Again"));
 	}
-	
+
 	free(path);
 }
 
@@ -318,6 +322,75 @@ int update_progress(void *data,double dltotal,double dlnow,
 }
 
 /*解压*/
+
+void unzip_t(char *zip_file,char *goagent_path)
+{
+	struct zip_head zip;
+	FILE *fp;
+
+	if((fp=fopen(zip_file,"rb")) == NULL)
+	{
+		perror(_("Open File Error"));
+		return;
+	}
+
+	fread(&zip,sizeof(zip),1,fp);
+	fclose(fp);
+
+	if(zip.type == 0)
+		unzip(zip_file,goagent_path);
+	else if(zip.type == 8)
+		_unzip(zip_file,goagent_path);
+	else
+		perror(_("Unknown Type"));
+}
+
+void _unzip(char *zip_file,char *goagent_path)
+{
+	int pipefd[2];
+	pid_t pid;
+	char buf[512]={0};
+	char *first_name;
+	int n;
+	int len=0;
+
+	change_path("/tmp/");
+
+	pipe(pipefd);
+	if((pid=fork()) == 0)
+	{
+		close(pipefd[0]);
+
+		dup2(pipefd[1],STDOUT_FILENO);
+		execl("/usr/bin/unzip","unzip",zip_file,NULL);
+	}
+	
+	close(pipefd[1]);
+	while(len < sizeof(buf)-1)
+	{
+		n=len;
+		n=read(pipefd[0],buf+n,sizeof(buf)-1-len);
+		len+=n;
+	}
+
+	waitpid(pid,NULL,WNOHANG);
+
+	close(pipefd[0]);
+	first_name=match_string("inflating: .[^/]*",buf);
+	if(first_name)
+		change_path(first_name+strlen("inflating: "));
+	else
+	{
+		perror(_("Can Not Get uncompress target file name\nmaybe you can uncompress it at /tmp with yourself"));
+		return;
+	}
+
+	free(first_name);
+	copy_file(get_proxy_ini_path(goagent_path),"local/proxy.ini.back");
+	rm_dir(goagent_path);
+	copy_dir(getcwd(NULL,0),goagent_path);
+	printf(_("Unzip And Copy Successed . . .\n"));
+}
 
 void unzip(char *zip_file,char *goagent_path)
 {
