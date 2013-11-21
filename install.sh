@@ -14,18 +14,18 @@ cp -R img $GTK_GOAGENT_PATH
 ln -s $GTK_GOAGENT_PATH/gtk_goagent /usr/bin/gtk_goagent
 
 
-echo '#Python Path' > $HOME/.gtk_goagentrc
-echo 'python_path '`whereis python | awk '{print $2}'` >> $HOME/.gtk_goagentrc 
-echo '#GoAgent Path' >> $HOME/.gtk_goagentrc 
-echo 'goagent_path ' >> $HOME/.gtk_goagentrc 
-echo '#Language' >> $HOME/.gtk_goagentrc 
-echo 'language_env zh_CN.UTF-8' >> $HOME/.gtk_goagentrc 
-echo '#Gtk GoAgent Path'
-echo $GTK_GOAGENT_PATH >> $HOME/.gtk_goagentrc 
-echo '#Font'
-echo 'font AR PL KaitiM GB Bold 13' >> $HOME/.gtk_goagentrc 
-echo '#GoAgent Auto Upgrade'
-echo 'goagent_auto_upgrade false' >> $HOME/.gtk_goagentrc 
+echo -e "#Python Path\n\n" > $HOME/.gtk_goagentrc
+echo -e "python_path `whereis python | awk '{print $2}'`\n\n" >> $HOME/.gtk_goagentrc 
+echo -e "#GoAgent Path\n\n" >> $HOME/.gtk_goagentrc 
+echo -e "goagent_path \n\n" >> $HOME/.gtk_goagentrc 
+echo -e "#Language\n\n" >> $HOME/.gtk_goagentrc 
+echo -e "language_env zh_CN.UTF-8\n\n" >> $HOME/.gtk_goagentrc 
+echo -e "#Gtk GoAgent Path\n\n"
+echo -e "gtk_goagent_path $GTK_GOAGENT_PATH\n\n" >> $HOME/.gtk_goagentrc 
+echo -e "#Font\n\n"
+echo -e "font AR PL KaitiM GB Bold 13\n\n" >> $HOME/.gtk_goagentrc 
+echo -e "#GoAgent Auto Upgrade\n\n"
+echo -e "goagent_auto_upgrade false\n\n" >> $HOME/.gtk_goagentrc 
 echo '#End Of Gtk GoAgent Config File' >> $HOME/.gtk_goagentrc 
 
 exit 0
