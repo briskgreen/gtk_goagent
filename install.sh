@@ -15,7 +15,7 @@ ln -s $GTK_GOAGENT_PATH/gtk_goagent /usr/bin/gtk_goagent
 
 
 echo -e "#Python Path\n" > $HOME/.gtk_goagentrc
-echo -e "python_path `whereis python | awk '{print $2}'`\n\n" >> $HOME/.gtk_goagentrc 
+echo -e "python_path `whereis python | awk '{print $2}'`\n" >> $HOME/.gtk_goagentrc 
 echo -e "#GoAgent Path\n" >> $HOME/.gtk_goagentrc 
 echo -e "goagent_path \n" >> $HOME/.gtk_goagentrc 
 echo -e "#Language\n" >> $HOME/.gtk_goagentrc 
