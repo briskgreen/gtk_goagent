@@ -1,4 +1,4 @@
-#!/bin/bash 
+#!/bin/bash
 
 GTK_GOAGENT_PATH='/usr/local/share/gtk_goagent'
 
