@@ -101,7 +101,7 @@ void auto_upgrade_goagent(char *url,CONFDATA *conf)
 		//curl_easy_setopt(curl,CURLOPT_PROXY,PROXY);
 		http=http_head_init();
 		http_head_add(http,url);
-		http_head_add(http,"Host: code.google.com\n");
+		http_head_add(http,"Host: github.com\n");
 		http_head_add(http,"Accept: */*\n");
 		http_head_add(http,"Connection: close\n\n");
 		
@@ -115,10 +115,10 @@ void auto_upgrade_goagent(char *url,CONFDATA *conf)
 			//每隔UPDATE_TIME检查一次
 			//
 			goagent_version=get_version(conf->proxy_py_path);
-			res=http_perform(http,host,port);
+			res=https_perform(http,host,port,NULL,NULL);
 			while(res == NULL)
 			{
-				res=http_perform(http,host,port);
+				res=https_perform(http,host,port,NULL,NULL);
 				sleep(1);
 			}
 			is_upgrade_goagent(res);
@@ -158,17 +158,38 @@ void auto_upgrade_goagent(char *url,CONFDATA *conf)
 void is_upgrade_goagent(char *buf)
 {
 	char *url;
-	char *temp;
+	//char *temp;
 	int download=0;
 	int is_upload=0;
 	char *version;
+	char msg[1024]={0};
+	int v_len=strlen("<span class=\"tag-name\">v");
 
-	temp=match_string("<p>goagent.*正式版下载.*",buf);
-	free(buf);
-	version=match_string("<p>goagent.[^<]*",temp);
-	if(!strstr(goagent_version,version))
+	//temp=match_string("<p>goagent.*正式版下载.*",buf);
+	//free(buf);
+	//version=match_string("<p>goagent.[^<]*",temp);
+	version=match_string("<span class=\"tag-name\">v.[^<]*",buf);
+	if(!version)
+	{
+		free(buf);
+		gtk_init(NULL,NULL);
+		message_box(NULL,_("The Release Page Had Changed\nPlease Email To briskgreen@163.com"));
+		return;
+	}
+
+	//printf("goagent_version=%s version=%s\n",goagent_version,version);
+	if(!strstr(version,goagent_version))
 		download=1;
-	free(version);
+
+	//printf("%s\n",version+v_len);
+	if(!download)
+	{
+		free(buf);
+		free(version);
+
+		return;
+	}
+	/*free(version);
 	if(!download)
 	{
 		free(temp);
@@ -181,10 +202,15 @@ void is_upgrade_goagent(char *buf)
 	if(strstr(version,"是"))
 		is_upload=1;
 	free(version);
-	free(temp);
+	free(temp);*/
+	url=string_add("https://github.com/goagent/goagent/archive/v%s.zip",version+v_len);
+
 	gtk_init(NULL,NULL);
-	if(message_box_ok(_("Have New Version GoAgent Do You Want To Upgrade Now?")))
+	sprintf(msg,"Have New Version GoAgent v%s\nDo You Want To Upgrade Now?",version+v_len);
+	free(version);
+	if(message_box_ok(_(msg)))
 		download_file(url,is_upload);
+	free(buf);
 }
 
 /*下载文件界面*/

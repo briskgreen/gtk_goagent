@@ -9,10 +9,10 @@
 #include "mysock/mysock.h"
 
 //GoAgent项目主页地址
-#define GOAGENT_URL "GET https://code.google.com/p/goagent/ HTTP/1.1\n"
+#define GOAGENT_URL "GET https://github.com/goagent/goagent/releases HTTP/1.1\n"
 //#define GTK_GOAGENT_URL "https://briskgreen.github.io/Download/Gtk GoAgent"
 //代理地址与端口
-#define PROXY "127.0.0.1:8087"
+#define PROXY "github.com:443"
 //更新周期
 #define UPDATE_TIME 60*60*2
 #define error_quit(s)\

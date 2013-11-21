@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2013-05-28 22:50+0800\n"
+"POT-Creation-Date: 2013-11-21 21:06+0800\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -17,54 +17,70 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: autoupgrade.c:147
-msgid "Have New Version GoAgent Do You Want To Upgrade Now?"
-msgstr "GoAgent有新的版本,你想现在更新吗?"
+#: autoupgrade.c:176
+msgid ""
+"The Release Page Had Changed\n"
+"Please Email To briskgreen@163.com"
+msgstr "版本更新网页有所变更\n请联系briskgreen@163.com"
 
-#: autoupgrade.c:200
+#: autoupgrade.c:239
 msgid "Downloading . . ."
 msgstr "正在下载中 . . ."
 
-#: autoupgrade.c:229
+#: autoupgrade.c:280
 msgid "This Version Should Upload Again"
-msgstr "GoAgent有新的版本,你想现在更新吗?"
+msgstr "当前版本需要重新上传"
 
-#: autoupgrade.c:390
+#: autoupgrade.c:359
+msgid "Open File Error"
+msgstr "打开文件出错"
+
+#: autoupgrade.c:371
+msgid "Unknown Type"
+msgstr "未知类型"
+
+#: autoupgrade.c:410
+msgid ""
+"Can Not Get uncompress target file name\n"
+"maybe you can uncompress it at /tmp with yourself"
+msgstr "丢失下载文件的文件名\n也许你可以去/tmp目录下手动解压"
+
+#: autoupgrade.c:418 autoupgrade.c:546
 #, c-format
 msgid "Unzip And Copy Successed . . .\n"
-msgstr "解压与复制成功!\n"
+msgstr "解压与复制成功! . . .\n"
 
-#: callback.c:22
+#: callback.c:30
 msgid "Connected Now\n"
 msgstr "已经连接!\n"
 
-#: callback.c:39
+#: callback.c:47
 msgid "No Connected Now!"
-msgstr "没有连接!"
+msgstr "当前没有连接!"
 
-#: callback.c:214 callback.c:215 callback.c:370 callback.c:371
+#: callback.c:235 callback.c:236 callback.c:399 callback.c:400
 msgid "Error Python Path!"
 msgstr "错误的Python路径!"
 
-#: callback.c:257
+#: callback.c:279
 msgid "You Should Set Python Path!"
-msgstr "你需要设置Python的路径!"
+msgstr "你需要设置Python路径!"
 
-#: callback.c:263
+#: callback.c:285
 msgid "You Should Set GoAgent Path!"
 msgstr "你需要设置GoAgent路径!"
 
-#: callback.c:356
+#: callback.c:385
 msgid "Upload Now!"
 msgstr "正在上传!"
 
-#: config.c:51
+#: config.c:55
 msgid ""
 "Are You Want to Save Config File?\n"
 "Clicked OK To Save,Click No To Not Save"
 msgstr "是否保存配置文件?\n点击确定退出,点击否继续!"
 
-#: config.c:60
+#: config.c:64
 msgid "Saved"
 msgstr "已保存"
 
@@ -78,54 +94,54 @@ msgid ""
 "Click OK To Quit,Click NO To Continue!"
 msgstr "你确定要退出应用程序吗?\n点击确定退出,点击否继续!"
 
-#: dialog.c:96
+#: dialog.c:97
 msgid "Message Box"
 msgstr "消息框"
 
-#: dialog.c:142
+#: dialog.c:143
 msgid "Help"
 msgstr "帮助"
 
-#: gtk_goagent.c:15
+#: gtk_goagent.c:17
 msgid "_Show"
 msgstr "显示(_S)"
 
-#: gtk_goagent.c:18
+#: gtk_goagent.c:20
 msgid "H_ide"
 msgstr "隐藏(_i)"
 
-#: gtk_goagent.c:150
+#: gtk_goagent.c:170
 msgid "_File"
 msgstr "文件(_F)"
 
-#: gtk_goagent.c:156
+#: gtk_goagent.c:176
 msgid "_Edit"
 msgstr "编辑(_E)"
 
-#: gtk_goagent.c:158
+#: gtk_goagent.c:178
 msgid "Up_load"
 msgstr "上传(_l)"
 
-#: gtk_goagent.c:160
+#: gtk_goagent.c:180
 msgid "_Help"
 msgstr "帮助(_H)"
 
-#: gtk_goagent.c:164
+#: gtk_goagent.c:184
 msgid "Upgrade GoAg_ent"
 msgstr "更新GoAgent(_e)"
 
-#: gtk_goagent.c:182
+#: gtk_goagent.c:204
 msgid "Connect"
 msgstr "连接"
 
-#: gtk_goagent.c:185
+#: gtk_goagent.c:207
 msgid "Clean"
 msgstr "清屏"
 
-#: gtk_goagent.c:188
+#: gtk_goagent.c:210
 msgid "Disconnect"
 msgstr "断开"
 
-#: upgrade.c:20
-msgid "New Version Now!"
-msgstr "已是最新看到!"
+#: upgrade.c:31
+msgid "Your GoAgent is the newest version now!"
+msgstr "当前GoAgent已经是最新版本!"
