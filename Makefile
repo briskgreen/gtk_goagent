@@ -55,4 +55,4 @@ install:
 	./install.sh
 
 uninstall:
-	rm -rf /usr/local/share/gtk_goagent && rm $HOME/.gtk_goagentrc
+	rm -rf /usr/local/share/gtk_goagent && rm $(HOME)/.gtk_goagentrc
