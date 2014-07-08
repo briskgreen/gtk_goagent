@@ -16,27 +16,24 @@ char *get_rel_path(const char *dir,const char *path);
 char *get_version(char *path)
 {
 	FILE *fp;
-	char buf[512];
+	//char buf[512];
+	char *buf=NULL;
+	size_t f_len;
 	char *version;
-	int len,i,j;
-	int index;
+	int len,i;
 
 	if((fp=fopen(path,"r"))==NULL)
 		error_quit(path);
 /*提取版本号
- * 通过匹配version字符串来得到
- * 文件中以#开头的是注释，所以路过
+ * 通过匹配__version__字符串来得到
  */
-	while(!feof(fp))
+	while(getline(&buf,&f_len,fp) > 0)
 	{
-		bzero(buf,sizeof(buf));
-		fgets(buf,sizeof(buf)-1,fp);
-
-		if(buf[0] == '#')
-			continue;
-
-		if(strstr(buf,"version"))
+		if(strstr(buf,"__version__"))
 			break;
+
+		free(buf);
+		buf=NULL;
 	}
 
 /*如果是到达文件未必退出循环，则没有找到version匹配字符串
@@ -46,29 +43,13 @@ char *get_version(char *path)
 		error_quit("Can Not Get Version");
 
 /*找到第一个数字字符的下标*/
-
-	for(i=0;buf[i];++i)
-		if(buf[i] >= '0' && buf[i] <='9')
-			break;
-	index=i;
-
-/*得到剩余字符串的长度*/
-
-	for(len=0;buf[i];++len,++i);
-
-/*去掉回车符*/
-
-	--len;
-	if(buf[i-2] < '0' || buf[i-2] >'9')
-		--len;
-
-	version=malloc(len+1);
-	bzero(version,len+1);
-
+	for(i=0;buf[i] < '0' || buf[i] > '9';++i);
+/*得到字符串的长度*/
+	len=strlen(buf)-i-2;
+	version=malloc(sizeof(char)*len+1);
 /*复制版本号并返回*/
-
-	for(j=0;len;++index,++j,--len)
-		version[j]=buf[index];
+	snprintf(version,sizeof(char)*len+1,"%s",buf+i);
+	free(buf);
 
 	return version;
 }
@@ -85,28 +66,47 @@ void auto_upgrade_goagent(char *url,CONFDATA *conf)
 	if(fork()==0)
 	{
 		char *res;
-		HTTP *http;
+/*		HTTP *http;
 		char *host;
 		char *proxy=PROXY;
-		int port;
-/*		CURL *curl;
+		int port;*/
+		CURL *curl;
+		RET_DATA ret;
+		char *download_url;
+		int is_upload;
+		char *goagent_version;
 
 		curl=curl_easy_init();
-		curl_easy_setopt(curl,CURLOPT_URL,url);
-		curl_easy_setopt(curl,CURLOPT_WRITEFUNCTION,
+		ret.data=NULL;
+		ret.len=0;
+
+		//获取Cookies
+		curl_easy_setopt(curl,CURLOPT_URL,"https://www.google.com/");
+		curl_easy_setopt(curl,CURLOPT_COOKIEJAR,"/dev/null");
+		curl_easy_setopt(curl,CURLOPT_COOKIEFILE,"/dev/null");
+		curl_easy_setopt(curl,CURLOPT_SSL_VERIFYPEER,0);
+		curl_easy_setopt(curl,CURLOPT_NOBODY,1);
+		curl_easy_setopt(curl,CURLOPT_PROXY,PROXY);
+		curl_easy_setopt(curl,CURLOPT_FOLLOWLOCATION,1);
+		curl_easy_perform(curl);
+
+		curl_easy_setopt(curl,CURLOPT_NOBODY,0);
+		curl_easy_setopt(curl,CURLOPT_WRITEFUNCTION,get_data);
+		curl_easy_setopt(curl,CURLOPT_WRITEDATA,&ret);
+/*		curl_easy_setopt(curl,CURLOPT_WRITEFUNCTION,
 				is_upgrade_goagent);*/
 
 		//由于众所周知的原因，所以需要使用代理
 		//
 		//curl_easy_setopt(curl,CURLOPT_PROXY,PROXY);
-		http=http_head_init();
+/*		http=http_head_init();
 		http_head_add(http,url);
 		http_head_add(http,"Host: github.com\n");
-		http_head_add(http,"Accept: */*\n");
+		http_head_add(http,"Accept: *//**\n");
 		http_head_add(http,"Connection: close\n\n");
 		
 		host=match_string(".[^:]*",proxy);
-		port=atoi(proxy+strlen(host)+1);
+		port=atoi(proxy+strlen(host)+1);*/
 
 		while(1)
 		{
@@ -115,13 +115,34 @@ void auto_upgrade_goagent(char *url,CONFDATA *conf)
 			//每隔UPDATE_TIME检查一次
 			//
 			goagent_version=get_version(conf->proxy_py_path);
-			res=https_perform(http,host,port,NULL,NULL);
+/*			res=https_perform(http,host,port,NULL,NULL);
 			while(res == NULL)
 			{
 				res=https_perform(http,host,port,NULL,NULL);
 				sleep(1);
+			}*/
+			curl_easy_setopt(curl,CURLOPT_URL,url);
+			curl_easy_perform(curl);
+			if(ret.len)
+			{
+				if(download_url=is_upgrade_goagent(&ret,goagent_version))
+				{
+					free(ret.data);
+					ret.data=NULL;
+					ret.len=0;
+
+					curl_easy_setopt(curl,CURLOPT_URL,GOAGENT_HIS_URL);
+					curl_easy_perform(curl);
+					is_upload=goagent_is_upload(&ret);
+					download_file(download_url,is_upload);
+					free(download_url);
+				}
+
+				free(ret.data);
+				ret.data=NULL;
+				ret.len=0;
+				free(goagent_version);
 			}
-			is_upgrade_goagent(res);
 
 			sleep(UPDATE_TIME);
 		}
@@ -155,39 +176,61 @@ void auto_upgrade_goagent(char *url,CONFDATA *conf)
 
 /*判断是否有新的版本需要更新*/
 
-void is_upgrade_goagent(char *buf)
+char *is_upgrade_goagent(RET_DATA *data,char *goagent_version)
 {
-	char *url;
 	//char *temp;
-	int download=0;
-	int is_upload=0;
-	char *version;
+	const char *version;
+	char *download_url;
+	const char *url;
 	char msg[1024]={0};
-	int v_len=strlen("<span class=\"tag-name\">v");
+	pcre *reg;
+	const char *errptr;
+	int erroffset;
+	int rc;
+	int ovector[3*3];
+	int download=0;
+
+	reg=pcre_compile("goagent (\\d+\\.\\d+\\.\\d+) 正式版下载 <a href=\"(.*?)\"",0,&errptr,&erroffset,NULL);
+	if(reg == NULL)
+		return NULL;
+
+	rc=pcre_exec(reg,NULL,data->data,data->len,0,0,ovector,3*3);
+	if(!rc)
+	{
+		pcre_free(reg);
+		return NULL;
+	}
+
+	pcre_get_substring(data->data,ovector,rc,1,&version);
+	pcre_get_substring(data->data,ovector,rc,2,&url);
+	pcre_free(reg);
+//	int v_len=strlen("<span class=\"tag-name\">v");
 
 	//temp=match_string("<p>goagent.*正式版下载.*",buf);
 	//free(buf);
 	//version=match_string("<p>goagent.[^<]*",temp);
-	version=match_string("<span class=\"tag-name\">v.[^<]*",buf);
+/*	version=match_string("<span class=\"tag-name\">v.[^<]*",buf);*/
 	if(!version)
 	{
-		free(buf);
+		pcre_free_substring(url);
 		gtk_init(NULL,NULL);
 		message_box(NULL,_("The Release Page Had Changed\nPlease Email To briskgreen@163.com"));
-		return;
+		return NULL;
 	}
 
 	//printf("goagent_version=%s version=%s\n",goagent_version,version);
-	if(!strstr(version,goagent_version))
+	/*if(!strstr(version,goagent_version))
+		download=1;*/
+	if(strcmp(version,goagent_version) != 0)
 		download=1;
 
 	//printf("%s\n",version+v_len);
 	if(!download)
 	{
-		free(buf);
-		free(version);
+		pcre_free_substring(version);
+		pcre_free_substring(url);
 
-		return;
+		return NULL;
 	}
 	/*free(version);
 	if(!download)
@@ -203,14 +246,56 @@ void is_upgrade_goagent(char *buf)
 		is_upload=1;
 	free(version);
 	free(temp);*/
-	url=string_add("https://github.com/goagent/goagent/archive/v%s.zip",version+v_len);
+/*	url=string_add("https://github.com/goagent/goagent/archive/v%s.zip",version+v_len);*/
 
 	gtk_init(NULL,NULL);
-	sprintf(msg,"Have New Version GoAgent v%s\nDo You Want To Upgrade Now?",version+v_len);
-	free(version);
+	sprintf(msg,"Have New Version GoAgent v%s\nDo You Want To Upgrade Now?",version);
+
+	download_url=strdup(url);
+	pcre_free_substring(url);
+	pcre_free_substring(version);
+
 	if(message_box_ok(_(msg)))
-		download_file(url,is_upload);
-	free(buf);
+		return download_url;
+	else
+	{
+		free(download_url);
+
+		return NULL;
+	}
+}
+
+int goagent_is_upload(RET_DATA *data)
+{
+	pcre *reg;
+	const char *errptr;
+	int erroffset;
+	int rc;
+	int ovector[2*3];
+	const char *is_upload;
+
+	reg=pcre_compile("\\[\\d+? (.*?)\\].*? \\d+\\.\\d+\\.\\d+",0,&errptr,&erroffset,NULL);
+	if(reg == NULL)
+		return 0;
+	rc=pcre_exec(reg,NULL,data->data,data->len,0,0,ovector,2*3);
+	if(!rc)
+	{
+		pcre_free(reg);
+		return 0;
+	}
+
+	pcre_get_substring(data->data,ovector,rc,1,&is_upload);
+	pcre_free(reg);
+
+	if(strcmp(is_upload,"是"))
+	{
+		pcre_free_substring(is_upload);
+		return 1;
+	}
+
+	pcre_free_substring(is_upload);
+
+	return 0;
 }
 
 /*下载文件界面*/
@@ -222,6 +307,7 @@ void download_file(char *path,int is_upload)
 	GtkWidget *vbox;
 	GtkWidget *label;
 	CURL_DATA data;
+	char *goagent_version;
 
 	gdk_threads_init();
 	//gtk_init(NULL,NULL);
@@ -376,9 +462,14 @@ void _unzip(char *zip_file,char *goagent_path)
 	int pipefd[2];
 	pid_t pid;
 	char buf[512]={0};
-	char *first_name;
+	const char *first_name;
 	int n;
 	int len=0;
+	pcre *re;
+	int rc;
+	const char *errptr;
+	int erroffset;
+	int ovector[2*3];
 
 	change_path("/tmp/");
 
@@ -402,16 +493,20 @@ void _unzip(char *zip_file,char *goagent_path)
 	waitpid(pid,NULL,WNOHANG);
 
 	close(pipefd[0]);
-	first_name=match_string("inflating: .[^/]*",buf);
+	re=pcre_compile("inflating: (.[^/]*)",0,&errptr,&erroffset,NULL);
+	rc=pcre_exec(re,NULL,buf,strlen(buf),0,0,ovector,2*3);
+	pcre_get_substring(buf,ovector,rc,1,&first_name);
+	//first_name=match_string("inflating: .[^/]*",buf);
 	if(first_name)
-		change_path(first_name+strlen("inflating: "));
+		change_path(first_name);
 	else
 	{
 		perror(_("Can Not Get uncompress target file name\nmaybe you can uncompress it at /tmp with yourself"));
 		return;
 	}
 
-	free(first_name);
+	pcre_free(re);
+	pcre_free_substring(first_name);
 	copy_file(get_proxy_ini_path(goagent_path),"local/proxy.ini.back");
 	rm_dir(goagent_path);
 	copy_dir(getcwd(NULL,0),goagent_path);
@@ -790,5 +885,15 @@ void _copy_file(const char *old_path,const char *new_path)
 
 //返回之前文件
 	change_path(p);
+}
+
+size_t get_data(char *ptr,size_t size,size_t nmemb,RET_DATA *data)
+{
+	data->data=realloc(data->data,sizeof(char)*(data->len+nmemb)+1);
+	snprintf(data->data+data->len,sizeof(char)*nmemb+1,"%s",ptr);
+
+	data->len+=nmemb;
+
+	return nmemb;
 }
 

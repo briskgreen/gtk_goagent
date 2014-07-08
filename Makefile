@@ -1,5 +1,5 @@
 PKG_LIBS=`pkg-config --cflags --libs gtk+-2.0`
-LIBS=dialog.o menu.o callback.o config.o autoupgrade.o mysock.o
+LIBS=dialog.o menu.o callback.o config.o autoupgrade.o
 
 all:gtk_goagent pre_ui upload upgrade
 
@@ -10,10 +10,10 @@ gtk_goagent.o:gtk_goagent.c callback.h autoupgrade.h
 	gcc -c gtk_goagent.c $(PKG_LIBS)
 
 autoupgrade.o:autoupgrade.c autoupgrade.h config.h
-	gcc -c autoupgrade.c $(PKG_LIBS) -lz -lcurl
+	gcc -c autoupgrade.c $(PKG_LIBS) -lz -lcurl -lpcre
 
-mysock.o:mysock/mysock.h mysock/mysock.c 
-	gcc -c mysock/mysock.c
+#mysock.o:mysock/mysock.h mysock/mysock.c 
+#	gcc -c mysock/mysock.c
 
 dialog.o:dialog.c dialog.h menu.h
 	gcc -c dialog.c $(PKG_LIBS)
@@ -55,4 +55,4 @@ install:
 	./install.sh
 
 uninstall:
-	rm -rf /usr/local/share/gtk_goagent && rm $HOME/.gtk_goagentrc
+	rm -rf /usr/local/share/gtk_goagent && rm $(HOME)/.gtk_goagentrc

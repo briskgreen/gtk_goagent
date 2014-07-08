@@ -5,14 +5,16 @@
 #include <zlib.h>
 #include <dirent.h>
 #include <sys/stat.h>
+#include <pcre.h>
 #include "config.h"
-#include "mysock/mysock.h"
+//#include "mysock/mysock.h"
 
 //GoAgent项目主页地址
-#define GOAGENT_URL "GET https://github.com/goagent/goagent/releases HTTP/1.1\n"
+#define GOAGENT_URL "https://code.google.com/p/goagent/"
+#define GOAGENT_HIS_URL "https://code.google.com/p/goagent/wiki/History"
 //#define GTK_GOAGENT_URL "https://briskgreen.github.io/Download/Gtk GoAgent"
 //代理地址与端口
-#define PROXY "github.com:443"
+#define PROXY "127.0.0.1:8087"
 //更新周期
 #define UPDATE_TIME 60*60*2
 #define error_quit(s)\
@@ -66,13 +68,26 @@ typedef struct
 	GtkWidget *progress_bar;
 }CURL_DATA;
 
-char *goagent_version; //goagent的当前版本号
+/* 获取HTTP请求字符串
+ * data为字符串
+ * len为当前获取的长度
+ */
+typedef struct
+{
+	int len;
+	char *data;
+}RET_DATA;
+
+//char *goagent_version; //goagent的当前版本号
 
 /*得到当前goagent版本号*/
 char *get_version(char *path);
 
 /*检查是否需要更新*/
-void is_upgrade_goagent(char *buf);
+char *is_upgrade_goagent(RET_DATA *data,char *goagent_version);
+
+/*检查是否需要上传*/
+int goagent_is_upload(RET_DATA *data);
 
 /*下载主界面*/
 void download_file(char *path,int is_upload);
@@ -117,5 +132,7 @@ void copy_file(const char *old_path,const char *new_path);
 void rm_dir(const char *path);
 
 void copy_dir(const char *old_path,const char *new_path);
+
+size_t get_data(char *ptr,size_t size,size_t nmemb,RET_DATA *data);
 
 #endif
