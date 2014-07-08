@@ -1,0 +1,55 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2014-06-20 16:14+0800\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: upgrade.c:78
+msgid "Your GoAgent is the newest version now!"
+msgstr "您的GoAgent目前是最新的了!"
+
+#: autoupgrade.c:217
+msgid ""
+"The Release Page Had Changed\n"
+"Please Email To briskgreen@163.com"
+msgstr "GoAgent的版本网页已经有所变更\n请发邮件到briskgreen@163.com进行报告"
+
+#: autoupgrade.c:325
+msgid "Downloading . . ."
+msgstr "下载中 . . ."
+
+#: autoupgrade.c:366
+msgid "This Version Should Upload Again"
+msgstr "该版本需要重新上传"
+
+#: autoupgrade.c:445
+msgid "Open File Error"
+msgstr "打开文件错误"
+
+#: autoupgrade.c:457
+msgid "Unknown Type"
+msgstr "未知类型"
+
+#: autoupgrade.c:496
+msgid ""
+"Can Not Get uncompress target file name\n"
+"maybe you can uncompress it at /tmp with yourself"
+msgstr "无法得到要解压的目标文件名\n或许您可以手动到/tmp目录下进行解压"
+
+#: autoupgrade.c:504 autoupgrade.c:632
+#, c-format
+msgid "Unzip And Copy Successed . . .\n"
+msgstr "解压并复制文件成功 . . .\n"
