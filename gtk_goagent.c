@@ -88,6 +88,7 @@ int main(int argc,char **argv)
 	init_about_data(&about_data);
 	//init_help_data(&help_data);
 
+	data.buf=g_string_new(NULL);
 	data.python_path=conf.python_path;
 	data.proxy_py_path=conf.proxy_py_path;
 	setlocale(LC_ALL,"");
@@ -219,6 +220,7 @@ int main(int argc,char **argv)
 
 	//setpgrp();
 	g_idle_remove_by_data(&data);
+	g_string_free(data.buf,TRUE);
 
 	kill(0,SIGKILL);
 	//killpg(getpgrp(),SIGKILL);

@@ -20,6 +20,7 @@
  * 虚拟终端
  * proxy.py路径
  * python路径
+ * 存储输出字符串的缓冲区
  */
 typedef struct
 {
@@ -29,6 +30,7 @@ typedef struct
 	int pty;
 	char *proxy_py_path;
 	char *python_path;
+	GString *buf;
 }DATA;
 
 //void init_help_data(HELP *help);
