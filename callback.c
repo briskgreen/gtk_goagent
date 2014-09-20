@@ -168,20 +168,20 @@ gboolean _get_connect(DATA *data)
 		return TRUE;
 	}*/
 	/*设置超时*/
-	timeout.tv_sec=0;
+	/*timeout.tv_sec=0;
 	timeout.tv_usec=300;
 
 	FD_ZERO(&reads);
-	FD_SET(data->pty,&reads);
+	FD_SET(data->pty,&reads);*/
 
 	/*侦听读，直到有可读数据，或者超时
 	 * 如果超时则返回TRUE，断续运行
 	 * 否则将显示读到的数据
 	 */
-	ret=select(data->pty+1,&reads,NULL,NULL,&timeout);
+	/*ret=select(data->pty+1,&reads,NULL,NULL,&timeout);
 
 	if(ret==-1 || ret==0)
-		return TRUE;
+		return TRUE;*/
 
 	/*len=read(data->pty,buf,sizeof(buf)-1);
 
@@ -191,6 +191,15 @@ gboolean _get_connect(DATA *data)
 	buf[len]='\0';*/
 	while(1)
 	{
+		FD_ZERO(&reads);
+		FD_SET(data->pty,&reads);
+		timeout.tv_sec=0;
+		timeout.tv_usec=300;
+
+		ret=select(data->pty+1,&reads,NULL,NULL,&timeout);
+		if(ret == -1 || ret == 0)
+			return TRUE;
+
 		ret=read(data->pty,&buf,sizeof(char));
 		if(ret > 0)
 		{
@@ -211,6 +220,9 @@ gboolean _get_connect(DATA *data)
 		return TRUE;
 	}
 
+	if(strncmp(data->buf->str,reset_color,strlen(reset_color)) ==0)
+		g_string_erase(data->buf,0,strlen(reset_color));
+
 	if(strncmp(data->buf->str,error_color,strlen(error_color)) == 0)
 	{
 		gtk_text_buffer_insert_with_tags_by_name(buffer,&end,
@@ -227,14 +239,14 @@ gboolean _get_connect(DATA *data)
 	{
 		gtk_text_buffer_insert_with_tags_by_name(buffer,&end,
 				data->buf->str+strlen(debug_color),
-				-1,"green_fg",NULL);
+				-1,"yellow_fg",NULL);
 	}
-	else if(strncmp(data->buf->str,reset_color,strlen(reset_color)) == 0)
+	/*else if(strncmp(data->buf->str,reset_color,strlen(reset_color)) == 0)
 	{
 		gtk_text_buffer_insert_with_tags_by_name(buffer,&end,
 				data->buf->str+strlen(reset_color),
 				-1,"red_fg",NULL);
-	}
+	}*/
 	else
 		gtk_text_buffer_insert_with_tags_by_name(buffer,&end,
 				data->buf->str,-1,"black_fg",NULL);
