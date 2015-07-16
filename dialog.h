@@ -37,7 +37,7 @@ typedef struct
 void about_dialog(GtkWidget *about,gpointer data);
 
 /*是否确定退出*/
-void really_quit(GtkWidget *widget,gpointer data);
+gboolean really_quit(GtkWidget *widget,gpointer data);
 
 /*错误弹出对话框*/
 void error_message(GtkWidget *widget,gchar *data);

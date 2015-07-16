@@ -34,7 +34,7 @@ void about_dialog(GtkWidget *about,gpointer data)
 	gtk_widget_destroy(dialog);
 }
 
-void really_quit(GtkWidget *widget,gpointer data)
+gboolean really_quit(GtkWidget *widget,gpointer data)
 {
 	GtkWidget *dialog;
 	GtkWidget *label;
@@ -60,6 +60,7 @@ void really_quit(GtkWidget *widget,gpointer data)
 	}
 
 	gtk_widget_destroy(dialog);
+	return TRUE;
 }
 
 void error_message(GtkWidget *widget,gchar *error)
