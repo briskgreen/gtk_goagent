@@ -149,7 +149,7 @@ char *get_proxy_py_path(FILE *fp)
 	if(test_argument(fp,"goagent_path",&temp))
 	{
 		proxy_py_path=malloc(strlen(temp)+strlen(PYPATH)+1);
-		bzero(proxy_py_path,strlen(proxy_py_path)+1);
+		bzero(proxy_py_path,strlen(temp)+strlen(PYPATH)+1);
 
 		strncpy(proxy_py_path,temp,strlen(temp));
 		strncat(proxy_py_path,PYPATH,strlen(PYPATH));
