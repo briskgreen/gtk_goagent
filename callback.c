@@ -149,11 +149,16 @@ gboolean _get_connect(DATA *data)
 	GtkTextBuffer *buffer=gtk_text_view_get_buffer(GTK_TEXT_VIEW(data->text));
 	GtkTextIter end;
 	GtkTextMark *mark;
-	char buf[2048];
+	//char buf[2048];
+	char buf;
 	int ret;
-	int len;
+	//int len;
 	fd_set reads;
 	struct timeval timeout;
+	char *error_color="\033[31m";
+	char *warning_color="\033[33m";
+	char *debug_color="\033[32m";
+	char *reset_color="\033[0m";
 
 	/*len=read(data->pipefd[0],buf,sizeof(buf)-1);
 
@@ -163,27 +168,49 @@ gboolean _get_connect(DATA *data)
 		return TRUE;
 	}*/
 	/*设置超时*/
-	timeout.tv_sec=0;
+	/*timeout.tv_sec=0;
 	timeout.tv_usec=300;
 
 	FD_ZERO(&reads);
-	FD_SET(data->pty,&reads);
+	FD_SET(data->pty,&reads);*/
 
 	/*侦听读，直到有可读数据，或者超时
 	 * 如果超时则返回TRUE，断续运行
 	 * 否则将显示读到的数据
 	 */
-	ret=select(data->pty+1,&reads,NULL,NULL,&timeout);
+	/*ret=select(data->pty+1,&reads,NULL,NULL,&timeout);
 
 	if(ret==-1 || ret==0)
-		return TRUE;
+		return TRUE;*/
 
-	len=read(data->pty,buf,sizeof(buf)-1);
+	/*len=read(data->pty,buf,sizeof(buf)-1);
 
 	if(len<=0)
 		return TRUE;
 
-	buf[len]='\0';
+	buf[len]='\0';*/
+	while(1)
+	{
+		FD_ZERO(&reads);
+		FD_SET(data->pty,&reads);
+		timeout.tv_sec=0;
+		timeout.tv_usec=300;
+
+		ret=select(data->pty+1,&reads,NULL,NULL,&timeout);
+		if(ret == -1 || ret == 0)
+			return TRUE;
+
+		ret=read(data->pty,&buf,sizeof(char));
+		if(ret > 0)
+		{
+			if(buf == '\n')
+				break;
+
+			g_string_append_c(data->buf,buf);
+		}
+		else
+			return TRUE;
+	}
 
 	gtk_text_buffer_get_end_iter(buffer,&end);
 	if(gtk_text_iter_get_offset(&end)>INT_MAX)
@@ -193,16 +220,49 @@ gboolean _get_connect(DATA *data)
 		return TRUE;
 	}
 
-	/*对WARNING与ERROR关键字设置颜色*/
-	if(strstr(buf,"WARNING"))
-		gtk_text_buffer_insert_with_tags_by_name(buffer,&end,buf,
-				len,"green_fg",NULL);
-	else if(strstr(buf,"ERROR"))
-		gtk_text_buffer_insert_with_tags_by_name(buffer,&end,buf,
-				len,"red_fg",NULL);
+	if(strncmp(data->buf->str,reset_color,strlen(reset_color)) ==0)
+		g_string_erase(data->buf,0,strlen(reset_color));
+
+	if(strncmp(data->buf->str,error_color,strlen(error_color)) == 0)
+	{
+		gtk_text_buffer_insert_with_tags_by_name(buffer,&end,
+				data->buf->str+strlen(error_color),
+				-1,"red_fg",NULL);
+	}
+	else if(strncmp(data->buf->str,warning_color,strlen(warning_color)) == 0)
+	{
+		gtk_text_buffer_insert_with_tags_by_name(buffer,&end,
+				data->buf->str+strlen(warning_color),
+				-1,"green_fg",NULL);
+	}
+	else if(strncmp(data->buf->str,debug_color,strlen(debug_color)) == 0)
+	{
+		gtk_text_buffer_insert_with_tags_by_name(buffer,&end,
+				data->buf->str+strlen(debug_color),
+				-1,"yellow_fg",NULL);
+	}
+	/*else if(strncmp(data->buf->str,reset_color,strlen(reset_color)) == 0)
+	{
+		gtk_text_buffer_insert_with_tags_by_name(buffer,&end,
+				data->buf->str+strlen(reset_color),
+				-1,"red_fg",NULL);
+	}*/
 	else
-		gtk_text_buffer_insert_with_tags_by_name(buffer,&end,buf,
-				len,"black_fg",NULL);
+		gtk_text_buffer_insert_with_tags_by_name(buffer,&end,
+				data->buf->str,-1,"black_fg",NULL);
+	/*对WARNING与ERROR关键字设置颜色*/
+/*	if(strstr(data->buf->str,"WARNING"))
+		gtk_text_buffer_insert_with_tags_by_name(buffer,&end,
+				data->buf->str,
+				-1,"green_fg",NULL);
+	else if(strstr(data->buf->str,"ERROR"))
+		gtk_text_buffer_insert_with_tags_by_name(buffer,&end,
+				data->buf->str,
+				-1,"red_fg",NULL);
+	else
+		gtk_text_buffer_insert_with_tags_by_name(buffer,&end,
+				data->buf->str,
+				-1,"black_fg",NULL);*/
 
 	/*gtk_text_view_scroll_to_iter(GTK_TEXT_VIEW(data->text),&end,
 			0,FALSE,FALSE,FALSE);*/
@@ -215,6 +275,8 @@ gboolean _get_connect(DATA *data)
 	gtk_text_buffer_move_mark(buffer,mark,&end);
 	gtk_text_view_scroll_to_mark(GTK_TEXT_VIEW(data->text),mark,
 			0,TRUE,TRUE,TRUE);
+
+	g_string_erase(data->buf,0,-1);
 
 	return TRUE;
 }

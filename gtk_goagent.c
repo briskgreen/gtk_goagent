@@ -88,6 +88,7 @@ int main(int argc,char **argv)
 	init_about_data(&about_data);
 	//init_help_data(&help_data);
 
+	data.buf=g_string_new(NULL);
 	data.python_path=conf.python_path;
 	data.proxy_py_path=conf.proxy_py_path;
 	setlocale(LC_ALL,"");
@@ -153,6 +154,7 @@ int main(int argc,char **argv)
 	 * 正常日志黑色输出
 	 * 绿色用于警告
 	 * 红色用于错误
+	 * 黄色用于调试
 	 */
 	gtk_text_buffer_create_tag(buffer,"green_fg",
 			"foreground","green",NULL);
@@ -160,6 +162,8 @@ int main(int argc,char **argv)
 			"red",NULL);
 	gtk_text_buffer_create_tag(buffer,"black_fg","foreground",
 			"black",NULL);
+	gtk_text_buffer_create_tag(buffer,"yellow_fg",
+			"foreground","yellow",NULL);
 
 	data.text=text;
 	data.off=0;
@@ -219,6 +223,7 @@ int main(int argc,char **argv)
 
 	//setpgrp();
 	g_idle_remove_by_data(&data);
+	g_string_free(data.buf,TRUE);
 
 	kill(0,SIGKILL);
 	//killpg(getpgrp(),SIGKILL);
